@@ -1,7 +1,7 @@
 {
-  "name": "@ZitySpace/react-component-template",
+  "name": "@ZitySpace/ux-sdk",
   "version": "0.0.1",
-  "description": "Simple react component",
+  "description": "ZitySpace UX SDK",
   "scripts": {
     "rollup": "rollup -c",
     "test": "jest",
