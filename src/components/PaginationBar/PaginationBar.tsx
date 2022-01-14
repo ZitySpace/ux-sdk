@@ -1,61 +1,53 @@
 import {
   ChevronDoubleLeftIcon,
-  ChevronLeftIcon,
   ChevronDoubleRightIcon,
+  ChevronLeftIcon,
   ChevronRightIcon,
 } from '@heroicons/react/solid';
 import React from 'react';
+import shallow from 'zustand/shallow';
+import { usePagingStore } from '../../stores/pagingStore';
 
-export interface PaginationBarProps {
-  step: number;
-  pos: number; // [0, total-1]
-  total: number;
-  setStep: Function;
-  setPos: Function;
-}
+const PaginationBar = () => {
+  const [
+    pos,
+    step,
+    total,
+    curPage,
+    totPages,
+    setStep,
+    toFstPage,
+    toLstPage,
+    toPrevPage,
+    toNextPage,
+    toPage,
+  ] = usePagingStore(
+    (s) => [
+      s.pos,
+      s.step,
+      s.total,
+      s.curPage,
+      s.totPages,
+      s.setStep,
+      s.toFstPage,
+      s.toLstPage,
+      s.toPrevPage,
+      s.toNextPage,
+      s.toPage,
+    ],
+    shallow
+  );
 
-const PaginationBar = ({
-  step,
-  pos,
-  total,
-  setPos,
-  setStep,
-}: PaginationBarProps) => {
-  const curPage = Math.floor(pos / step) + 1;
-  const totPages = Math.floor((total - 1) / step) + 1 || 1;
-
-  const toPrevPage = () => {
-    const prevPos = Math.max(0, pos - step);
-    setPos(prevPos);
-  };
-
-  const toFstPage = () => {
-    setPos(0);
-  };
-
-  const toNextPage = () => {
-    const nextPos = Math.min(step * (totPages - 1), pos + step);
-    setPos(nextPos);
-  };
-
-  const toLstPage = () => {
-    setPos(step * (totPages - 1));
-  };
-
-  const toPage = (evt: React.BaseSyntheticEvent) => {
+  const toPageInputHandler = (evt: React.BaseSyntheticEvent) => {
     const v = parseInt(evt.target.value);
     if (isNaN(v)) return;
-    const page = Math.max(1, Math.min(v, totPages));
-    setPos(step * (page - 1));
+    toPage(v);
   };
 
-  const useStep = (evt: React.BaseSyntheticEvent) => {
+  const setStepInputHandler = (evt: React.BaseSyntheticEvent) => {
     const v = parseInt(evt.target.value);
     if (isNaN(v)) return;
-    const newStep = Math.max(1, Math.min(v, total));
-    const newPos = Math.floor(pos / newStep) * newStep;
-    setPos(newPos);
-    setStep(newStep);
+    setStep(v);
   };
 
   return (
@@ -96,9 +88,9 @@ const PaginationBar = ({
           <input
             key={curPage}
             defaultValue={curPage}
-            onBlur={toPage}
+            onBlur={toPageInputHandler}
             onKeyPress={(evt: React.KeyboardEvent) => {
-              evt.key === 'Enter' ? toPage(evt) : null;
+              evt.key === 'Enter' ? toPageInputHandler(evt) : null;
             }}
             className='flex justify-center h-6 w-6 rounded-sm md:h-8 md:w-8 md:rounded-full text-center bg-indigo-600 text-gray-100 text-xs focus:outline-none'
           />
@@ -132,9 +124,9 @@ const PaginationBar = ({
             <input
               key={step}
               defaultValue={step}
-              onBlur={useStep}
+              onBlur={setStepInputHandler}
               onKeyPress={(evt: React.KeyboardEvent) => {
-                evt.key === 'Enter' ? useStep(evt) : null;
+                evt.key === 'Enter' ? setStepInputHandler(evt) : null;
               }}
               className='h-8 w-8 flex justify-center items-center mr-1 rounded-full text-center bg-gray-200 text-xs focus:outline-none'
             />

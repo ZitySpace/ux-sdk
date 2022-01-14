@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { ComponentStory, ComponentMeta } from '@storybook/react';
+import { ComponentMeta, ComponentStory } from '@storybook/react';
+import React from 'react';
 import PaginationBar from './PaginationBar';
 
 export default {
@@ -7,25 +7,9 @@ export default {
   component: PaginationBar,
 } as ComponentMeta<typeof PaginationBar>;
 
-const Template: ComponentStory<typeof PaginationBar> = (args) => {
-  const total = args.total;
-  const [pos, setPos] = useState(args.pos);
-  const [step, setStep] = useState(args.step);
-
-  return (
-    <PaginationBar
-      step={step}
-      pos={pos}
-      total={total}
-      setPos={setPos}
-      setStep={setStep}
-    />
-  );
-};
+const Template: ComponentStory<typeof PaginationBar> = (args) => (
+  <PaginationBar {...args} />
+);
 
 export const Story = Template.bind({});
-Story.args = {
-  pos: 13,
-  step: 10,
-  total: 123,
-};
+Story.args = {};

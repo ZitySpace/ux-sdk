@@ -6,6 +6,13 @@ interface PagingStoreState extends State {
   total: number;
   curPage: number;
   totPages: number;
+  setPos: (p: number) => void;
+  setStep: (d: number) => void;
+  toPrevPage: () => void;
+  toNextPage: () => void;
+  toFstPage: () => void;
+  toLstPage: () => void;
+  toPage: (n: number) => void;
 }
 
 export const usePagingStore = create<PagingStoreState>((set, get) => ({
@@ -24,7 +31,7 @@ export const usePagingStore = create<PagingStoreState>((set, get) => ({
       return { pos: newPos, step: newStep };
     }),
 
-  toPrevpage: () => set((s) => ({ pos: Math.max(0, s.pos - s.step) })),
+  toPrevPage: () => set((s) => ({ pos: Math.max(0, s.pos - s.step) })),
   toNextPage: () =>
     set((s) => ({ pos: Math.min(s.step * (s.totPages - 1), s.pos + s.step) })),
 
