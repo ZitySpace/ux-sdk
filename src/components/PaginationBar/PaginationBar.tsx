@@ -13,8 +13,8 @@ const PaginationBar = () => {
     pos,
     step,
     total,
-    curPage,
-    totPages,
+    getCurPage,
+    getTotPages,
     setStep,
     toFstPage,
     toLstPage,
@@ -26,8 +26,8 @@ const PaginationBar = () => {
       s.pos,
       s.step,
       s.total,
-      s.curPage,
-      s.totPages,
+      s.getCurPage,
+      s.getTotPages,
       s.setStep,
       s.toFstPage,
       s.toLstPage,
@@ -37,6 +37,9 @@ const PaginationBar = () => {
     ],
     shallow
   );
+
+  const curPage = getCurPage();
+  const totPages = getTotPages();
 
   const toPageInputHandler = (evt: React.BaseSyntheticEvent) => {
     const v = parseInt(evt.target.value);
