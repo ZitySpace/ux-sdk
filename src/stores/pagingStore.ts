@@ -1,7 +1,7 @@
 import create, { State } from 'zustand';
 import createContext from 'zustand/context';
 
-export interface PagingStoreState extends State {
+interface PagingStoreState extends State {
   pos: number;
   step: number;
   total: number;
