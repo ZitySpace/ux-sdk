@@ -1,7 +1,10 @@
 import { ComponentMeta, ComponentStory } from '@storybook/react';
 import React from 'react';
 import PaginationBar from './PaginationBar';
-import { Provider, createPagingStore } from '../../stores/pagingStore';
+import {
+  PagingStoreProvider,
+  createPagingStore,
+} from '../../stores/pagingStore';
 
 export default {
   title: 'UX-SDK/PaginationBar',
@@ -10,9 +13,9 @@ export default {
 
 const Template: ComponentStory<typeof PaginationBar> = (args) => {
   return (
-    <Provider createStore={createPagingStore}>
+    <PagingStoreProvider createStore={createPagingStore}>
       <PaginationBar {...args} />
-    </Provider>
+    </PagingStoreProvider>
   );
 };
 

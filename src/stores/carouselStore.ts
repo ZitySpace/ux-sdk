@@ -43,7 +43,7 @@ const initCarouselStoreState: InitCarouselStoreState = {
   },
 };
 
-export const { Provider, useStore: useCarouselStore } =
+export const { Provider: CarouselStoreProvider, useStore: useCarouselStore } =
   createContext<CarouselStoreState>();
 
 export const createCarouselStore = (

@@ -16,7 +16,7 @@ interface PagingStoreState extends State {
   toPage: (n: number) => void;
 }
 
-export const { Provider, useStore: usePagingStore } =
+export const { Provider: PagingStoreProvider, useStore: usePagingStore } =
   createContext<PagingStoreState>();
 
 export const createPagingStore = () =>

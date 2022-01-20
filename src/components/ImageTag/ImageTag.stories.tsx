@@ -1,6 +1,9 @@
 import { ComponentMeta, ComponentStory } from '@storybook/react';
 import React from 'react';
-import { createCarouselStore, Provider } from '../../stores/carouselStore';
+import {
+  createCarouselStore,
+  CarouselStoreProvider,
+} from '../../stores/carouselStore';
 import ImageTag from './ImageTag';
 
 export default {
@@ -10,7 +13,7 @@ export default {
 
 const Template: ComponentStory<typeof ImageTag> = (args) => {
   return (
-    <Provider
+    <CarouselStoreProvider
       createStore={() =>
         createCarouselStore({
           carouselData: {
@@ -41,7 +44,7 @@ const Template: ComponentStory<typeof ImageTag> = (args) => {
       <div className='h-64 w-64'>
         <ImageTag {...args} />
       </div>
-    </Provider>
+    </CarouselStoreProvider>
   );
 };
 

@@ -3,7 +3,7 @@ import { fabric } from 'fabric';
 import React, { useEffect, useRef, useState } from 'react';
 import { useCarouselStore } from '../../stores/carouselStore';
 
-const ImageTag = ({ name = '' }: { name: string }) => {
+const ImageTag = ({ name }: { name: string }) => {
   const [
     selectable,
     toggleImageSelect,
