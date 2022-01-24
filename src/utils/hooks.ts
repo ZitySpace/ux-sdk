@@ -7,5 +7,6 @@ export const useCarouselSizeQuery = () =>
   useQuery('carouselSize', () => 123, {
     onSuccess: (total) => setTotal(total),
   });
+
 export const useCarouselPageQuery = (pos: number, step: number) =>
   useQuery(['carouselPage', pos, step], () => pos + step);

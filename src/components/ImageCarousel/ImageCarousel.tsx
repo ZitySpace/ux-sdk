@@ -1,5 +1,5 @@
 import React from 'react';
-import { useCarouselSizeQuery, useCarouselPageQuery } from '../../hooks';
+import { useCarouselSizeQuery, useCarouselPageQuery } from '../../utils/hooks';
 import PaginationBar from '../PaginationBar/PaginationBar';
 
 const ImageCarousel = () => {
