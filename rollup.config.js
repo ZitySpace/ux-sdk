@@ -41,7 +41,7 @@ export default [
         },
       }),
     ],
-    external: ['react', 'react-dom', 'fabric'],
+    external: ['react', 'react-dom', 'fabric', 'react-query'],
   },
   {
     input: 'dist/esm/types/index.d.ts',
