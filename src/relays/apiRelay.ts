@@ -43,8 +43,6 @@ export const requestTemplate =
     return data;
   };
 
-export const API_ENDPOINT = process.env.ZITYSPACE_API_ENDPOINT;
-
 const getImage = requestTemplate((projectSlug: string, file_name: string) => {
   return {
     url:

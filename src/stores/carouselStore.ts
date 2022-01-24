@@ -1,6 +1,5 @@
 import produce from 'immer';
 import create, { State } from 'zustand';
-import createContext from 'zustand/context';
 
 interface DetectionProps {
   x: number;
@@ -25,9 +24,10 @@ interface CarouselStoreState extends State {
     toggleSelectable: () => void;
     toggleImageSelect: (name: string) => void;
   };
+  setStateData: (data: CarouselStoreStateData) => void;
 }
 
-interface InitCarouselStoreState extends State {
+interface CarouselStoreStateData extends State {
   carouselData: { [key: string]: ImageProps };
   selection: {
     selectable: boolean;
@@ -35,36 +35,24 @@ interface InitCarouselStoreState extends State {
   };
 }
 
-const initCarouselStoreState: InitCarouselStoreState = {
+export const useCarouselStore = create<CarouselStoreState>((set) => ({
   carouselData: {},
   selection: {
     selectable: true,
     selected: {},
+    toggleSelectable: () =>
+      set(
+        produce((s) => {
+          s.selection.selectable = !s.selection.selectable;
+        })
+      ),
+    toggleImageSelect: (name) =>
+      set(
+        produce((s) => {
+          s.selection.selected[name] = !s.selection.selected[name];
+        })
+      ),
   },
-};
-
-export const { Provider: CarouselStoreProvider, useStore: useCarouselStore } =
-  createContext<CarouselStoreState>();
-
-export const createCarouselStore = (
-  initState: InitCarouselStoreState = initCarouselStoreState
-) =>
-  create<CarouselStoreState>((set) => ({
-    carouselData: initState.carouselData,
-    selection: {
-      selectable: initState.selection.selectable,
-      selected: initState.selection.selected,
-      toggleSelectable: () =>
-        set(
-          produce((s) => {
-            s.selection.selectable = !s.selection.selectable;
-          })
-        ),
-      toggleImageSelect: (name) =>
-        set(
-          produce((s) => {
-            s.selection.selected[name] = !s.selection.selected[name];
-          })
-        ),
-    },
-  }));
+  setStateData: (data: CarouselStoreStateData) =>
+    set(produce((s) => ({ ...s, ...data }))),
+}));
