@@ -8,7 +8,11 @@ export default {
 } as ComponentMeta<typeof PaginationBar>;
 
 const Template: ComponentStory<typeof PaginationBar> = (args) => {
-  return <PaginationBar {...args} />;
+  return (
+    <div className='bg-gray-100 flex-grow flex justify-center'>
+      <PaginationBar {...args} />
+    </div>
+  );
 };
 
 export const Story = Template.bind({});
