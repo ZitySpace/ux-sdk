@@ -1,12 +1,21 @@
 import { useQuery } from 'react-query';
 import { usePagingStore } from '../stores/pagingStore';
+import { useAPIs } from './apis';
 
-const setTotal = usePagingStore.getState().setTotal;
+export const useHooks = () => {
+  const setTotal = usePagingStore((s) => s.setTotal);
+  const { getImagesCount } = useAPIs();
 
-export const useCarouselSizeQuery = () =>
-  useQuery('carouselSize', () => 123, {
-    onSuccess: (total) => setTotal(total),
-  });
+  const useCarouselSizeQuery = () =>
+    useQuery('carouselSize', getImagesCount, {
+      onSuccess: (total) => {
+        setTotal(total);
+      },
+      refetchOnWindowFocus: false, // this option is very important
+    });
 
-export const useCarouselPageQuery = (pos: number, step: number) =>
-  useQuery(['carouselPage', pos, step], () => pos + step);
+  const useCarouselPageQuery = (pos: number, step: number) =>
+    useQuery(['carouselPage', pos, step], () => pos + step);
+
+  return { useCarouselSizeQuery, useCarouselPageQuery };
+};

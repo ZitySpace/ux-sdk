@@ -1,11 +1,15 @@
-export const responseHandlerTemplate = async (response: Response) => {
+const responseHandlerTemplate = async (response: Response) => {
+  if (response.status === 401) {
+    throw new Error('Not Authorized');
+  }
+
   if (response.status === 500) {
     throw new Error('Internal Server Error');
   }
 
   const data = await response.json();
 
-  if (response.status >= 400 && response.status < 500) {
+  if (response.status > 401 && response.status < 500) {
     const err = data.detail ? data.detail : data;
     throw err;
   }
@@ -13,7 +17,7 @@ export const responseHandlerTemplate = async (response: Response) => {
   return data;
 };
 
-export const requestTemplate =
+const requestTemplate =
   (
     requestConstructor: Function,
     responseHandler: Function = responseHandlerTemplate,
@@ -43,16 +47,34 @@ export const requestTemplate =
     return data;
   };
 
-const getImage = requestTemplate((projectSlug: string, file_name: string) => {
-  return {
-    url:
-      '/api/project/data/image?slug=' + projectSlug + '&file_name=' + file_name,
-    method: 'GET',
-  };
-});
+// const getImage = requestTemplate((file_name: string) => {
+//   return {
+//     url:
+//       apiEndpoint +
+//       '/project/data/image?slug=' +
+//       projectSlug +
+//       '&file_name=' +
+//       file_name,
+//     method: 'GET',
+//   };
+// });
 
-export const calcImageSrc = async (projectSlug: string, file_name: string) => {
-  const imgBlob = await getImage(projectSlug, file_name);
-  const src = URL.createObjectURL(imgBlob);
-  return src;
+// export const calcImageSrc = async (file_name: string) => {
+//   const imgBlob = await getImage(projectSlug, file_name);
+//   const src = URL.createObjectURL(imgBlob);
+//   return src;
+// };
+
+export const useAPIs = () => {
+  const apiEndpoint = localStorage.getItem('apiEndpoint');
+  const projectSlug = localStorage.getItem('projectSlug');
+
+  const getImagesCount = requestTemplate(() => {
+    return {
+      url: apiEndpoint + '/project/data/images/count?slug=' + projectSlug,
+      method: 'GET',
+    };
+  });
+
+  return { getImagesCount };
 };

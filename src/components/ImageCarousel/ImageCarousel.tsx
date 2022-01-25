@@ -1,10 +1,16 @@
 import React from 'react';
-import { useCarouselSizeQuery, useCarouselPageQuery } from '../../utils/hooks';
+import { useHooks } from '../../utils/hooks';
 import PaginationBar from '../PaginationBar/PaginationBar';
 
 const ImageCarousel = () => {
+  const { useCarouselSizeQuery } = useHooks();
   const sizeQuery = useCarouselSizeQuery();
   // const pageQuery = useCarouselPageQuery();
+
+  if (sizeQuery.isLoading)
+    return (
+      <div className='h-full flex justify-center items-center'>loading...</div>
+    );
 
   return (
     <div className='bg-gray-100 flex-grow flex justify-center'>
