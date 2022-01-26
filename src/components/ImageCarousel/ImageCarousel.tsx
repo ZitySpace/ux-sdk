@@ -3,11 +3,11 @@ import { useHooks } from '../../utils/hooks';
 import PaginationBar from '../PaginationBar/PaginationBar';
 
 const ImageCarousel = () => {
-  const { useCarouselSizeQuery } = useHooks();
+  const { useCarouselSizeQuery, useCarouselPageQuery } = useHooks();
   const sizeQuery = useCarouselSizeQuery();
-  // const pageQuery = useCarouselPageQuery();
+  const pageQuery = useCarouselPageQuery();
 
-  if (sizeQuery.isLoading)
+  if (sizeQuery.isLoading || pageQuery.isLoading)
     return (
       <div className='h-full flex justify-center items-center'>loading...</div>
     );

@@ -1,3 +1,5 @@
+import { CarouselStoreStateData, ImageProps } from '../stores/carouselStore';
+
 const responseHandlerTemplate = async (response: Response) => {
   if (response.status === 401) {
     throw new Error('Not Authorized');
@@ -21,6 +23,7 @@ const requestTemplate =
   (
     requestConstructor: Function,
     responseHandler: Function = responseHandlerTemplate,
+    dataNormalizer: Function | null = null,
     requireAuthentication: boolean = true
   ) =>
   async (...args: any[]) => {
@@ -44,7 +47,8 @@ const requestTemplate =
     const response = await fetch(request);
 
     const data = await responseHandler(response);
-    return data;
+
+    return dataNormalizer ? dataNormalizer(data) : data;
   };
 
 // const getImage = requestTemplate((file_name: string) => {
@@ -65,6 +69,61 @@ const requestTemplate =
 //   return src;
 // };
 
+export interface ImageMetaProps {
+  id: number;
+  file_name: string;
+  file_size: number;
+  image_area: number;
+  image_height: number;
+  image_width: number;
+  upload_time: string;
+  annotations: {
+    x: number;
+    y: number;
+    w: number;
+    h: number;
+    category: string;
+    timestamp_z: string;
+    unique_hash_z: string;
+  }[];
+}
+
+export const normalizeImagesMeta = (data: ImageMetaProps[]) => ({
+  carouselData: data.reduce(
+    (res: CarouselStoreStateData['carouselData'], d: ImageMetaProps) => {
+      return {
+        ...res,
+        [d.file_name]: {
+          id: d.id,
+          name: d.file_name,
+          file_size: d.file_size,
+          image_area: d.image_area,
+          height: d.image_height,
+          width: d.image_width,
+          upload_time: d.upload_time,
+          annotations: d.annotations,
+        },
+      };
+    },
+    {}
+  ),
+  selection: {
+    selectable: true,
+    selected: data.reduce(
+      (
+        res: CarouselStoreStateData['selection']['selected'],
+        d: ImageMetaProps
+      ) => {
+        return {
+          ...res,
+          [d.file_name]: false,
+        };
+      },
+      {}
+    ),
+  },
+});
+
 export const useAPIs = () => {
   const apiEndpoint = localStorage.getItem('apiEndpoint');
   const projectSlug = localStorage.getItem('projectSlug');
@@ -76,5 +135,25 @@ export const useAPIs = () => {
     };
   });
 
-  return { getImagesCount };
+  const getImagesMeta = requestTemplate(
+    (offset: number, limit: number, order_by: string) => {
+      return {
+        url:
+          apiEndpoint +
+          '/project/data/images/meta?slug=' +
+          projectSlug +
+          '&offset=' +
+          offset +
+          '&limit=' +
+          limit +
+          '&order_by=' +
+          order_by,
+        method: 'GET',
+      };
+    },
+    ...[,],
+    normalizeImagesMeta
+  );
+
+  return { getImagesCount, getImagesMeta };
 };

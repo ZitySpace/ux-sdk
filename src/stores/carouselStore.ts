@@ -7,12 +7,18 @@ interface DetectionProps {
   w: number;
   h: number;
   category: string;
+  timestamp_z?: string;
+  unique_hash_z?: string;
 }
 
-interface ImageProps {
+export interface ImageProps {
+  id?: number;
   name: string;
-  width?: number;
+  file_size?: number;
+  image_area?: number;
   height?: number;
+  width?: number;
+  upload_time?: string;
   annotations: DetectionProps[];
 }
 
@@ -27,7 +33,7 @@ interface CarouselStoreState extends State {
   setStateData: (data: CarouselStoreStateData) => void;
 }
 
-interface CarouselStoreStateData extends State {
+export interface CarouselStoreStateData extends State {
   carouselData: { [key: string]: ImageProps };
   selection: {
     selectable: boolean;
