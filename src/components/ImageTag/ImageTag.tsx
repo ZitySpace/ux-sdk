@@ -2,6 +2,7 @@ import { CheckCircleIcon } from '@heroicons/react/solid';
 import { fabric } from 'fabric';
 import React, { useEffect, useRef, useState } from 'react';
 import { useCarouselStore } from '../../stores/carouselStore';
+import { useHooks } from '../../utils/hooks';
 
 const ImageTag = ({ name }: { name: string }) => {
   const [
@@ -20,6 +21,8 @@ const ImageTag = ({ name }: { name: string }) => {
     s.carouselData[name].height,
   ]);
 
+  const { useImage } = useHooks();
+
   const [src, setSrc] = useState<string>(
     'data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs%3D'
   );
@@ -30,8 +33,7 @@ const ImageTag = ({ name }: { name: string }) => {
 
   // load image on mount
   useEffect(() => {
-    setSrc('https://media.moddb.com/images/members/5/4550/4549205/duck.jpg');
-
+    (async () => setSrc(await useImage(name)))();
     imgLoadedRef.current = true;
   }, [name]);
 

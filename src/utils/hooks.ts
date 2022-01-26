@@ -12,7 +12,7 @@ export const useHooks = () => {
 
   const setCarouselStateData = useCarouselStore((s) => s.setStateData);
 
-  const { getImagesCount, getImagesMeta } = useAPIs();
+  const { getImagesCount, getImagesMeta, getImage } = useAPIs();
 
   const useCarouselSizeQuery = () =>
     useQuery('carouselSize', getImagesCount, {
@@ -33,5 +33,7 @@ export const useHooks = () => {
       }
     );
 
-  return { useCarouselSizeQuery, useCarouselPageQuery };
+  const useImage = (name: string) => getImage(name);
+
+  return { useCarouselSizeQuery, useCarouselPageQuery, useImage };
 };

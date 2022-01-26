@@ -19,11 +19,30 @@ const responseHandlerTemplate = async (response: Response) => {
   return data;
 };
 
+const getImageResponseHandler = async (response: Response) => {
+  if (response.status === 401) {
+    throw new Error('Not Authorized');
+  }
+
+  if (response.status === 500) {
+    throw new Error('Internal Server Error');
+  }
+
+  const data = await response.blob();
+
+  if (response.status > 401 && response.status < 500) {
+    const err = JSON.parse(await data.text());
+    throw new Error(err.detail);
+  }
+
+  return data;
+};
+
 const requestTemplate =
   (
     requestConstructor: Function,
     responseHandler: Function = responseHandlerTemplate,
-    dataNormalizer: Function | null = null,
+    dataTransformer: Function | null = null,
     requireAuthentication: boolean = true
   ) =>
   async (...args: any[]) => {
@@ -48,26 +67,8 @@ const requestTemplate =
 
     const data = await responseHandler(response);
 
-    return dataNormalizer ? dataNormalizer(data) : data;
+    return dataTransformer ? dataTransformer(data) : data;
   };
-
-// const getImage = requestTemplate((file_name: string) => {
-//   return {
-//     url:
-//       apiEndpoint +
-//       '/project/data/image?slug=' +
-//       projectSlug +
-//       '&file_name=' +
-//       file_name,
-//     method: 'GET',
-//   };
-// });
-
-// export const calcImageSrc = async (file_name: string) => {
-//   const imgBlob = await getImage(projectSlug, file_name);
-//   const src = URL.createObjectURL(imgBlob);
-//   return src;
-// };
 
 export interface ImageMetaProps {
   id: number;
@@ -155,5 +156,21 @@ export const useAPIs = () => {
     normalizeImagesMeta
   );
 
-  return { getImagesCount, getImagesMeta };
+  const getImage = requestTemplate(
+    (file_name: string) => {
+      return {
+        url:
+          apiEndpoint +
+          '/project/data/image?slug=' +
+          projectSlug +
+          '&file_name=' +
+          file_name,
+        method: 'GET',
+      };
+    },
+    getImageResponseHandler,
+    URL.createObjectURL
+  );
+
+  return { getImagesCount, getImagesMeta, getImage };
 };
