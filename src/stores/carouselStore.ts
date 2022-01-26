@@ -31,6 +31,7 @@ interface CarouselStoreState extends State {
     toggleImageSelect: (name: string) => void;
   };
   setStateData: (data: CarouselStoreStateData) => void;
+  getNames: () => string[];
 }
 
 export interface CarouselStoreStateData extends State {
@@ -41,7 +42,7 @@ export interface CarouselStoreStateData extends State {
   };
 }
 
-export const useCarouselStore = create<CarouselStoreState>((set) => ({
+export const useCarouselStore = create<CarouselStoreState>((set, get) => ({
   carouselData: {},
   selection: {
     selectable: true,
@@ -60,5 +61,12 @@ export const useCarouselStore = create<CarouselStoreState>((set) => ({
       ),
   },
   setStateData: (data: CarouselStoreStateData) =>
-    set(produce((s) => ({ ...s, ...data }))),
+    set(
+      produce((s) => {
+        s.carouselData = data.carouselData;
+        s.selection.selectable = data.selection.selectable;
+        s.selection.selected = data.selection.selected;
+      })
+    ),
+  getNames: () => Object.keys(get().carouselData),
 }));
