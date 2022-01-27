@@ -39,6 +39,7 @@ const ImageTag = ({ name }: { name: string }) => {
 
   // render canvas after image has loaded
   const onImgLoad = () => {
+    URL.revokeObjectURL(src);
     const img: any = imgElRef.current;
     const cw = img.getBoundingClientRect().width;
     const ch = img.getBoundingClientRect().height;
