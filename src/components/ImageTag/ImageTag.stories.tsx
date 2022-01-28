@@ -7,6 +7,11 @@ import {
   createCarouselStore,
 } from '../../stores/carouselStore';
 
+import {
+  PagingStoreProvider,
+  createPagingStore,
+} from '../../stores/pagingStore';
+
 export default {
   title: 'UX-SDK/ImageTag',
   component: ImageTag,
@@ -14,39 +19,41 @@ export default {
 
 const Template: ComponentStory<typeof ImageTag> = (args) => {
   return (
-    <CarouselStoreProvider
-      createStore={() =>
-        createCarouselStore({
-          carouselData: {
-            duck: {
-              name: 'duck',
-              annotations: [
-                {
-                  x: 100,
-                  y: 200,
-                  w: 50,
-                  h: 80,
-                  category: 'cateA',
-                },
-                {
-                  x: 200,
-                  y: 300,
-                  w: 100,
-                  h: 50,
-                  category: 'cateB',
-                },
-              ],
+    <PagingStoreProvider createStore={createPagingStore}>
+      <CarouselStoreProvider
+        createStore={() =>
+          createCarouselStore({
+            carouselData: {
+              duck: {
+                name: 'duck',
+                annotations: [
+                  {
+                    x: 100,
+                    y: 200,
+                    w: 50,
+                    h: 80,
+                    category: 'cateA',
+                  },
+                  {
+                    x: 200,
+                    y: 300,
+                    w: 100,
+                    h: 50,
+                    category: 'cateB',
+                  },
+                ],
+              },
             },
-          },
 
-          selection: { selectable: true, selected: { duck: false } },
-        })
-      }
-    >
-      <div className='h-64 w-64'>
-        <ImageTag {...args} />
-      </div>
-    </CarouselStoreProvider>
+            selection: { selectable: true, selected: { duck: false } },
+          })
+        }
+      >
+        <div className='h-64 w-64'>
+          <ImageTag {...args} />
+        </div>
+      </CarouselStoreProvider>
+    </PagingStoreProvider>
   );
 };
 
