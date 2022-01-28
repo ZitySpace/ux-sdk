@@ -1,4 +1,5 @@
 import create, { State } from 'zustand';
+import createContext from 'zustand/context';
 
 interface PagingStoreState extends State {
   pos: number;
@@ -16,35 +17,41 @@ interface PagingStoreState extends State {
   toPage: (n: number) => void;
 }
 
-export const usePagingStore = create<PagingStoreState>((set, get) => ({
-  pos: 0,
-  step: 10,
-  total: 100,
+export const { Provider: PagingStoreProvider, useStore: usePagingStore } =
+  createContext<PagingStoreState>();
 
-  getCurPage: () => Math.floor(get().pos / get().step) + 1,
-  getTotPages: () => Math.floor((get().total - 1) / get().step) + 1 || 1,
+// export const usePagingStore = create<PagingStoreState>((set, get) => ({
 
-  setPos: (p: number) => set({ pos: p }),
-  setStep: (d: number) =>
-    set((s) => {
-      const newStep = Math.max(1, Math.min(d, s.total));
-      const newPos = Math.floor(s.pos / newStep) * newStep;
-      return { pos: newPos, step: newStep };
-    }),
-  setTotal: (t: number) => set({ total: t }),
+export const createPagingStore = () =>
+  create<PagingStoreState>((set, get) => ({
+    pos: 0,
+    step: 10,
+    total: 100,
 
-  toPrevPage: () => set((s) => ({ pos: Math.max(0, s.pos - s.step) })),
-  toNextPage: () =>
-    set((s) => ({
-      pos: Math.min(s.step * (s.getTotPages() - 1), s.pos + s.step),
-    })),
+    getCurPage: () => Math.floor(get().pos / get().step) + 1,
+    getTotPages: () => Math.floor((get().total - 1) / get().step) + 1 || 1,
 
-  toFstPage: () => set({ pos: 0 }),
-  toLstPage: () => set((s) => ({ pos: s.step * (s.getTotPages() - 1) })),
+    setPos: (p: number) => set({ pos: p }),
+    setStep: (d: number) =>
+      set((s) => {
+        const newStep = Math.max(1, Math.min(d, s.total));
+        const newPos = Math.floor(s.pos / newStep) * newStep;
+        return { pos: newPos, step: newStep };
+      }),
+    setTotal: (t: number) => set({ total: t }),
 
-  toPage: (n: number) =>
-    set((s) => {
-      const page = Math.max(1, Math.min(n, s.getTotPages()));
-      return { pos: s.step * (page - 1) };
-    }),
-}));
+    toPrevPage: () => set((s) => ({ pos: Math.max(0, s.pos - s.step) })),
+    toNextPage: () =>
+      set((s) => ({
+        pos: Math.min(s.step * (s.getTotPages() - 1), s.pos + s.step),
+      })),
+
+    toFstPage: () => set({ pos: 0 }),
+    toLstPage: () => set((s) => ({ pos: s.step * (s.getTotPages() - 1) })),
+
+    toPage: (n: number) =>
+      set((s) => {
+        const page = Math.max(1, Math.min(n, s.getTotPages()));
+        return { pos: s.step * (page - 1) };
+      }),
+  }));

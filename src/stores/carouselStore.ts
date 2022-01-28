@@ -1,5 +1,6 @@
 import produce from 'immer';
 import create, { State } from 'zustand';
+import createContext from 'zustand/context';
 
 interface DetectionProps {
   x: number;
@@ -42,31 +43,42 @@ export interface CarouselStoreStateData extends State {
   };
 }
 
-export const useCarouselStore = create<CarouselStoreState>((set, get) => ({
-  carouselData: {},
-  selection: {
-    selectable: true,
-    selected: {},
-    toggleSelectable: () =>
+export const { Provider: CarouselStoreProvider, useStore: useCarouselStore } =
+  createContext<CarouselStoreState>();
+
+// export const useCarouselStore = create<CarouselStoreState>((set, get) => ({
+
+export const createCarouselStore = (
+  initState: CarouselStoreStateData = {
+    carouselData: {},
+    selection: { selectable: true, selected: {} },
+  }
+) =>
+  create<CarouselStoreState>((set, get) => ({
+    carouselData: initState.carouselData,
+    selection: {
+      selectable: initState.selection.selectable,
+      selected: initState.selection.selected,
+      toggleSelectable: () =>
+        set(
+          produce((s) => {
+            s.selection.selectable = !s.selection.selectable;
+          })
+        ),
+      toggleImageSelect: (name: string) =>
+        set(
+          produce((s) => {
+            s.selection.selected[name] = !s.selection.selected[name];
+          })
+        ),
+    },
+    setStateData: (data: CarouselStoreStateData) =>
       set(
         produce((s) => {
-          s.selection.selectable = !s.selection.selectable;
+          s.carouselData = data.carouselData;
+          s.selection.selectable = data.selection.selectable;
+          s.selection.selected = data.selection.selected;
         })
       ),
-    toggleImageSelect: (name) =>
-      set(
-        produce((s) => {
-          s.selection.selected[name] = !s.selection.selected[name];
-        })
-      ),
-  },
-  setStateData: (data: CarouselStoreStateData) =>
-    set(
-      produce((s) => {
-        s.carouselData = data.carouselData;
-        s.selection.selectable = data.selection.selectable;
-        s.selection.selected = data.selection.selected;
-      })
-    ),
-  getNames: () => Object.keys(get().carouselData),
-}));
+    getNames: () => Object.keys(get().carouselData),
+  }));

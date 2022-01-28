@@ -1,7 +1,11 @@
 import { ComponentMeta, ComponentStory } from '@storybook/react';
 import React from 'react';
 import ImageTag from './ImageTag';
-import { useCarouselStore } from '../../stores/carouselStore';
+
+import {
+  CarouselStoreProvider,
+  createCarouselStore,
+} from '../../stores/carouselStore';
 
 export default {
   title: 'UX-SDK/ImageTag',
@@ -9,36 +13,40 @@ export default {
 } as ComponentMeta<typeof ImageTag>;
 
 const Template: ComponentStory<typeof ImageTag> = (args) => {
-  const setCarouselStateData = useCarouselStore((s) => s.setStateData);
-  setCarouselStateData({
-    carouselData: {
-      duck: {
-        name: 'duck',
-        annotations: [
-          {
-            x: 100,
-            y: 200,
-            w: 50,
-            h: 80,
-            category: 'cateA',
-          },
-          {
-            x: 200,
-            y: 300,
-            w: 100,
-            h: 50,
-            category: 'cateB',
-          },
-        ],
-      },
-    },
-    selection: { selectable: true, selected: { duck: false } },
-  });
-
   return (
-    <div className='h-64 w-64'>
-      <ImageTag {...args} />
-    </div>
+    <CarouselStoreProvider
+      createStore={() =>
+        createCarouselStore({
+          carouselData: {
+            duck: {
+              name: 'duck',
+              annotations: [
+                {
+                  x: 100,
+                  y: 200,
+                  w: 50,
+                  h: 80,
+                  category: 'cateA',
+                },
+                {
+                  x: 200,
+                  y: 300,
+                  w: 100,
+                  h: 50,
+                  category: 'cateB',
+                },
+              ],
+            },
+          },
+
+          selection: { selectable: true, selected: { duck: false } },
+        })
+      }
+    >
+      <div className='h-64 w-64'>
+        <ImageTag {...args} />
+      </div>
+    </CarouselStoreProvider>
   );
 };
 

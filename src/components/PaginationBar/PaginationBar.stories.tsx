@@ -2,6 +2,11 @@ import { ComponentMeta, ComponentStory } from '@storybook/react';
 import React from 'react';
 import PaginationBar from './PaginationBar';
 
+import {
+  PagingStoreProvider,
+  createPagingStore,
+} from '../../stores/pagingStore';
+
 export default {
   title: 'UX-SDK/PaginationBar',
   component: PaginationBar,
@@ -9,9 +14,11 @@ export default {
 
 const Template: ComponentStory<typeof PaginationBar> = (args) => {
   return (
-    <div className='bg-gray-100 flex-grow flex justify-center'>
-      <PaginationBar {...args} />
-    </div>
+    <PagingStoreProvider createStore={createPagingStore}>
+      <div className='bg-gray-100 flex-grow flex justify-center'>
+        <PaginationBar {...args} />
+      </div>
+    </PagingStoreProvider>
   );
 };
 
