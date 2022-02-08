@@ -20,8 +20,6 @@ interface PagingStoreState extends State {
 export const { Provider: PagingStoreProvider, useStore: usePagingStore } =
   createContext<PagingStoreState>();
 
-// export const usePagingStore = create<PagingStoreState>((set, get) => ({
-
 export const createPagingStore = () =>
   create<PagingStoreState>((set, get) => ({
     pos: 0,

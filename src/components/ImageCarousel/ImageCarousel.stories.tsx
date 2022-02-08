@@ -12,6 +12,11 @@ import {
   createPagingStore,
 } from '../../stores/pagingStore';
 
+import {
+  ContextStoreProvider,
+  createContextStore,
+} from '../../stores/contextStore';
+
 export default {
   title: 'UX-SDK/ImageCarousel',
   component: ImageCarousel,
@@ -21,11 +26,13 @@ const queryClient = new QueryClient();
 
 const Template: ComponentStory<typeof ImageCarousel> = (args) => (
   <QueryClientProvider client={queryClient}>
-    <PagingStoreProvider createStore={createPagingStore}>
-      <CarouselStoreProvider createStore={createCarouselStore}>
-        <ImageCarousel {...args} />
-      </CarouselStoreProvider>
-    </PagingStoreProvider>
+    <ContextStoreProvider createStore={createContextStore}>
+      <PagingStoreProvider createStore={createPagingStore}>
+        <CarouselStoreProvider createStore={createCarouselStore}>
+          <ImageCarousel {...args} />
+        </CarouselStoreProvider>
+      </PagingStoreProvider>
+    </ContextStoreProvider>
   </QueryClientProvider>
 );
 

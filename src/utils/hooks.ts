@@ -1,6 +1,7 @@
 import { useQuery } from 'react-query';
 import { usePagingStore } from '../stores/pagingStore';
 import { useCarouselStore } from '../stores/carouselStore';
+import { useContextStore } from '../stores/contextStore';
 import { useAPIs } from './apis';
 
 export const useHooks = () => {
@@ -9,6 +10,8 @@ export const useHooks = () => {
     s.step,
     s.setTotal,
   ]);
+
+  const filtering = useContextStore((s) => s.filtering);
 
   const setCarouselStateData = useCarouselStore((s) => s.setStateData);
 

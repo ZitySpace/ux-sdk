@@ -46,8 +46,6 @@ export interface CarouselStoreStateData extends State {
 export const { Provider: CarouselStoreProvider, useStore: useCarouselStore } =
   createContext<CarouselStoreState>();
 
-// export const useCarouselStore = create<CarouselStoreState>((set, get) => ({
-
 export const createCarouselStore = (
   initState: CarouselStoreStateData = {
     carouselData: {},
