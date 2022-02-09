@@ -109,7 +109,6 @@ export const normalizeImagesMeta = (data: ImageMetaProps[]) => ({
     {}
   ),
   selection: {
-    selectable: true,
     selected: data.reduce(
       (
         res: CarouselStoreStateData['selection']['selected'],

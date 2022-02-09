@@ -50,7 +50,7 @@ export const { Provider: CarouselStoreProvider, useStore: useCarouselStore } =
 export const createCarouselStore = (
   initState: CarouselStoreStateData = {
     carouselData: {},
-    selection: { selectable: true, selected: {} },
+    selection: { selectable: false, selected: {} },
   }
 ) =>
   create<CarouselStoreState>((set, get) => ({
@@ -85,7 +85,6 @@ export const createCarouselStore = (
       set(
         produce((s) => {
           s.carouselData = data.carouselData;
-          s.selection.selectable = data.selection.selectable;
           s.selection.selected = data.selection.selected;
         })
       ),
