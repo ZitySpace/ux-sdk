@@ -1,6 +1,7 @@
 import { ComponentMeta, ComponentStory } from '@storybook/react';
 import React from 'react';
 import ImageCarousel from '../ImageCarousel';
+import ImageList from '../ImageList';
 import StoreProvider from './StoreProvider';
 import { QueryClient, QueryClientProvider } from 'react-query';
 
@@ -11,7 +12,7 @@ export default {
 
 const queryClient = new QueryClient();
 
-const Template: ComponentStory<typeof StoreProvider> = (args) => (
+const TemplateSimple: ComponentStory<typeof StoreProvider> = (args) => (
   <QueryClientProvider client={queryClient}>
     <StoreProvider {...args}>
       <ImageCarousel />
@@ -19,7 +20,21 @@ const Template: ComponentStory<typeof StoreProvider> = (args) => (
   </QueryClientProvider>
 );
 
-export const Story = Template.bind({});
-Story.args = {
+export const SimpleStory = TemplateSimple.bind({});
+SimpleStory.args = {
   filtering: { by: 'Category', value: 'shoes' },
+};
+
+const TemplateComposite: ComponentStory<typeof StoreProvider> = (args) => (
+  <QueryClientProvider client={queryClient}>
+    <StoreProvider {...args}>
+      <ImageCarousel />
+      <ImageList />
+    </StoreProvider>
+  </QueryClientProvider>
+);
+
+export const CompositeStory = TemplateComposite.bind({});
+CompositeStory.args = {
+  filtering: { by: 'Category', value: 'pants' },
 };

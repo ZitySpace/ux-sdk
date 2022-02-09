@@ -30,6 +30,7 @@ interface CarouselStoreState extends State {
     selected: { [key: string]: boolean };
     toggleSelectable: () => void;
     toggleImageSelect: (name: string) => void;
+    toggleSelectAll: () => void;
   };
   setStateData: (data: CarouselStoreStateData) => void;
   getNames: () => string[];
@@ -67,6 +68,16 @@ export const createCarouselStore = (
         set(
           produce((s) => {
             s.selection.selected[name] = !s.selection.selected[name];
+          })
+        ),
+      toggleSelectAll: () =>
+        set(
+          produce((s) => {
+            const selected = s.selection.selected;
+            const allSelected = !Object.values(selected).includes(false);
+            Object.keys(selected).forEach(
+              (name) => (selected[name] = !allSelected)
+            );
           })
         ),
     },
