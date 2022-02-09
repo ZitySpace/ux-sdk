@@ -15,20 +15,45 @@ export const useHooks = () => {
 
   const setCarouselStateData = useCarouselStore((s) => s.setStateData);
 
-  const { getImagesCount, getImagesMeta, getImage } = useAPIs();
+  const {
+    getImagesCount,
+    getImagesMeta,
+    getImage,
+    getImagesCountByCategory,
+    getImagesMetaByCategory,
+  } = useAPIs();
 
   const useCarouselSizeQuery = () =>
-    useQuery('carouselSize', getImagesCount, {
-      onSuccess: (total) => {
-        setTotal(total);
-      },
-      refetchOnWindowFocus: false, // this option is very important
-    });
+    useQuery(
+      'carouselSize',
+      filtering
+        ? async () =>
+            filtering.by === 'Category'
+              ? getImagesCountByCategory(filtering.value)
+              : filtering.by === 'ImageNames'
+              ? filtering.value.length
+              : 1000 // fallback value
+        : getImagesCount,
+      {
+        onSuccess: (total) => {
+          setTotal(total);
+        },
+        refetchOnWindowFocus: false, // this option is very important
+      }
+    );
 
   const useCarouselPageQuery = () =>
     useQuery(
       ['carouselPage', pos, step],
-      async () => getImagesMeta(pos, step, 'upload_time'),
+      async () =>
+        filtering
+          ? filtering.by === 'Category'
+            ? getImagesMetaByCategory(filtering.value, pos, step, 'upload_time')
+            : {
+                carouselData: {},
+                selection: { selectable: true, selected: [] },
+              }
+          : getImagesMeta(pos, step, 'upload_time'),
       {
         onSuccess: (carouselStateData) =>
           setCarouselStateData(carouselStateData),

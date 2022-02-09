@@ -1,15 +1,10 @@
 import create, { State } from 'zustand';
 import createContext from 'zustand/context';
 
-enum FilteringOption {
-  Category = 'Category',
-  ImageNames = 'ImageNames',
-}
-
-export interface FilteringProps {
-  by: FilteringOption;
+export type FilteringProps = {
+  by: string;
   value: string | string[];
-}
+};
 
 interface ContextStoreState extends State {
   filtering: null | FilteringProps;

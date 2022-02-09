@@ -20,4 +20,6 @@ const Template: ComponentStory<typeof StoreProvider> = (args) => (
 );
 
 export const Story = Template.bind({});
-Story.args = {};
+Story.args = {
+  filtering: { by: 'Category', value: 'shoes' },
+};

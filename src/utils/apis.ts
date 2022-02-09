@@ -172,5 +172,45 @@ export const useAPIs = () => {
     URL.createObjectURL
   );
 
-  return { getImagesCount, getImagesMeta, getImage };
+  const getImagesCountByCategory = requestTemplate((category: string) => {
+    return {
+      url:
+        apiEndpoint +
+        '/project/data/images/category/count?slug=' +
+        projectSlug +
+        '&category=' +
+        category,
+      method: 'GET',
+    };
+  });
+
+  const getImagesMetaByCategory = requestTemplate(
+    (category: string, offset: number, limit: number, order_by: string) => {
+      return {
+        url:
+          apiEndpoint +
+          '/project/data/images/category/meta?slug=' +
+          projectSlug +
+          '&category=' +
+          category +
+          '&offset=' +
+          offset +
+          '&limit=' +
+          limit +
+          '&order_by=' +
+          order_by,
+        method: 'GET',
+      };
+    },
+    ...[,],
+    normalizeImagesMeta
+  );
+
+  return {
+    getImagesCount,
+    getImagesMeta,
+    getImage,
+    getImagesCountByCategory,
+    getImagesMetaByCategory,
+  };
 };
