@@ -38,6 +38,7 @@ export const useHooks = () => {
         onSuccess: (total) => {
           setTotal(total);
         },
+        keepPreviousData: true,
         refetchOnWindowFocus: false, // this option is very important
       }
     );
@@ -57,6 +58,7 @@ export const useHooks = () => {
       {
         onSuccess: (carouselStateData) =>
           setCarouselStateData(carouselStateData),
+        keepPreviousData: true,
         refetchOnWindowFocus: false,
       }
     );
