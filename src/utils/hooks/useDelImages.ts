@@ -1,4 +1,4 @@
-import { useMutation, QueryClient } from 'react-query';
+import { useMutation, useQueryClient } from 'react-query';
 import { useCarouselStore } from '../../stores/carouselStore';
 import { useAPIs } from '../apis';
 import { toast } from 'react-toastify';
@@ -12,13 +12,14 @@ export const useDelImages = () => {
 
   const { deleteImages } = useAPIs();
 
-  const queryClient = new QueryClient();
+  const queryClient = useQueryClient();
 
   const deleteImagesMutation = useMutation(
     (imglist: string[]) => deleteImages(imglist),
     {
       onSuccess: () => {
         queryClient.invalidateQueries('carouselSize');
+        queryClient.invalidateQueries('carouselPage');
         toast.success('Successfully deleted images');
       },
       onError: (err: string) => {

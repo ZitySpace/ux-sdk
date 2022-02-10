@@ -34,10 +34,7 @@ export const useCarouselQueries = () => {
               : 1000 // fallback value
         : getImagesCount,
       {
-        onSuccess: (total) => {
-          console.log('in sizeQuery');
-          setTotal(total);
-        },
+        onSuccess: (total) => setTotal(total),
         keepPreviousData: true,
         refetchOnWindowFocus: false, // this option is very important
       }
@@ -56,10 +53,8 @@ export const useCarouselQueries = () => {
               }
           : getImagesMeta(pos, step, 'upload_time'),
       {
-        onSuccess: (carouselStateData) => {
-          console.log('in pageQuery');
-          setCarouselStateData(carouselStateData);
-        },
+        onSuccess: (carouselStateData) =>
+          setCarouselStateData(carouselStateData),
         keepPreviousData: true,
         refetchOnWindowFocus: false,
       }
