@@ -3,9 +3,10 @@ import { TrashIcon } from '@heroicons/react/solid';
 import { useHooks } from '../../utils/hooks';
 import { useCarouselStore } from '../../stores/carouselStore';
 import Modal from '../Generic/modal';
+import { ToastContainer } from 'react-toastify';
 
 const ImageList = () => {
-  const { useCarouselPageQuery } = useHooks();
+  const { useCarouselPageQuery, deleteSelectedImages } = useHooks();
   const pageQuery = useCarouselPageQuery();
 
   const [
@@ -61,13 +62,13 @@ const ImageList = () => {
               <TrashIcon className='-ml-0.5 mr-2 h-3 w-3' aria-hidden='true' />
               Delete selected
             </button>
-            <button
+            {/* <button
               type='button'
               className='m-0.5 inline-flex items-center px-2 py-1 border border-transparent shadow-sm text-xs leading-4 font-medium rounded-md text-white bg-indigo-500 hover:bg-indigo-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500'
             >
               <TrashIcon className='-ml-0.5 mr-2 h-3 w-3' aria-hidden='true' />
               Delete all
-            </button>
+            </button> */}
           </div>
 
           <div className='shadow overflow-y-scroll border-b border-gray-200 sm:rounded-lg w-full h-full'>
@@ -158,9 +159,10 @@ const ImageList = () => {
         body='Delete images will also delete related annotations. This action cannot be undone.'
         open={delImgModalOpen}
         setOpen={setDelImgModalOpen}
-        yesCallback={() => {}}
+        yesCallback={deleteSelectedImages}
         confirmAlias='Delete'
       />
+      <ToastContainer autoClose={2500} hideProgressBar={true} theme='light' />
     </>
   );
 };

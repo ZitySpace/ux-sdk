@@ -1,8 +1,10 @@
-import { useQuery } from 'react-query';
+import { useQuery, useMutation, QueryClient } from 'react-query';
 import { usePagingStore } from '../stores/pagingStore';
 import { useCarouselStore } from '../stores/carouselStore';
 import { useContextStore } from '../stores/contextStore';
 import { useAPIs } from './apis';
+import { toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 export const useHooks = () => {
   const [pos, step, setTotal] = usePagingStore((s) => [
@@ -13,7 +15,13 @@ export const useHooks = () => {
 
   const filtering = useContextStore((s) => s.filtering);
 
-  const setCarouselStateData = useCarouselStore((s) => s.setStateData);
+  const [setCarouselStateData, selectedImageNames] = useCarouselStore((s) => {
+    const selected = s.selection.selected;
+    return [
+      s.setStateData,
+      Object.keys(selected).filter((name) => selected[name]),
+    ];
+  });
 
   const {
     getImagesCount,
@@ -21,6 +29,7 @@ export const useHooks = () => {
     getImage,
     getImagesCountByCategory,
     getImagesMetaByCategory,
+    deleteImages,
   } = useAPIs();
 
   const useCarouselSizeQuery = () =>
@@ -65,5 +74,35 @@ export const useHooks = () => {
 
   const useImage = (name: string) => getImage(name);
 
-  return { useCarouselSizeQuery, useCarouselPageQuery, useImage };
+  const queryClient = new QueryClient();
+
+  const deleteImagesMutation = useMutation(
+    (imglist: string[]) => deleteImages(imglist),
+    {
+      onSuccess: () => {
+        queryClient.invalidateQueries('carouselPage');
+        toast.success('Successfully deleted images');
+      },
+      onError: (err: string) => {
+        toast.error(err);
+      },
+    }
+  );
+
+  const deleteSelectedImages = () => {
+    if (!selectedImageNames.length) {
+      toast.warning('No images selected');
+      return;
+    }
+
+    console.log(selectedImageNames);
+    // deleteImagesMutation.mutate(selectedImageNames);
+  };
+
+  return {
+    useCarouselSizeQuery,
+    useCarouselPageQuery,
+    useImage,
+    deleteSelectedImages,
+  };
 };

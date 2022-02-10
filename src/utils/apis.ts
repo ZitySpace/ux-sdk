@@ -205,11 +205,27 @@ export const useAPIs = () => {
     normalizeImagesMeta
   );
 
+  const deleteImages = requestTemplate(
+    (filenames: string[], keepAnnotations: boolean = false) => {
+      const formData = new FormData();
+      formData.set('slug', projectSlug!);
+      formData.set('filenames', JSON.stringify(filenames));
+      formData.set('keep_annotations', JSON.stringify(keepAnnotations));
+
+      return {
+        url: apiEndpoint + '/project/data/images',
+        method: 'DELETE',
+        body: formData,
+      };
+    }
+  );
+
   return {
     getImagesCount,
     getImagesMeta,
     getImage,
     getImagesCountByCategory,
     getImagesMetaByCategory,
+    deleteImages,
   };
 };
