@@ -1,11 +1,11 @@
 import React from 'react';
-import { useHooks } from '../../utils/hooks';
+import { useCarouselQueries } from '../../utils/hooks/useCarouselQueries';
 import { useCarouselStore } from '../../stores/carouselStore';
 import PaginationBar from '../PaginationBar/PaginationBar';
 import ImageTag from '../ImageTag';
 
 const ImageCarousel = () => {
-  const { useCarouselSizeQuery, useCarouselPageQuery } = useHooks();
+  const { useCarouselSizeQuery, useCarouselPageQuery } = useCarouselQueries();
   const sizeQuery = useCarouselSizeQuery();
   const pageQuery = useCarouselPageQuery();
 

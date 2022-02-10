@@ -1,12 +1,15 @@
 import React, { useState } from 'react';
 import { TrashIcon } from '@heroicons/react/solid';
-import { useHooks } from '../../utils/hooks';
+import { useCarouselQueries } from '../../utils/hooks/useCarouselQueries';
+import { useDelImages } from '../../utils/hooks/useDelImages';
 import { useCarouselStore } from '../../stores/carouselStore';
 import Modal from '../Generic/modal';
 import { ToastContainer } from 'react-toastify';
 
 const ImageList = () => {
-  const { useCarouselPageQuery, deleteSelectedImages } = useHooks();
+  const { useCarouselPageQuery } = useCarouselQueries();
+  const deleteSelectedImages = useDelImages();
+
   const pageQuery = useCarouselPageQuery();
 
   const [

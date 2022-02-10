@@ -1,0 +1,40 @@
+import { useMutation, QueryClient } from 'react-query';
+import { useCarouselStore } from '../../stores/carouselStore';
+import { useAPIs } from '../apis';
+import { toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+
+export const useDelImages = () => {
+  const selectedImageNames = useCarouselStore((s) => {
+    const selected = s.selection.selected;
+    return Object.keys(selected).filter((name) => selected[name]);
+  });
+
+  const { deleteImages } = useAPIs();
+
+  const queryClient = new QueryClient();
+
+  const deleteImagesMutation = useMutation(
+    (imglist: string[]) => deleteImages(imglist),
+    {
+      onSuccess: () => {
+        queryClient.invalidateQueries('carouselSize');
+        toast.success('Successfully deleted images');
+      },
+      onError: (err: string) => {
+        toast.error(err);
+      },
+    }
+  );
+
+  const deleteSelectedImages = () => {
+    if (!selectedImageNames.length) {
+      toast.warning('No images selected');
+      return;
+    }
+
+    deleteImagesMutation.mutate(selectedImageNames);
+  };
+
+  return deleteSelectedImages;
+};
