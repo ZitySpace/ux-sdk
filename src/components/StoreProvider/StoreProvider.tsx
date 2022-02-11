@@ -20,7 +20,7 @@ const StoreProvider = ({
   filtering = null,
   children,
 }: {
-  filtering: null | FilteringProps;
+  filtering?: null | FilteringProps;
   children?: React.ReactNode;
 }) => {
   return (
