@@ -54,7 +54,7 @@ const PaginationBar = () => {
   };
 
   return (
-    <div className='absolute bottom-0 flex justify-center p-1 w-full bg-gray-100'>
+    <div className='flex justify-center p-1 w-full bg-gray-100'>
       <div className='flex justify-between w-full'>
         <div className='flex-1 inline-flex justify-start items-center md:pl-2'>
           <div className='text-gray-500 text-xs'>

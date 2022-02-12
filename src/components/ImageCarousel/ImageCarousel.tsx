@@ -17,8 +17,8 @@ const ImageCarousel = () => {
     );
 
   return (
-    <div className='bg-gray-100 flex-grow flex justify-center'>
-      <div className='absolute top-0 overflow-y-scroll h-full pb-10 w-full'>
+    <div className='bg-gray-100 flex flex-col justify-center'>
+      <div className='overflow-y-scroll h-full w-full'>
         <div className='grid grid-cols-5 md:grid-cols-10 gap-1 xl:gap-2 px-1 pt-1 pb-4 items-center justify-center'>
           {getImageNames().map((name: string, i: number) => (
             <ImageTag name={name} key={i} />
