@@ -39,11 +39,11 @@ const ImageList = () => {
 
   return (
     <>
-      <div className='bg-gray-100 max-h-full max-w-full flex flex-col text-xs shadow-lg rounded-md select-none'>
+      <div className='bg-gray-100 h-full max-w-full flex flex-col text-xs shadow-lg rounded-md select-none'>
         <div className='bg-indigo-400 py-2 px-2 rounded-t-md flex justify-center space-x-2'>
           <span>Image List</span>
         </div>
-        <div className='overflow-auto h-64 xl:h-96 max-w-full px-4 py-2 flex flex-col space-y-2'>
+        <div className='overflow-auto h-full max-w-full px-4 py-2 flex flex-col space-y-2'>
           <div className='p-0.5 rounded-lg flex flex-wrap'>
             <span
               onClick={toggleSelectable}
