@@ -3,6 +3,7 @@ import { fabric } from 'fabric';
 import React, { useEffect, useRef, useState } from 'react';
 import { useCarouselStore } from '../../stores/carouselStore';
 import { useAPIs } from '../../utils/apis';
+import { useResizeDetector } from 'react-resize-detector';
 
 const ImageTag = ({ name }: { name: string }) => {
   const [
@@ -36,6 +37,13 @@ const ImageTag = ({ name }: { name: string }) => {
     (async () => setSrc(await getImage(name)))();
     imgLoadedRef.current = true;
   }, [name]);
+
+  const { width, height } = useResizeDetector({
+    targetRef: imgElRef,
+    refreshMode: 'debounce',
+    refreshRate: 50,
+    onResize: () => onImgLoad(),
+  });
 
   // render canvas after image has loaded
   const onImgLoad = () => {
