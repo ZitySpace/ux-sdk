@@ -1,6 +1,6 @@
 {
   "name": "@ZitySpace/ux-sdk",
-  "version": "0.0.1-alpha9",
+  "version": "0.0.1-alpha14",
   "description": "ZitySpace UX SDK",
   "scripts": {
     "rollup": "rollup -c",
@@ -12,6 +12,7 @@
   "author": "Rui Zheng",
   "license": "MIT",
   "devDependencies": {
+    "@ZitySpace/iframe-auth": "^0.0.1-alpha1",
     "@babel/core": "^7.16.7",
     "@babel/preset-env": "^7.16.7",
     "@babel/preset-react": "^7.16.7",
