@@ -17,19 +17,15 @@ import {
 import { FilteringProps } from '../../stores/contextStore';
 
 const StoreProvider = ({
-  filtering = null,
+  filteringInit = null,
   children,
 }: {
-  filtering?: null | FilteringProps;
+  filteringInit?: null | FilteringProps;
   children?: React.ReactNode;
 }) => {
   return (
     <ContextStoreProvider
-      createStore={() =>
-        createContextStore({
-          filtering: filtering,
-        })
-      }
+      createStore={() => createContextStore({ filtering: filteringInit })}
     >
       <PagingStoreProvider createStore={createPagingStore}>
         <CarouselStoreProvider createStore={createCarouselStore}>

@@ -4,15 +4,15 @@ import createContext from 'zustand/context';
 export type FilteringProps = {
   by: string;
   value: string | string[];
-};
+} | null;
 
 interface ContextStoreState extends State {
-  filtering: null | FilteringProps;
+  filtering: FilteringProps;
   setFiltering: (p: FilteringProps) => void;
 }
 
 interface ContextStoreStateData extends State {
-  filtering: null | FilteringProps;
+  filtering: FilteringProps;
 }
 
 export const { Provider: ContextStoreProvider, useStore: useContextStore } =

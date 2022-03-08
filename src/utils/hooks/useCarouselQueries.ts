@@ -24,7 +24,7 @@ export const useCarouselQueries = () => {
 
   const useCarouselSizeQuery = () =>
     useQuery(
-      'carouselSize',
+      ['carouselSize', filtering],
       filtering
         ? async () =>
             filtering.by === 'Category'
@@ -42,7 +42,7 @@ export const useCarouselQueries = () => {
 
   const useCarouselPageQuery = () =>
     useQuery(
-      ['carouselPage', pos, step],
+      ['carouselPage', pos, step, filtering],
       async () =>
         filtering
           ? filtering.by === 'Category'
