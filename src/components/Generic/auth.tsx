@@ -18,6 +18,17 @@ const getCookie = (cname: string) => {
   return '';
 };
 
+export const getLambdaRunContext = async () => {
+  const contextResponse = await fetch('context.json', {
+    method: 'GET',
+    headers: {
+      Accept: 'application/json',
+    },
+  });
+  const data = await contextResponse.json();
+  return { ...data, token: getCookie('token') };
+};
+
 const Auth = ({ children }: { children?: React.ReactNode }) => {
   useEffect(() => {
     ['apiEndpoint', 'projectSlug', 'token'].map((key: string) => {
