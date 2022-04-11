@@ -1,21 +1,38 @@
-import React, { useRef } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useCarouselQueries } from '../../utils/hooks/useCarouselQueries';
 import { useContainerQueries } from '../../utils/hooks/useContainerQueries';
 import { useCarouselStore } from '../../stores/carouselStore';
+import { usePagingStore } from '../../stores/pagingStore';
 import PaginationBar from '../PaginationBar';
-import ImageTag from '../ImageTag';
 
-const ImageCarousel = () => {
+interface ComponentProps {
+  name: string;
+}
+
+const Comparer = ({
+  Components,
+  nItems = 12,
+}: {
+  Components: React.FC<ComponentProps>[];
+  nItems?: number;
+}) => {
+  const setStep = usePagingStore((s) => s.setStep);
+
   const { useCarouselSizeQuery, useCarouselPageQuery } = useCarouselQueries();
+
   const sizeQuery = useCarouselSizeQuery();
   const pageQuery = useCarouselPageQuery();
 
   const getImageNames = useCarouselStore((s) => s.getNames);
 
-  const { ref, observeCSS } = useContainerQueries();
-  const _ = ['grid-cols-10', 'gap-2'];
+  useEffect(() => {
+    setStep(nItems);
+  }, []);
 
-  if (sizeQuery.isLoading || pageQuery.isLoading)
+  const { ref, observeCSS } = useContainerQueries();
+  const _ = ['grid-cols-4', 'gap-2'];
+
+  if (sizeQuery?.isLoading || pageQuery?.isLoading)
     return (
       <div className='h-full flex justify-center items-center' ref={ref}>
         loading...
@@ -28,18 +45,27 @@ const ImageCarousel = () => {
       ref={ref}
     >
       <div className='bg-indigo-400 py-2 px-2 rounded-t-md flex justify-center space-x-2'>
-        <span>Image Carousel</span>
+        <span>Comparer</span>
       </div>
       <div className='overflow-y-scroll h-full w-full'>
         <div
           className={
             'grid ' +
-            observeCSS('grid-cols-5 md:grid-cols-10 gap-1 xl:gap-2') +
+            observeCSS('grid-cols-2 md:grid-cols-4 gap-1 xl:gap-2') +
             ' px-1 pt-1 pb-4 items-center justify-center'
           }
         >
           {getImageNames().map((name: string, i: number) => (
-            <ImageTag name={name} key={i} />
+            <div
+              key={i}
+              className='flex space-x-1 border-2 border-indigo-400/50 rounded-lg p-0.5'
+            >
+              {Components.map(
+                (Component: React.FC<ComponentProps>, j: number) => (
+                  <Component name={name} key={'c-' + j} />
+                )
+              )}
+            </div>
           ))}
         </div>
       </div>
@@ -48,4 +74,4 @@ const ImageCarousel = () => {
   );
 };
 
-export default ImageCarousel;
+export default Comparer;
