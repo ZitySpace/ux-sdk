@@ -60,7 +60,7 @@ const Comparer = ({
           {getImageNames().map((name: string, i: number) => (
             <div
               key={i}
-              className='flex justify-around space-x-1 border-2 border-indigo-400/50 rounded-lg p-0.5'
+              className={`grid grid-cols-${Components.length} gap-x-1 border-2 border-indigo-400/50 rounded-lg p-0.5`}
             >
               {Components.map(
                 (Component: React.FC<ComponentProps>, j: number) => (
