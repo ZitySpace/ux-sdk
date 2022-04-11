@@ -11,10 +11,12 @@ interface ComponentProps {
 
 const Comparer = ({
   Components,
-  nItems = 12,
+  nItems = 6,
+  title = 'Comparer',
 }: {
   Components: React.FC<ComponentProps>[];
   nItems?: number;
+  title?: string;
 }) => {
   const setStep = usePagingStore((s) => s.setStep);
 
@@ -30,7 +32,7 @@ const Comparer = ({
   }, []);
 
   const { ref, observeCSS } = useContainerQueries();
-  const _ = ['grid-cols-4', 'gap-2'];
+  const _ = ['grid-cols-2', 'gap-2'];
 
   if (sizeQuery?.isLoading || pageQuery?.isLoading)
     return (
@@ -45,20 +47,20 @@ const Comparer = ({
       ref={ref}
     >
       <div className='bg-indigo-400 py-2 px-2 rounded-t-md flex justify-center space-x-2'>
-        <span>Comparer</span>
+        <span>{title}</span>
       </div>
       <div className='overflow-y-scroll h-full w-full'>
         <div
           className={
             'grid ' +
-            observeCSS('grid-cols-2 md:grid-cols-4 gap-1 xl:gap-2') +
+            observeCSS('grid-cols-1 md:grid-cols-2 gap-1 xl:gap-2') +
             ' px-1 pt-1 pb-4 items-center justify-center'
           }
         >
           {getImageNames().map((name: string, i: number) => (
             <div
               key={i}
-              className='flex space-x-1 border-2 border-indigo-400/50 rounded-lg p-0.5'
+              className='flex justify-around space-x-1 border-2 border-indigo-400/50 rounded-lg p-0.5'
             >
               {Components.map(
                 (Component: React.FC<ComponentProps>, j: number) => (

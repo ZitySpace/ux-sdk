@@ -1,32 +1,43 @@
-import { CheckCircleIcon } from '@heroicons/react/solid';
 import { fabric } from 'fabric';
 import React, { useEffect, useRef, useState } from 'react';
 import { useCarouselStore } from '../../stores/carouselStore';
-import { useAPIs } from '../../utils/apis';
 import { useResizeDetector } from 'react-resize-detector';
+import { RefreshIcon } from '@heroicons/react/solid';
 
-const ImageTag = ({ name }: { name: string }) => {
-  const [
-    selectable,
-    toggleImageSelect,
-    isSelected,
-    annotations,
-    imgWidth,
-    imgHeight,
-  ] = useCarouselStore((s) => [
-    s.selection.selectable,
-    s.selection.toggleImageSelect,
-    s.selection.selected[name],
+interface BoxProps {
+  x: number;
+  y: number;
+  w: number;
+  h: number;
+  category?: string;
+}
+
+export type AugmenterTypes = {
+  (name: string, bboxes?: BoxProps[]): Promise<{
+    imageSrc: string;
+    augBoxes: BoxProps[];
+  }>;
+};
+
+const AugmentedImageTag = ({
+  name,
+  augmenter,
+}: {
+  name: string;
+  augmenter: AugmenterTypes;
+}) => {
+  const [annotations, imgWidth, imgHeight] = useCarouselStore((s) => [
     s.carouselData[name].annotations,
     s.carouselData[name].width,
     s.carouselData[name].height,
   ]);
 
-  const { getImage } = useAPIs();
-
   const [src, setSrc] = useState<string>(
     'data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs%3D'
   );
+
+  const [boxes, setBoxes] = useState<BoxProps[]>([]);
+
   const imgElRef = useRef(null);
   const imgLoadedRef = useRef(false);
   const canvasElRef = useRef(null);
@@ -34,9 +45,22 @@ const ImageTag = ({ name }: { name: string }) => {
 
   // load image on mount
   useEffect(() => {
-    (async () => setSrc(await getImage(name)))();
-    imgLoadedRef.current = true;
+    const augment = async () => {
+      const { imageSrc, augBoxes } = await augmenter(name, annotations);
+
+      setSrc(imageSrc);
+      setBoxes(augBoxes);
+      imgLoadedRef.current = true;
+    };
+
+    augment();
   }, [name]);
+
+  const reAugment = async () => {
+    const { imageSrc, augBoxes } = await augmenter(name, annotations);
+    setSrc(imageSrc);
+    setBoxes(augBoxes);
+  };
 
   const { width, height } = useResizeDetector({
     targetRef: imgElRef,
@@ -62,7 +86,7 @@ const ImageTag = ({ name }: { name: string }) => {
     canvas.setWidth(cw);
     canvas.setHeight(ch);
 
-    annotations.map(({ x, y, w, h, category }: any) => {
+    boxes.map(({ x, y, w, h, category }: any) => {
       canvas.add(
         new fabric.Rect({
           left: (x * cw) / iw,
@@ -97,16 +121,14 @@ const ImageTag = ({ name }: { name: string }) => {
 
       <canvas ref={canvasElRef} className='absolute top-0 rounded-lg' />
 
-      {selectable ? (
-        <CheckCircleIcon
-          className={`absolute top-0 h-8 w-8 ${
-            isSelected ? 'text-indigo-600' : 'text-gray-600'
-          }`}
-          onClick={() => toggleImageSelect(name)}
-        />
-      ) : null}
+      <div
+        className='absolute top-0 right-2 h-6 w-6 rounded-sm md:h-8 md:w-8 md:rounded-full flex justify-center items-center cursor-pointer bg-gray-200 hover:bg-indigo-600 hover:text-gray-100'
+        onClick={reAugment}
+      >
+        <RefreshIcon className='h-4 w-4' />
+      </div>
     </div>
   );
 };
 
-export default ImageTag;
+export default AugmentedImageTag;

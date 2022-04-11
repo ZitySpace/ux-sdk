@@ -39,5 +39,5 @@ const Template: ComponentStory<typeof Comparer> = (args) => (
 
 export const Story = Template.bind({});
 Story.args = {
-  Components: [ImageTag, ImageTag, ImageTag],
+  Components: [ImageTag, ImageTag],
 };
