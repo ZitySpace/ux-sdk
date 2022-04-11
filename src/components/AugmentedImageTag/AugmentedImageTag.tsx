@@ -26,11 +26,7 @@ const AugmentedImageTag = ({
   name: string;
   augmenter: AugmenterTypes;
 }) => {
-  const [annotations, imgWidth, imgHeight] = useCarouselStore((s) => [
-    s.carouselData[name].annotations,
-    s.carouselData[name].width,
-    s.carouselData[name].height,
-  ]);
+  const annotations = useCarouselStore((s) => s.carouselData[name].annotations);
 
   const [src, setSrc] = useState<string>(
     'data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs%3D'
@@ -75,8 +71,8 @@ const AugmentedImageTag = ({
     const img: any = imgElRef.current;
     const cw = img.getBoundingClientRect().width;
     const ch = img.getBoundingClientRect().height;
-    const iw = imgWidth || img.naturalWidth;
-    const ih = imgHeight || img.naturalHeight;
+    const iw = img.naturalWidth;
+    const ih = img.naturalHeight;
 
     if (canvasRef.current === null)
       canvasRef.current = new fabric.StaticCanvas(canvasElRef.current);
