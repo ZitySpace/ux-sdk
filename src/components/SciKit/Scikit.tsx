@@ -2,6 +2,7 @@ import React, { useRef, forwardRef, useImperativeHandle } from 'react';
 import Toggle from './Toggle';
 import Slider from './Slider';
 import Select from './Select';
+import MultiSelect from './MultiSelect';
 
 const ScikitGroup = forwardRef(
   (
@@ -33,7 +34,10 @@ const ScikitGroup = forwardRef(
             {React.Children.map(children, (c) => {
               const pass =
                 React.isValidElement(c) &&
-                (c.type === Toggle || c.type === Slider || c.type === Select);
+                (c.type === Toggle ||
+                  c.type === Slider ||
+                  c.type === Select ||
+                  c.type === MultiSelect);
 
               if (!pass) return c;
 

@@ -1,6 +1,7 @@
 import { ComponentMeta, ComponentStory } from '@storybook/react';
 import Toggle from './Toggle';
 import Select from './Select';
+import MultiSelect from './MultiSelect';
 import Slider from './Slider';
 import ScikitGroup from './Scikit';
 import React, { useRef, useState, useEffect } from 'react';
@@ -25,6 +26,12 @@ const Template: ComponentStory<typeof ScikitGroup> = (args) => {
         <Toggle name='do_Blackout' defaultValue={false} />
         <Select
           name='dataset'
+          defaultValue='CoCo'
+          options={['ImageNet', 'CoCo', 'CUB1000', 'Some Long Option']}
+        />
+        <MultiSelect
+          name='dataset_multi'
+          defaultValue={['CoCo']}
           options={['ImageNet', 'CoCo', 'CUB1000', 'Some Long Option']}
         />
         <Slider
