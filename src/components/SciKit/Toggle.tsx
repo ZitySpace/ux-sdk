@@ -11,7 +11,7 @@ const Toggle = forwardRef(
       name,
       defaultValue = false,
     }: {
-      name?: string;
+      name: string;
       defaultValue?: boolean;
     },
     ref
@@ -21,9 +21,9 @@ const Toggle = forwardRef(
     useImperativeHandle(ref, () => ({ getValue: () => enabled }));
 
     return (
-      <Switch.Group as='div' className='flex items-center'>
-        <Switch.Label as='span' className='mr-3'>
-          <span className='text-sm font-medium text-gray-900'>{name}</span>
+      <Switch.Group as='div' className='flex items-center justify-start'>
+        <Switch.Label as='span' className='mr-3 w-24 text-right'>
+          <span className='text-sm font-medium text-gray-700'>{name}</span>
         </Switch.Label>
 
         <Switch

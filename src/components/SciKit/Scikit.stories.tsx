@@ -1,5 +1,6 @@
 import { ComponentMeta, ComponentStory } from '@storybook/react';
 import Toggle from './Toggle';
+import Select from './Select';
 import ScikitGroup from './Scikit';
 import React, { useRef, useState, useEffect } from 'react';
 
@@ -21,7 +22,12 @@ const Template: ComponentStory<typeof ScikitGroup> = (args) => {
       <ScikitGroup ref={sgRef}>
         <Toggle name='do_Blur' defaultValue={false} />
         <Toggle name='do_Blackout' defaultValue={false} />
+        <Select
+          name='dataset'
+          options={['ImageNet', 'CoCo', 'CUB1000', 'Some Long Option']}
+        />
       </ScikitGroup>
+
       <div className='flex items-center space-x-6'>
         <button
           onClick={() => setValue(sgRef.current.getValue())}
