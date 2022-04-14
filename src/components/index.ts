@@ -9,3 +9,5 @@ export {
   default as AugmentedImageTag,
   AugmenterTypes,
 } from './AugmentedImageTag';
+
+export * as Scikit from './SciKit';
