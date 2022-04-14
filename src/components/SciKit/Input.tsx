@@ -16,7 +16,6 @@ const Input = forwardRef(
     ref
   ) => {
     const [value, setValue] = useState(defaultValue);
-    const [valid, setValid] = useState(true);
 
     useImperativeHandle(ref, () => ({
       getValue: () => value,
@@ -36,13 +35,12 @@ const Input = forwardRef(
             type={type}
             name={name}
             className={`bg-white relative w-full border ${
-              valid
-                ? 'border-gray-100'
-                : 'outline-none ring-1 ring-red-500 border-red-500'
-            } rounded-md shadow-sm pl-3 pr-10 py-1 text-left cursor-default focus:outline-none focus:ring-1 focus:ring-indigo-500 focus:border-indigo-500 text-sm`}
+              required && value === ''
+                ? 'outline-none ring-1 ring-red-500 border-red-500'
+                : 'border-gray-100 focus:outline-none focus:ring-1 focus:ring-indigo-500 focus:border-indigo-500 '
+            } rounded-md shadow-sm pl-3 pr-10 py-1 text-left cursor-default text-sm`}
             value={value}
             onChange={(evt) => setValue(evt.target.value)}
-            onBlur={() => setValid(!(required && value === ''))}
           />
         </div>
       </div>

@@ -6,12 +6,19 @@ import Input from './Input';
 import MultiSelect from './MultiSelect';
 import { CheckCircleIcon, RefreshIcon } from '@heroicons/react/outline';
 
+type YesCallbackType = (params: { [key: string]: unknown }) => unknown;
+
 const ScikitGroup = forwardRef(
   (
     {
       title = 'Scikit Group',
+      yesCallback = (params) => {},
       children,
-    }: { title?: string; children: React.ReactNode },
+    }: {
+      title?: string;
+      yesCallback?: YesCallbackType;
+      children: React.ReactNode;
+    },
     ref
   ) => {
     const childRefs: {
@@ -68,6 +75,7 @@ const ScikitGroup = forwardRef(
               <button
                 type='button'
                 className='inline-flex items-center px-5 py-1 border border-transparent shadow-sm text-sm leading-4 font-medium rounded-md text-white bg-teal-400 hover:bg-teal-500 focus:outline-none focus:ring-2 focus:ring-offset-1 focus:ring-teal-600'
+                onClick={() => yesCallback(getValue())}
               >
                 <CheckCircleIcon className='h-5 w-5' aria-hidden='true' />
               </button>
