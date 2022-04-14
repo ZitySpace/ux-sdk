@@ -24,7 +24,7 @@ const Input = forwardRef(
 
     return (
       <div className='flex items-center justify-start'>
-        <div className='w-36 mr-3 relative h-7'>
+        <div className='w-28 mr-3 relative h-7'>
           <label
             htmlFor={name}
             className='block absolute right-0 text-right text-sm font-medium text-gray-700'

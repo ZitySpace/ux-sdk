@@ -42,7 +42,7 @@ const ScikitGroup = forwardRef(
         <div className='bg-indigo-400 py-2 px-2 rounded-t-md flex justify-center space-x-2 text-xs'>
           <span>{title}</span>
         </div>
-        <div className='flex justify-center'>
+        <div className='flex justify-center overflow-scroll'>
           <div className='flex-col space-y-2 pt-2 pb-4 h-full'>
             {React.Children.map(children, (c) => {
               const pass =
@@ -64,7 +64,7 @@ const ScikitGroup = forwardRef(
               });
             })}
 
-            <div className='pt-3 flex space-x-2 justify-start ml-36 pl-3'>
+            <div className='pt-3 flex space-x-2 justify-start ml-28 pl-3'>
               <button
                 type='button'
                 className='inline-flex items-center px-5 py-1 border border-transparent shadow-sm text-sm leading-4 font-medium rounded-md text-white  bg-amber-400 hover:bg-amber-500 focus:outline-none focus:ring-2 focus:ring-offset-1 focus:ring-amber-600'

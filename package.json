@@ -1,6 +1,6 @@
 {
   "name": "@ZitySpace/ux-sdk",
-  "version": "0.0.1-alpha6",
+  "version": "0.0.1-alpha8",
   "description": "ZitySpace UX SDK",
   "scripts": {
     "rollup": "rollup -c",

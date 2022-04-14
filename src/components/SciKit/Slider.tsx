@@ -131,7 +131,7 @@ const Slider = forwardRef(
 
     return (
       <div className='flex items-center justify-start pb-2'>
-        <div className='w-36 mr-3 relative h-7'>
+        <div className='w-28 mr-3 relative h-7'>
           <div className='text-right absolute right-0'>
             <span className='text-sm font-medium text-gray-700'>{name}</span>
           </div>
