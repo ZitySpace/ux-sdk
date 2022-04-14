@@ -124,7 +124,10 @@ const Slider = forwardRef(
 
     const [value, setValue] = useState(defaultValue);
 
-    useImperativeHandle(ref, () => ({ getValue: () => value }));
+    useImperativeHandle(ref, () => ({
+      getValue: () => value,
+      reset: () => setValue(defaultValue),
+    }));
 
     return (
       <div className='flex items-center justify-start pb-3'>
@@ -138,6 +141,7 @@ const Slider = forwardRef(
               min={range[0]}
               max={range[1]}
               defaultValue={defaultValue}
+              value={value}
               allowCross={false}
               marks={marks}
               step={discrete ? null : stepFinal}
@@ -160,6 +164,7 @@ const Slider = forwardRef(
               min={range[0]}
               max={range[1]}
               defaultValue={defaultValue}
+              value={value}
               marks={marks}
               step={discrete ? null : stepFinal}
               reverse={reverse}

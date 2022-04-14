@@ -2,7 +2,9 @@ import React, { useRef, forwardRef, useImperativeHandle } from 'react';
 import Toggle from './Toggle';
 import Slider from './Slider';
 import Select from './Select';
+import Input from './Input';
 import MultiSelect from './MultiSelect';
+import { CheckCircleIcon, RefreshIcon } from '@heroicons/react/outline';
 
 const ScikitGroup = forwardRef(
   (
@@ -13,7 +15,9 @@ const ScikitGroup = forwardRef(
     ref
   ) => {
     const childRefs: {
-      [key: string]: React.MutableRefObject<{ getValue: Function } | undefined>;
+      [key: string]: React.MutableRefObject<
+        { getValue: Function; reset: Function } | undefined
+      >;
     } = {};
 
     const getValue = () =>
@@ -21,6 +25,8 @@ const ScikitGroup = forwardRef(
         (prev, [key, r]) => ({ ...prev, [key]: r.current!.getValue() }),
         {}
       );
+
+    const reset = () => Object.values(childRefs).map((r) => r.current!.reset());
 
     useImperativeHandle(ref, () => ({ getValue: getValue }));
 
@@ -37,7 +43,8 @@ const ScikitGroup = forwardRef(
                 (c.type === Toggle ||
                   c.type === Slider ||
                   c.type === Select ||
-                  c.type === MultiSelect);
+                  c.type === MultiSelect ||
+                  c.type === Input);
 
               if (!pass) return c;
 
@@ -49,6 +56,22 @@ const ScikitGroup = forwardRef(
                 ref: childRefs[name],
               });
             })}
+
+            <div className='pt-3 flex space-x-2 justify-start ml-24 pl-3'>
+              <button
+                type='button'
+                className='inline-flex items-center px-5 py-1 border border-transparent shadow-sm text-sm leading-4 font-medium rounded-md text-white  bg-amber-400 hover:bg-amber-500 focus:outline-none focus:ring-2 focus:ring-offset-1 focus:ring-amber-600'
+                onClick={reset}
+              >
+                <RefreshIcon className='h-4 w-4' aria-hidden='true' />
+              </button>
+              <button
+                type='button'
+                className='inline-flex items-center px-5 py-1 border border-transparent shadow-sm text-sm leading-4 font-medium rounded-md text-white bg-teal-400 hover:bg-teal-500 focus:outline-none focus:ring-2 focus:ring-offset-1 focus:ring-teal-600'
+              >
+                <CheckCircleIcon className='h-5 w-5' aria-hidden='true' />
+              </button>
+            </div>
           </div>
         </div>
       </div>

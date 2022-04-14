@@ -37,6 +37,7 @@ const MultiSelect = forwardRef(
 
     useImperativeHandle(ref, () => ({
       getValue: () => selected.map((s) => s.value),
+      reset: () => setSelected(initValue),
     }));
 
     return (

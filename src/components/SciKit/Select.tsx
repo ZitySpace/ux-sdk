@@ -35,7 +35,10 @@ const Select = forwardRef(
 
     const [selected, setSelected] = useState(initValue);
 
-    useImperativeHandle(ref, () => ({ getValue: () => selected.value }));
+    useImperativeHandle(ref, () => ({
+      getValue: () => selected.value,
+      reset: () => setSelected(initValue),
+    }));
 
     return (
       <Listbox value={selected} onChange={setSelected}>

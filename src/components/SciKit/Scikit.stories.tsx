@@ -3,6 +3,7 @@ import Toggle from './Toggle';
 import Select from './Select';
 import MultiSelect from './MultiSelect';
 import Slider from './Slider';
+import Input from './Input';
 import ScikitGroup from './Scikit';
 import React, { useRef, useState, useEffect } from 'react';
 
@@ -12,7 +13,7 @@ export default {
 } as ComponentMeta<typeof ScikitGroup>;
 
 const Template: ComponentStory<typeof ScikitGroup> = (args) => {
-  const sgRef = useRef<{ getValue: Function }>();
+  const sgRef = useRef<{ getValue: Function; reset: Function }>();
   const [value, setValue] = useState<any | null>(null);
 
   useEffect(() => {
@@ -46,6 +47,7 @@ const Template: ComponentStory<typeof ScikitGroup> = (args) => {
           range={[-1, 1]}
           asRange={true}
         />
+        <Input name='image' defaultValue='kol_batch1_118.jpg' />
       </ScikitGroup>
 
       <div className='flex items-center space-x-6'>

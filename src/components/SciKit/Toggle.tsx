@@ -18,7 +18,10 @@ const Toggle = forwardRef(
   ) => {
     const [enabled, setEnabled] = useState<boolean>(defaultValue);
 
-    useImperativeHandle(ref, () => ({ getValue: () => enabled }));
+    useImperativeHandle(ref, () => ({
+      getValue: () => enabled,
+      reset: () => setEnabled(defaultValue),
+    }));
 
     return (
       <Switch.Group as='div' className='flex items-center justify-start'>
