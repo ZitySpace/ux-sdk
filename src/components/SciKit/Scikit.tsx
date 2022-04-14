@@ -64,7 +64,7 @@ const ScikitGroup = forwardRef(
               });
             })}
 
-            <div className='pt-3 flex space-x-2 justify-start ml-24 pl-3'>
+            <div className='pt-3 flex space-x-2 justify-start ml-36 pl-3'>
               <button
                 type='button'
                 className='inline-flex items-center px-5 py-1 border border-transparent shadow-sm text-sm leading-4 font-medium rounded-md text-white  bg-amber-400 hover:bg-amber-500 focus:outline-none focus:ring-2 focus:ring-offset-1 focus:ring-amber-600'

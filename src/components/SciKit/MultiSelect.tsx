@@ -44,10 +44,13 @@ const MultiSelect = forwardRef(
       <Listbox value={selected} onChange={setSelected}>
         {({ open }) => (
           <div className='flex items-center justify-start'>
-            <Listbox.Label className='mr-3 w-24 text-right'>
-              <span className='text-sm font-medium text-gray-700'>{name}</span>
-            </Listbox.Label>
-
+            <div className='w-36 mr-3 relative h-7'>
+              <Listbox.Label className='absolute right-0 text-right'>
+                <span className='text-sm font-medium text-gray-700'>
+                  {name}
+                </span>
+              </Listbox.Label>
+            </div>
             <div className='relative w-64'>
               <span className='inline-block w-full rounded-md shadow-sm'>
                 <Listbox.Button className='bg-white relative w-full border border-gray-100 rounded-md shadow-sm pl-3 pr-10 py-1 text-left cursor-default focus:outline-none focus:ring-1 focus:ring-indigo-500 focus:border-indigo-500 text-sm'>

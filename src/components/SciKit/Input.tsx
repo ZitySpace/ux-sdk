@@ -24,12 +24,14 @@ const Input = forwardRef(
 
     return (
       <div className='flex items-center justify-start'>
-        <label
-          htmlFor={name}
-          className='block mr-3 w-24 text-right text-sm font-medium text-gray-700'
-        >
-          {name}
-        </label>
+        <div className='w-36 mr-3 relative h-7'>
+          <label
+            htmlFor={name}
+            className='block absolute right-0 text-right text-sm font-medium text-gray-700'
+          >
+            {name}
+          </label>
+        </div>
         <div className='mt-1 flex items-center'>
           <input
             type={type}

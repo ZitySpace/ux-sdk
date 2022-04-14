@@ -25,9 +25,11 @@ const Toggle = forwardRef(
 
     return (
       <Switch.Group as='div' className='flex items-center justify-start'>
-        <Switch.Label as='span' className='mr-3 w-24 text-right'>
-          <span className='text-sm font-medium text-gray-700'>{name}</span>
-        </Switch.Label>
+        <div className='w-36 mr-3 relative h-7'>
+          <Switch.Label as='span' className='text-right absolute right-0'>
+            <span className='text-sm font-medium text-gray-700'>{name}</span>
+          </Switch.Label>
+        </div>
 
         <Switch
           checked={enabled}
