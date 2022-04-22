@@ -38,7 +38,7 @@ const getImageResponseHandler = async (response: Response) => {
   return data;
 };
 
-const requestTemplate =
+export const requestTemplate =
   (
     requestConstructor: Function,
     responseHandler: Function = responseHandlerTemplate,
@@ -46,7 +46,8 @@ const requestTemplate =
     requireAuthentication: boolean = true
   ) =>
   async (...args: any[]) => {
-    const headers = new Headers({ Accept: 'application/json' });
+    const { url, method, headers, body } = requestConstructor(...args);
+    const headersFinal = headers || new Headers({ Accept: 'application/json' });
 
     if (requireAuthentication) {
       const token = localStorage.getItem('token');
@@ -54,13 +55,12 @@ const requestTemplate =
         throw new Error('Not Authorized');
       }
 
-      headers.set('Authorization', `Bearer ${token}`);
+      headersFinal.set('Authorization', `Bearer ${token}`);
     }
 
-    const { url, method, body } = requestConstructor(...args);
     const request = new Request(url, {
       method: method,
-      headers: headers,
+      headers: headersFinal,
       body: body,
     });
     const response = await fetch(request);

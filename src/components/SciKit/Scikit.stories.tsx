@@ -13,7 +13,7 @@ export default {
 } as ComponentMeta<typeof ScikitGroup>;
 
 const Template: ComponentStory<typeof ScikitGroup> = (args) => {
-  const sgRef = useRef<{ getValue: Function; reset: Function }>();
+  const sgRef = useRef<{ getValue: Function }>();
   const [value, setValue] = useState<any | null>(null);
 
   useEffect(() => {
