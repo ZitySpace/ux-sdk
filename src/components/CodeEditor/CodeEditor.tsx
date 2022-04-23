@@ -3,7 +3,6 @@ import {
   PlayIcon,
   InformationCircleIcon,
   DocumentReportIcon,
-  ViewGridIcon,
 } from '@heroicons/react/solid';
 
 import {
@@ -17,7 +16,13 @@ import 'ace-builds/src-noconflict/mode-python';
 import 'ace-builds/src-noconflict/theme-monokai';
 import 'ace-builds/src-noconflict/ext-language_tools';
 
-const DataFrame = ({ header, data }: { header: string[]; data: any[][] }) => {
+export const DataFrame = ({
+  header,
+  data,
+}: {
+  header: string[];
+  data: any[][];
+}) => {
   return (
     <PagingStoreProvider createStore={createPagingStore}>
       <div className='resize-y overflow-auto h-48 mt-1 bg-white'>
@@ -102,8 +107,7 @@ const ACECodeEditor = ({
     { header: string[]; data: any[][] } | string
   >('');
   const [showLog, setShowLog] = useState<boolean>(true);
-  const [showResultPlain, setShowResultPlain] = useState<boolean>(true);
-  const [showResultTable, setShowResultTable] = useState<boolean>(false);
+  const [showResult, setShowResult] = useState<boolean>(true);
 
   let onRun: Function;
   if (onCodeRun === null) onRun = () => {};
@@ -148,22 +152,11 @@ const ACECodeEditor = ({
               />
               <DocumentReportIcon
                 className={`h-8 w-8 hover:text-emerald-700 ${
-                  showResultPlain ? 'text-emerald-700' : ''
+                  showResult ? 'text-emerald-700' : ''
                 }`}
                 aria-hidden='true'
                 onClick={() => {
-                  setShowResultPlain(!showResultPlain);
-                  setShowResultTable(false);
-                }}
-              />
-              <ViewGridIcon
-                className={`h-8 w-8 hover:text-emerald-700 ${
-                  showResultTable ? 'text-emerald-700' : ''
-                }`}
-                aria-hidden='true'
-                onClick={() => {
-                  setShowResultTable(!showResultTable);
-                  setShowResultPlain(false);
+                  setShowResult(!showResult);
                 }}
               />
             </>
@@ -208,7 +201,7 @@ const ACECodeEditor = ({
           readOnly
         ></textarea>
       )}
-      {showResultPlain && (
+      {showResult && (
         <textarea
           className='resize-y overflow-auto h-48 mt-1 bg-gray-700 text-gray-200 text-xs px-4 pt-1 focus:outline-none'
           value={
@@ -219,9 +212,6 @@ const ACECodeEditor = ({
           placeholder='This displays the code run result'
           readOnly
         ></textarea>
-      )}
-      {showResultTable && typeof result !== 'string' && (
-        <DataFrame header={result.header} data={result.data} />
       )}
     </div>
   );

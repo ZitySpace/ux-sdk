@@ -1,6 +1,6 @@
 import { ComponentMeta, ComponentStory } from '@storybook/react';
 import React from 'react';
-import CodeEditor from './CodeEditor';
+import CodeEditor, { DataFrame } from './CodeEditor';
 import { requestTemplate } from '../../utils/apis';
 
 export default {
