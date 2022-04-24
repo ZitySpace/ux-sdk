@@ -1,6 +1,6 @@
 import { ComponentMeta, ComponentStory } from '@storybook/react';
-import React from 'react';
-import CodeEditor, { DataFrame } from './CodeEditor';
+import React, { useState } from 'react';
+import CodeEditor, { DataFrame, CodeEditorResultProps } from './CodeEditor';
 import { requestTemplate } from '../../utils/apis';
 
 export default {
@@ -30,13 +30,19 @@ const runCode = requestTemplate(
 );
 
 const Template: ComponentStory<typeof CodeEditor> = (args) => {
+  const editorAtom = useState<CodeEditorResultProps>('');
+
   return (
-    <CodeEditor
-      title='DataFrame Query Box'
-      initCode={code}
-      placeholder='write pandas dataframe query here'
-      onCodeRun={runCode}
-    />
+    <>
+      <CodeEditor
+        title='DataFrame Query Box'
+        initCode={code}
+        placeholder='write pandas dataframe query here'
+        onCodeRun={runCode}
+        atom={editorAtom}
+      />
+      <DataFrame title='Query Result' atom={editorAtom} />
+    </>
   );
 };
 
