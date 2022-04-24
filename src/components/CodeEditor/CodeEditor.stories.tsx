@@ -30,7 +30,7 @@ const runCode = requestTemplate(
 );
 
 const Template: ComponentStory<typeof CodeEditor> = (args) => {
-  const editorAtom = useState<CodeEditorResultProps>('');
+  const queryAtom = useState<CodeEditorResultProps>('');
 
   return (
     <>
@@ -39,9 +39,9 @@ const Template: ComponentStory<typeof CodeEditor> = (args) => {
         initCode={code}
         placeholder='write pandas dataframe query here'
         onCodeRun={runCode}
-        atom={editorAtom}
+        atom={queryAtom}
       />
-      <DataFrame title='Query Result' atom={editorAtom} />
+      <DataFrame title='Query Result' atom={queryAtom} />
     </>
   );
 };

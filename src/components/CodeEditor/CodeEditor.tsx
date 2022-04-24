@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import {
   PlayIcon,
   InformationCircleIcon,
@@ -8,6 +8,7 @@ import {
 import {
   PagingStoreProvider,
   createPagingStore,
+  usePagingStore,
 } from '../../stores/pagingStore';
 import PaginationBar from '../PaginationBar';
 
@@ -16,9 +17,9 @@ import 'ace-builds/src-noconflict/mode-python';
 import 'ace-builds/src-noconflict/theme-monokai';
 import 'ace-builds/src-noconflict/ext-language_tools';
 
-type State<S> = [S, React.Dispatch<React.SetStateAction<S>>];
+type StateT<S> = [S, React.Dispatch<React.SetStateAction<S>>]; // not conflict with zustand State
 
-function tryState<S>(state: State<S> | null, initialState: S) {
+function tryState<S>(state: StateT<S> | null, initialState: S) {
   return state ? state : useState<S>(initialState);
 }
 
@@ -42,7 +43,7 @@ const ACECodeEditor = ({
   placeholder?: string;
   readOnly?: boolean;
   onCodeRun?: Function | null;
-  atom?: State<CodeEditorResultProps> | null;
+  atom?: StateT<CodeEditorResultProps> | null;
 }) => {
   const code = useRef<string>(initCode);
 
@@ -169,82 +170,103 @@ export const DataFrame = ({
 }: {
   title?: string;
   df?: DataFrameProps | null;
-  atom?: State<DataFrameProps> | null;
+  atom?: StateT<DataFrameProps> | null;
+}) => (
+  <PagingStoreProvider createStore={createPagingStore}>
+    <DataFrameCore title={title} df={df} atom={atom} />
+  </PagingStoreProvider>
+);
+
+const DataFrameCore = ({
+  title = 'DataFrame',
+  df = null,
+  atom = null,
+}: {
+  title?: string;
+  df?: DataFrameProps | null;
+  atom?: StateT<DataFrameProps> | null;
 }) => {
   const [dataframe] = df ? [df] : tryState(atom, '');
 
+  const [setPos, setTotal] = usePagingStore((s) => [s.setPos, s.setTotal]);
+
+  useEffect(() => {
+    if (typeof dataframe !== 'string') {
+      setPos(0);
+      setTotal(dataframe.data.length);
+    }
+  }, [dataframe]);
+
   return (
-    <PagingStoreProvider createStore={createPagingStore}>
-      <div className='bg-gray-100 h-full flex flex-col rounded-md shadow-lg'>
-        <div className='bg-indigo-400 py-2 px-2 rounded-t-md flex justify-center space-x-2 text-xs'>
-          <span>{title}</span>
-        </div>
-        <div className='resize-y overflow-auto h-48 bg-white '>
-          {typeof dataframe === 'string' ? (
-            <div className='flex justify-center text-xs'>{dataframe}</div>
-          ) : (
-            <>
-              <table className='min-w-full divide-y divide-gray-200 relative table-fixed'>
-                <thead className='bg-gray-700 sticky top-0'>
-                  <tr>
+    <div className='bg-gray-100 h-full flex flex-col rounded-md shadow-lg'>
+      <div className='bg-indigo-400 py-2 px-2 rounded-t-md flex justify-center space-x-2 text-xs'>
+        <span>{title}</span>
+      </div>
+      <div className='resize-y overflow-auto h-48 bg-white '>
+        {typeof dataframe === 'string' ? (
+          <div className='flex justify-center text-xs'>{dataframe}</div>
+        ) : (
+          <>
+            <table className='min-w-full divide-y divide-gray-200 relative table-fixed'>
+              <thead className='bg-gray-700 sticky top-0'>
+                <tr>
+                  <th
+                    scope='col'
+                    className='px-3 py-2 text-left text-xs font-medium text-gray-200'
+                    // onClick={}
+                  >
+                    <input
+                      type='checkbox'
+                      className='border-none focus:outline-none focus:ring-0 focus:ring-offset-0 bg-white w-3.5 h-3.5'
+                      // checked={}
+                      readOnly
+                    />
+                  </th>
+
+                  {dataframe.header.map((name, icol) => (
                     <th
                       scope='col'
+                      key={icol}
                       className='px-3 py-2 text-left text-xs font-medium text-gray-200'
-                      // onClick={}
                     >
-                      <input
-                        type='checkbox'
-                        className='border-none focus:outline-none focus:ring-0 focus:ring-offset-0 bg-white w-3.5 h-3.5'
-                        // checked={}
-                        readOnly
-                      />
+                      {name}
                     </th>
+                  ))}
+                </tr>
+              </thead>
+              <tbody>
+                {dataframe.data.map((row, irow) => (
+                  <tr key={irow} className='bg-white border-b'>
+                    <td className='px-3 py-2 whtiespace-nowrap'>
+                      <div className='flex items-center'>
+                        <input
+                          type='checkbox'
+                          className='border-none focus:outline-none focus:ring-0 focus:ring-offset-0 bg-indigo-100 w-3.5 h-3.5'
+                          // checked={}
+                          readOnly
+                        />
+                      </div>
+                    </td>
 
-                    {dataframe.header.map((name, icol) => (
-                      <th
-                        scope='col'
+                    {row.map((cell, icol) => (
+                      <td
                         key={icol}
-                        className='px-3 py-2 text-left text-xs font-medium text-gray-200'
+                        className='px-3 py-2 whitespace-nowrap text-xs font-light text-gray-500 overflow-x-auto'
                       >
-                        {name}
-                      </th>
+                        {cell}
+                      </td>
                     ))}
                   </tr>
-                </thead>
-                <tbody>
-                  {dataframe.data.map((row, irow) => (
-                    <tr key={irow} className='bg-white border-b'>
-                      <td className='px-3 py-2 whtiespace-nowrap'>
-                        <div className='flex items-center'>
-                          <input
-                            type='checkbox'
-                            className='border-none focus:outline-none focus:ring-0 focus:ring-offset-0 bg-indigo-100 w-3.5 h-3.5'
-                            // checked={}
-                            readOnly
-                          />
-                        </div>
-                      </td>
-
-                      {row.map((cell, icol) => (
-                        <td
-                          key={icol}
-                          className='px-3 py-2 whitespace-nowrap text-xs font-light text-gray-500 overflow-x-auto'
-                        >
-                          {cell}
-                        </td>
-                      ))}
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-              <div className='sticky bottom-0 min-w-full'>
-                <PaginationBar />
-              </div>
-            </>
-          )}
-        </div>
+                ))}
+              </tbody>
+            </table>
+            <div className='sticky bottom-0 min-w-full'>
+              <PaginationBar />
+            </div>
+          </>
+        )}
       </div>
-    </PagingStoreProvider>
+    </div>
   );
 };
 
