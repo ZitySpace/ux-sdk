@@ -195,12 +195,18 @@ const DataFrameCore = ({
     s.setTotal,
   ]);
 
+  const isMsg = typeof dataframe === 'string';
   useEffect(() => {
-    if (typeof dataframe !== 'string') {
+    if (!isMsg) {
       setPos(0);
       setTotal(dataframe.data.length);
+      setSelected(Array(dataframe.data.length).fill(false));
     }
   }, [dataframe]);
+
+  const [selected, setSelected] = useState<boolean[]>(
+    Array(isMsg ? 0 : dataframe.data.length).fill(false)
+  );
 
   return (
     <div className='bg-gray-100 h-full flex flex-col rounded-md shadow-lg'>
@@ -208,7 +214,7 @@ const DataFrameCore = ({
         <span>{title}</span>
       </div>
       <div className='resize-y overflow-auto h-48 bg-white '>
-        {typeof dataframe === 'string' ? (
+        {isMsg ? (
           <div className='flex justify-center text-xs'>{dataframe}</div>
         ) : (
           <>
@@ -218,12 +224,23 @@ const DataFrameCore = ({
                   <th
                     scope='col'
                     className='px-3 py-2 text-left text-xs font-medium text-gray-200'
-                    // onClick={}
+                    onClick={() => {
+                      const allSelected = !selected
+                        .slice(pos, pos + step)
+                        .includes(false);
+                      const newSelected = [...selected];
+                      newSelected.splice(
+                        pos,
+                        step,
+                        ...Array(step).fill(!allSelected)
+                      );
+                      setSelected(newSelected);
+                    }}
                   >
                     <input
                       type='checkbox'
                       className='border-none focus:outline-none focus:ring-0 focus:ring-offset-0 bg-white w-3.5 h-3.5'
-                      // checked={}
+                      checked={!selected.slice(pos, pos + step).includes(false)}
                       readOnly
                     />
                   </th>
@@ -241,13 +258,21 @@ const DataFrameCore = ({
               </thead>
               <tbody>
                 {dataframe.data.slice(pos, pos + step).map((row, irow) => (
-                  <tr key={irow} className='bg-white border-b'>
+                  <tr
+                    key={irow}
+                    className='bg-white border-b'
+                    onClick={() => {
+                      const newSelected = [...selected];
+                      newSelected.splice(pos + irow, 1, !selected[pos + irow]);
+                      setSelected(newSelected);
+                    }}
+                  >
                     <td className='px-3 py-2 whtiespace-nowrap'>
                       <div className='flex items-center'>
                         <input
                           type='checkbox'
                           className='border-none focus:outline-none focus:ring-0 focus:ring-offset-0 bg-indigo-100 w-3.5 h-3.5'
-                          // checked={}
+                          checked={selected[pos + irow] || false}
                           readOnly
                         />
                       </div>
