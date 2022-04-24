@@ -188,7 +188,12 @@ const DataFrameCore = ({
 }) => {
   const [dataframe] = df ? [df] : tryState(atom, '');
 
-  const [setPos, setTotal] = usePagingStore((s) => [s.setPos, s.setTotal]);
+  const [pos, step, setPos, setTotal] = usePagingStore((s) => [
+    s.pos,
+    s.step,
+    s.setPos,
+    s.setTotal,
+  ]);
 
   useEffect(() => {
     if (typeof dataframe !== 'string') {
@@ -235,7 +240,7 @@ const DataFrameCore = ({
                 </tr>
               </thead>
               <tbody>
-                {dataframe.data.map((row, irow) => (
+                {dataframe.data.slice(pos, pos + step).map((row, irow) => (
                   <tr key={irow} className='bg-white border-b'>
                     <td className='px-3 py-2 whtiespace-nowrap'>
                       <div className='flex items-center'>
