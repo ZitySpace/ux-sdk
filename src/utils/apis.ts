@@ -128,14 +128,20 @@ export const useAPIs = () => {
   const apiEndpoint = localStorage.getItem('apiEndpoint');
   const projectSlug = localStorage.getItem('projectSlug');
 
-  const getImagesCount = requestTemplate(() => {
+  const getImagesCount: { (): Promise<number> } = requestTemplate(() => {
     return {
       url: apiEndpoint + '/project/data/images/count?slug=' + projectSlug,
       method: 'GET',
     };
   });
 
-  const getImagesMeta = requestTemplate(
+  const getImagesMeta: {
+    (
+      offset: number,
+      limit: number,
+      order_by: string
+    ): Promise<CarouselStoreStateData>;
+  } = requestTemplate(
     (offset: number, limit: number, order_by: string) => {
       return {
         url:
@@ -171,19 +177,27 @@ export const useAPIs = () => {
     URL.createObjectURL
   );
 
-  const getImagesCountByCategory = requestTemplate((category: string) => {
-    return {
-      url:
-        apiEndpoint +
-        '/project/data/images/category/count?slug=' +
-        projectSlug +
-        '&category=' +
-        category,
-      method: 'GET',
-    };
-  });
+  const getImagesCountByCategory: { (category: string): Promise<number> } =
+    requestTemplate((category: string) => {
+      return {
+        url:
+          apiEndpoint +
+          '/project/data/images/category/count?slug=' +
+          projectSlug +
+          '&category=' +
+          category,
+        method: 'GET',
+      };
+    });
 
-  const getImagesMetaByCategory = requestTemplate(
+  const getImagesMetaByCategory: {
+    (
+      category: string,
+      offset: number,
+      limit: number,
+      order_by: string
+    ): Promise<CarouselStoreStateData>;
+  } = requestTemplate(
     (category: string, offset: number, limit: number, order_by: string) => {
       return {
         url:

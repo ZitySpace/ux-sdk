@@ -49,7 +49,7 @@ export const useCarouselQueries = () => {
             ? getImagesMetaByCategory(filtering.value, pos, step, 'upload_time')
             : {
                 carouselData: {},
-                selection: { selectable: true, selected: [] },
+                selection: { selectable: true, selected: {} },
               }
           : getImagesMeta(pos, step, 'upload_time'),
       {
