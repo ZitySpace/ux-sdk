@@ -17,10 +17,10 @@ import {
 import { FilteringProps } from '../../stores/contextStore';
 
 const StoreProvider = ({
-  filteringInit = null,
+  filteringInit = { by: null },
   children,
 }: {
-  filteringInit?: null | FilteringProps;
+  filteringInit?: FilteringProps;
   children?: React.ReactNode;
 }) => {
   return (

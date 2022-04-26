@@ -1,8 +1,13 @@
 import { useQuery } from 'react-query';
 import { usePagingStore } from '../../stores/pagingStore';
 import { useCarouselStore } from '../../stores/carouselStore';
-import { useContextStore } from '../../stores/contextStore';
-import { useAPIs } from '../apis';
+import {
+  useContextStore,
+  SizeFilterBaseType,
+  SizeFilterOnValueType,
+  PageFilterBaseType,
+  PageFilterOnValueType,
+} from '../../stores/contextStore';
 
 export const useCarouselQueries = () => {
   const [pos, step, setTotal] = usePagingStore((s) => [
@@ -15,24 +20,13 @@ export const useCarouselQueries = () => {
 
   const setCarouselStateData = useCarouselStore((s) => s.setStateData);
 
-  const {
-    getImagesCount,
-    getImagesMeta,
-    getImagesCountByCategory,
-    getImagesMetaByCategory,
-  } = useAPIs();
-
   const useCarouselSizeQuery = () =>
     useQuery(
       ['carouselSize', filtering],
-      filtering
-        ? async () =>
-            filtering.by === 'Category'
-              ? getImagesCountByCategory(filtering.value)
-              : filtering.by === 'ImageNames'
-              ? filtering.value.length
-              : 1000 // fallback value
-        : getImagesCount,
+      () =>
+        filtering.dependsOnValue
+          ? (filtering.sizeFilter as SizeFilterOnValueType)(filtering.value)
+          : (filtering.sizeFilter as SizeFilterBaseType)(),
       {
         onSuccess: (total) => setTotal(total),
         keepPreviousData: true,
@@ -43,15 +37,19 @@ export const useCarouselQueries = () => {
   const useCarouselPageQuery = () =>
     useQuery(
       ['carouselPage', pos, step, filtering],
-      async () =>
-        filtering
-          ? filtering.by === 'Category'
-            ? getImagesMetaByCategory(filtering.value, pos, step, 'upload_time')
-            : {
-                carouselData: {},
-                selection: { selectable: true, selected: {} },
-              }
-          : getImagesMeta(pos, step, 'upload_time'),
+      () =>
+        filtering.dependsOnValue
+          ? (filtering.pageFilter as PageFilterOnValueType)(
+              filtering.value,
+              pos,
+              step,
+              'upload_time'
+            )
+          : (filtering.pageFilter as PageFilterBaseType)(
+              pos,
+              step,
+              'upload_time'
+            ),
       {
         onSuccess: (carouselStateData) =>
           setCarouselStateData(carouselStateData),

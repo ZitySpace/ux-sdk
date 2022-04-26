@@ -10,31 +10,36 @@ const {
   getImagesMetaByCategory,
 } = useAPIs();
 
-type sizeFilterType =
-  | {
-      (): number | Promise<number>;
-    }
-  | {
-      (value: any): number | Promise<number>;
-    };
+export type SizeFilterBaseType = {
+  (): number | Promise<number>;
+};
 
-type pageFilterType =
-  | {
-      (pos: number, step: number, ...args: Array<any>):
-        | CarouselStoreStateData
-        | Promise<CarouselStoreStateData>;
-    }
-  | {
-      (value: any, pos: number, step: number, ...args: Array<any>):
-        | CarouselStoreStateData
-        | Promise<CarouselStoreStateData>;
-    };
+export type SizeFilterOnValueType = {
+  (value: any): number | Promise<number>;
+};
+
+export type PageFilterBaseType = {
+  (pos: number, step: number, ...args: Array<any>):
+    | CarouselStoreStateData
+    | Promise<CarouselStoreStateData>;
+};
+
+export type PageFilterOnValueType = {
+  (value: any, pos: number, step: number, ...args: Array<any>):
+    | CarouselStoreStateData
+    | Promise<CarouselStoreStateData>;
+};
+
+type SizeFilterType = SizeFilterBaseType | SizeFilterOnValueType;
+
+type PageFilterType = PageFilterBaseType | PageFilterOnValueType;
 
 export type FilteringProps = {
   by: string | null;
-  value?: any | any[];
-  sizeFilter?: sizeFilterType;
-  pageFilter?: pageFilterType;
+  value?: any | any[] | null;
+  dependsOnValue?: boolean;
+  sizeFilter?: SizeFilterType;
+  pageFilter?: PageFilterType;
 };
 
 interface ContextStoreState extends State {
@@ -46,14 +51,17 @@ interface ContextStoreStateData extends State {
   filtering: FilteringProps;
 }
 
-const defaultFilters = (filtering: FilteringProps) =>
+const defaultFilterProps = (filtering: FilteringProps) =>
   filtering.by === null
     ? {
+        value: null,
+        dependsOnValue: false,
         sizeFilter: getImagesCount,
         pageFilter: getImagesMeta,
       }
-    : filtering.by === 'category'
+    : filtering.by === 'Category'
     ? {
+        dependsOnValue: true,
         sizeFilter: getImagesCountByCategory,
         pageFilter: getImagesMetaByCategory,
       }
@@ -63,13 +71,25 @@ export const { Provider: ContextStoreProvider, useStore: useContextStore } =
   createContext<ContextStoreState>();
 
 export const createContextStore = (
-  initState: ContextStoreStateData = { filtering: { by: null, value: null } }
+  initState: ContextStoreStateData = {
+    filtering: {
+      by: null,
+      value: null,
+      dependsOnValue: false,
+      sizeFilter: getImagesCount,
+      pageFilter: getImagesMeta,
+    },
+  }
 ) =>
   create<ContextStoreState>((set) => ({
-    filtering: initState.filtering,
+    filtering: {
+      ...initState.filtering,
+      ...defaultFilterProps(initState.filtering),
+    },
 
-    setFiltering: (filteringProps: FilteringProps) =>
+    setFiltering: (filteringProps: FilteringProps) => {
       set({
-        filtering: { ...defaultFilters(filteringProps), ...filteringProps },
-      }),
+        filtering: { ...filteringProps, ...defaultFilterProps(filteringProps) },
+      });
+    },
   }));
