@@ -4,12 +4,37 @@ import {
   ChevronLeftIcon,
   ChevronRightIcon,
 } from '@heroicons/react/solid';
-import React from 'react';
+import React, { useRef, useEffect } from 'react';
 import shallow from 'zustand/shallow';
-import { usePagingStore } from '../../stores/pagingStore';
+import { useStore, StoreApi } from 'zustand';
+import {
+  pagingStoreDataDefault,
+  PagingStoreData,
+  PagingStore,
+  usePagingStore,
+} from '../../stores/pagingStore';
 import { useContainerQueries } from '../../utils/hooks/useContainerQueries';
 
-const PaginationBar = () => {
+const PaginationBar = ({
+  storeName = '.pagingStore',
+  storeInit = pagingStoreDataDefault,
+  resetStoreOnFirstMount = true,
+}: {
+  storeName: string;
+  storeInit?: PagingStoreData;
+  resetStoreOnFirstMount?: boolean;
+}) => {
+  const mounted = useRef(false);
+  useEffect(() => {
+    mounted.current = true;
+  }, []);
+
+  const store: StoreApi<PagingStore> = usePagingStore(
+    storeName,
+    storeInit,
+    resetStoreOnFirstMount && !mounted.current
+  );
+
   const [
     pos,
     step,
@@ -22,7 +47,8 @@ const PaginationBar = () => {
     toPrevPage,
     toNextPage,
     toPage,
-  ] = usePagingStore(
+  ] = useStore(
+    store,
     (s) => [
       s.pos,
       s.step,

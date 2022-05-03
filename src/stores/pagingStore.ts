@@ -1,10 +1,20 @@
-import create, { State } from 'zustand';
-import createContext from 'zustand/context';
+import { createContext } from 'react';
+import { createStore, State, StoreApi } from 'zustand';
+import { newUseStore } from './factory';
 
-interface PagingStoreState extends State {
+interface StoreData extends State {
   pos: number;
   step: number;
   total: number;
+}
+
+const storeDataDefault = {
+  pos: 0,
+  step: 10,
+  total: 100,
+};
+
+interface Store extends StoreData {
   getCurPage: () => number;
   getTotPages: () => number;
   setPos: (p: number) => void;
@@ -17,14 +27,10 @@ interface PagingStoreState extends State {
   toPage: (n: number) => void;
 }
 
-export const { Provider: PagingStoreProvider, useStore: usePagingStore } =
-  createContext<PagingStoreState>();
-
-export const createPagingStore = () =>
-  create<PagingStoreState>((set, get) => ({
-    pos: 0,
-    step: 10,
-    total: 100,
+const createStoreFromData = (data: Partial<StoreData> = storeDataDefault) =>
+  createStore<Store>((set, get) => ({
+    ...storeDataDefault,
+    ...data,
 
     getCurPage: () => Math.floor(get().pos / get().step) + 1,
     getTotPages: () => Math.floor((get().total - 1) / get().step) + 1 || 1,
@@ -53,3 +59,16 @@ export const createPagingStore = () =>
         return { pos: s.step * (page - 1) };
       }),
   }));
+
+const storeDefault = createStoreFromData(storeDataDefault);
+const StoreContext = createContext<StoreApi<Store>>(storeDefault);
+
+const useStore = newUseStore<Store>(createStoreFromData, storeDataDefault);
+
+export {
+  StoreContext as PagingStoreContext,
+  StoreData as PagingStoreData,
+  storeDataDefault as pagingStoreDataDefault,
+  Store as PagingStore,
+  useStore as usePagingStore,
+};
