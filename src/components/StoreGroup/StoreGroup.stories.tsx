@@ -40,9 +40,9 @@ const TemplateSimple: ComponentStory<any> = (args) => {
     if (sizeQuery.isLoading || pageQuery.isLoading) return <></>;
     return (
       <>
-        <ImageCarousel storeName={args.imageCarousel.storeName} />
-        <PaginationBar storeName={args.paginationBar.storeName} />
-        <ImageList storeName={args.imageCarousel.storeName} />
+        <ImageCarousel carouselStoreName={args.imageCarousel.storeName} />
+        <PaginationBar pagingStoreName={args.paginationBar.storeName} />
+        <ImageList carouselStoreName={args.imageCarousel.storeName} />
       </>
     );
   };
@@ -129,9 +129,9 @@ const TemplateDynamic: ComponentStory<any> = (args) => {
         </button>
         {!sizeQuery.isLoading && !pageQuery.isLoading && (
           <>
-            <ImageCarousel storeName={args.imageCarousel.storeName} />
-            <PaginationBar storeName={args.paginationBar.storeName} />
-            <ImageList storeName={args.imageCarousel.storeName} />
+            <ImageCarousel carouselStoreName={args.imageCarousel.storeName} />
+            <PaginationBar pagingStoreName={args.paginationBar.storeName} />
+            <ImageList carouselStoreName={args.imageCarousel.storeName} />
           </>
         )}
       </div>

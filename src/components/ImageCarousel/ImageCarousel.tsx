@@ -1,32 +1,15 @@
-import React, { useRef, useEffect } from 'react';
+import React from 'react';
 import { useContainerQueries } from '../../utils/hooks/useContainerQueries';
-import {
-  useCarouselStore,
-  CarouselStoreDataDefault,
-  CarouselStoreData,
-} from '../../stores/carouselStore';
+import { useCarouselStore } from '../../stores/carouselStore';
 import ImageTag from '../ImageTag';
 import { useStore } from 'zustand';
 
 const ImageCarousel = ({
-  storeName = '.carouselStore',
-  storeInit = CarouselStoreDataDefault,
-  resetOnFirstMount = false,
+  carouselStoreName = '.carouselStore',
 }: {
-  storeName?: string;
-  storeInit?: CarouselStoreData;
-  resetOnFirstMount?: boolean;
+  carouselStoreName?: string;
 }) => {
-  const mounted = useRef(false);
-  useEffect(() => {
-    mounted.current = true;
-  }, []);
-
-  const store = useCarouselStore(
-    storeName,
-    storeInit,
-    resetOnFirstMount && !mounted.current
-  );
+  const store = useCarouselStore(carouselStoreName);
 
   const getImageNames = useStore(store, (s) => s.getNames);
 
@@ -50,7 +33,11 @@ const ImageCarousel = ({
           }
         >
           {getImageNames().map((name: string, i: number) => (
-            <ImageTag name={name} carouselStoreName={storeName} key={i} />
+            <ImageTag
+              name={name}
+              carouselStoreName={carouselStoreName}
+              key={i}
+            />
           ))}
         </div>
       </div>

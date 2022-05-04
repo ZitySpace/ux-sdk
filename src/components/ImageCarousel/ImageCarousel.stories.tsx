@@ -43,8 +43,8 @@ const Template: ComponentStory<any> = (args) => {
 
     return (
       <>
-        <ImageCarousel storeName={args.imageCarousel.storeName} />
-        <PaginationBar storeName={args.paginationBar.storeName} />
+        <ImageCarousel carouselStoreName={args.imageCarousel.storeName} />
+        <PaginationBar pagingStoreName={args.paginationBar.storeName} />
       </>
     );
   };

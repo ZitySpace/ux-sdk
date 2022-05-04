@@ -30,7 +30,7 @@ const Template: ComponentStory<any> = (args) => {
     const pageQuery = useCarouselPageQuery();
     if (pageQuery.isLoading) return <></>;
 
-    return <ImageList storeName={args.imageCarousel.storeName} />;
+    return <ImageList carouselStoreName={args.imageCarousel.storeName} />;
   };
 
   return (

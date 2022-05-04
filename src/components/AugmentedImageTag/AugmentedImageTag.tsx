@@ -3,6 +3,7 @@ import React, { useEffect, useRef, useState } from 'react';
 import { useCarouselStore } from '../../stores/carouselStore';
 import { useResizeDetector } from 'react-resize-detector';
 import { RefreshIcon } from '@heroicons/react/solid';
+import { useStore } from 'zustand';
 
 interface BoxProps {
   x: number;
@@ -22,11 +23,16 @@ export type AugmenterTypes = {
 const AugmentedImageTag = ({
   name,
   augmenter,
+  carouselStoreName = '.carouselStore',
 }: {
   name: string;
   augmenter: AugmenterTypes;
+  carouselStoreName?: string;
 }) => {
-  const annotations = useCarouselStore((s) => s.carouselData[name].annotations);
+  const annotations = useStore(
+    useCarouselStore(carouselStoreName),
+    (s) => s.carouselData[name].annotations
+  );
 
   const [src, setSrc] = useState<string>(
     'data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs%3D'

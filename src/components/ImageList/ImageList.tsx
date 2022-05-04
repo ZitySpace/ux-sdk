@@ -1,34 +1,17 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState } from 'react';
 import { TrashIcon } from '@heroicons/react/solid';
 import { useDelImages } from '../../utils/hooks/useDelImages';
-import {
-  useCarouselStore,
-  CarouselStoreData,
-  CarouselStoreDataDefault,
-} from '../../stores/carouselStore';
+import { useCarouselStore } from '../../stores/carouselStore';
 import Modal from '../Generic/modal';
 import { ToastContainer } from 'react-toastify';
 import { useStore } from 'zustand';
 
 const ImageList = ({
-  storeName = '.carouselStore',
-  storeInit = CarouselStoreDataDefault,
-  resetOnFirstMount = false,
+  carouselStoreName = '.carouselStore',
 }: {
-  storeName?: string;
-  storeInit?: CarouselStoreData;
-  resetOnFirstMount?: boolean;
+  carouselStoreName?: string;
 }) => {
-  const mounted = useRef(false);
-  useEffect(() => {
-    mounted.current = true;
-  }, []);
-
-  const store = useCarouselStore(
-    storeName,
-    storeInit,
-    resetOnFirstMount && !mounted.current
-  );
+  const store = useCarouselStore(carouselStoreName);
 
   const deleteSelectedImages = useDelImages({ carouselStore: store });
 
