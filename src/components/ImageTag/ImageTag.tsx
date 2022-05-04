@@ -4,8 +4,15 @@ import React, { useEffect, useRef, useState } from 'react';
 import { useCarouselStore } from '../../stores/carouselStore';
 import { useAPIs } from '../../utils/apis';
 import { useResizeDetector } from 'react-resize-detector';
+import { useStore } from 'zustand';
 
-const ImageTag = ({ name }: { name: string }) => {
+const ImageTag = ({
+  name,
+  carouselStoreName = '.carouselStore',
+}: {
+  name: string;
+  carouselStoreName: string;
+}) => {
   const [
     selectable,
     toggleImageSelect,
@@ -13,7 +20,7 @@ const ImageTag = ({ name }: { name: string }) => {
     annotations,
     imgWidth,
     imgHeight,
-  ] = useCarouselStore((s) => [
+  ] = useStore(useCarouselStore(carouselStoreName), (s) => [
     s.selection.selectable,
     s.selection.toggleImageSelect,
     s.selection.selected[name],

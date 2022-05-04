@@ -17,6 +17,7 @@ const Template: ComponentStory<typeof PaginationBar> = (args) => {
 
 export const Story = Template.bind({});
 Story.args = {
+  storeName: 'PaginationBar.stories.paingStore',
   storeInit: { step: 20, pos: 30 },
-  resetStoreOnFirstMount: true,
+  resetOnFirstMount: false,
 };

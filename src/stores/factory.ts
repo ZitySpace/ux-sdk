@@ -15,13 +15,13 @@ const rootStore = createStore<RootStoreState>()((set, get) => ({
   hasStore: (name: string) => get().stores.hasOwnProperty(name),
 }));
 
-function newUseStore<S extends object>(
-  createStoreFromData: (data: any) => StoreApi<S>,
-  storeDataDefault: any
+function newUseStore<S extends object, D extends object>(
+  createStoreFromData: (data: Partial<D>) => StoreApi<S>,
+  storeDataDefault: D
 ) {
   const { registerStore, getStore, hasStore } = rootStore.getState();
 
-  return (name: string, data: any, force: boolean = false) => {
+  return (name: string, data: Partial<D> = {}, force: boolean = false) => {
     if (!hasStore(name)) {
       const store = createStoreFromData(data);
       registerStore(name, store);

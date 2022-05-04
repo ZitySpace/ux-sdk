@@ -1,4 +1,4 @@
-import { CarouselStoreStateData, ImageProps } from '../stores/carouselStore';
+import { CarouselStoreData } from '../stores/carouselStore';
 
 const responseHandlerTemplate = async (response: Response) => {
   if (response.status === 401) {
@@ -91,7 +91,7 @@ export interface ImageMetaProps {
 
 export const normalizeImagesMeta = (data: ImageMetaProps[]) => ({
   carouselData: data.reduce(
-    (res: CarouselStoreStateData['carouselData'], d: ImageMetaProps) => {
+    (res: CarouselStoreData['carouselData'], d: ImageMetaProps) => {
       return {
         ...res,
         [d.file_name]: {
@@ -110,10 +110,7 @@ export const normalizeImagesMeta = (data: ImageMetaProps[]) => ({
   ),
   selection: {
     selected: data.reduce(
-      (
-        res: CarouselStoreStateData['selection']['selected'],
-        d: ImageMetaProps
-      ) => {
+      (res: CarouselStoreData['selection']['selected'], d: ImageMetaProps) => {
         return {
           ...res,
           [d.file_name]: false,
@@ -140,7 +137,7 @@ export const useAPIs = () => {
       offset: number,
       limit: number,
       order_by: string
-    ): Promise<CarouselStoreStateData>;
+    ): Promise<CarouselStoreData>;
   } = requestTemplate(
     (offset: number, limit: number, order_by: string) => {
       return {
@@ -196,7 +193,7 @@ export const useAPIs = () => {
       offset: number,
       limit: number,
       order_by: string
-    ): Promise<CarouselStoreStateData>;
+    ): Promise<CarouselStoreData>;
   } = requestTemplate(
     (category: string, offset: number, limit: number, order_by: string) => {
       return {

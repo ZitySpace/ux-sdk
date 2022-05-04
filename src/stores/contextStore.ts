@@ -1,7 +1,9 @@
-import create, { State } from 'zustand';
-import createContext from 'zustand/context';
 import { useAPIs } from '../utils/apis';
-import { CarouselStoreStateData } from './carouselStore';
+import { CarouselStoreData } from './carouselStore';
+
+import { createContext } from 'react';
+import { createStore, State, StoreApi } from 'zustand';
+import { newUseStore } from './factory';
 
 const {
   getImagesCount,
@@ -20,14 +22,14 @@ export type SizeFilterOnValueType = {
 
 export type PageFilterBaseType = {
   (pos: number, step: number, ...args: Array<any>):
-    | CarouselStoreStateData
-    | Promise<CarouselStoreStateData>;
+    | CarouselStoreData
+    | Promise<CarouselStoreData>;
 };
 
 export type PageFilterOnValueType = {
   (value: any, pos: number, step: number, ...args: Array<any>):
-    | CarouselStoreStateData
-    | Promise<CarouselStoreStateData>;
+    | CarouselStoreData
+    | Promise<CarouselStoreData>;
 };
 
 type SizeFilterType = SizeFilterBaseType | SizeFilterOnValueType;
@@ -42,13 +44,23 @@ export type FilteringProps = {
   pageFilter?: PageFilterType;
 };
 
-interface ContextStoreState extends State {
+interface StoreData extends State {
   filtering: FilteringProps;
-  setFiltering: (p: FilteringProps) => void;
 }
 
-interface ContextStoreStateData extends State {
+const storeDataDefault = {
+  filtering: {
+    by: null,
+    value: null,
+    dependsOnValue: false,
+    sizeFilter: getImagesCount,
+    pageFilter: getImagesMeta,
+  },
+};
+
+interface Store extends StoreData {
   filtering: FilteringProps;
+  setFiltering: (p: FilteringProps) => void;
 }
 
 const defaultFilterProps = (filtering: FilteringProps) =>
@@ -67,24 +79,13 @@ const defaultFilterProps = (filtering: FilteringProps) =>
       }
     : {};
 
-export const { Provider: ContextStoreProvider, useStore: useContextStore } =
-  createContext<ContextStoreState>();
+const createStoreFromData = (pdata: Partial<StoreData> = storeDataDefault) => {
+  const data = { ...storeDataDefault, ...pdata };
 
-export const createContextStore = (
-  initState: ContextStoreStateData = {
+  return createStore<Store>((set) => ({
     filtering: {
-      by: null,
-      value: null,
-      dependsOnValue: false,
-      sizeFilter: getImagesCount,
-      pageFilter: getImagesMeta,
-    },
-  }
-) =>
-  create<ContextStoreState>((set) => ({
-    filtering: {
-      ...initState.filtering,
-      ...defaultFilterProps(initState.filtering),
+      ...data.filtering,
+      ...defaultFilterProps(data.filtering),
     },
 
     setFiltering: (filteringProps: FilteringProps) => {
@@ -93,3 +94,20 @@ export const createContextStore = (
       });
     },
   }));
+};
+
+const storeDefault = createStoreFromData(storeDataDefault);
+const StoreContext = createContext<StoreApi<Store>>(storeDefault);
+
+const useStore = newUseStore<Store, StoreData>(
+  createStoreFromData,
+  storeDataDefault
+);
+
+export {
+  StoreContext as ContextStoreContext,
+  StoreData as ContextStoreData,
+  storeDataDefault as ContextStoreDataDefault,
+  Store as ContextStore,
+  useStore as useContextStore,
+};

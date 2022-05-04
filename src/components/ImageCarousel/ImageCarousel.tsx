@@ -1,26 +1,37 @@
-import React, { useRef } from 'react';
-import { useCarouselQueries } from '../../utils/hooks/useCarouselQueries';
+import React, { useRef, useEffect } from 'react';
 import { useContainerQueries } from '../../utils/hooks/useContainerQueries';
-import { useCarouselStore } from '../../stores/carouselStore';
-import PaginationBar from '../PaginationBar';
+import {
+  useCarouselStore,
+  CarouselStoreDataDefault,
+  CarouselStoreData,
+} from '../../stores/carouselStore';
 import ImageTag from '../ImageTag';
+import { useStore } from 'zustand';
 
-const ImageCarousel = () => {
-  const { useCarouselSizeQuery, useCarouselPageQuery } = useCarouselQueries();
-  const sizeQuery = useCarouselSizeQuery();
-  const pageQuery = useCarouselPageQuery();
+const ImageCarousel = ({
+  storeName = '.carouselStore',
+  storeInit = CarouselStoreDataDefault,
+  resetOnFirstMount = false,
+}: {
+  storeName?: string;
+  storeInit?: CarouselStoreData;
+  resetOnFirstMount?: boolean;
+}) => {
+  const mounted = useRef(false);
+  useEffect(() => {
+    mounted.current = true;
+  }, []);
 
-  const getImageNames = useCarouselStore((s) => s.getNames);
+  const store = useCarouselStore(
+    storeName,
+    storeInit,
+    resetOnFirstMount && !mounted.current
+  );
+
+  const getImageNames = useStore(store, (s) => s.getNames);
 
   const { ref, observeCSS } = useContainerQueries();
   const _ = ['grid-cols-10', 'gap-2'];
-
-  if (sizeQuery.isLoading || pageQuery.isLoading)
-    return (
-      <div className='h-full flex justify-center items-center' ref={ref}>
-        loading...
-      </div>
-    );
 
   return (
     <div
@@ -39,11 +50,10 @@ const ImageCarousel = () => {
           }
         >
           {getImageNames().map((name: string, i: number) => (
-            <ImageTag name={name} key={i} />
+            <ImageTag name={name} carouselStoreName={storeName} key={i} />
           ))}
         </div>
       </div>
-      <PaginationBar />
     </div>
   );
 };

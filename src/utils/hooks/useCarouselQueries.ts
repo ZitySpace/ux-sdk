@@ -1,24 +1,33 @@
 import { useQuery } from 'react-query';
-import { usePagingStore } from '../../stores/pagingStore';
-import { useCarouselStore } from '../../stores/carouselStore';
 import {
-  useContextStore,
   SizeFilterBaseType,
   SizeFilterOnValueType,
   PageFilterBaseType,
   PageFilterOnValueType,
 } from '../../stores/contextStore';
+import { useStore, StoreApi } from 'zustand';
+import { ContextStore } from '../../stores/contextStore';
+import { PagingStore } from '../../stores/pagingStore';
+import { CarouselStore } from '../../stores/carouselStore';
 
-export const useCarouselQueries = () => {
-  const [pos, step, setTotal] = usePagingStore((s) => [
+export const useCarouselQueries = ({
+  contextStore,
+  pagingStore,
+  carouselStore,
+}: {
+  contextStore: StoreApi<ContextStore>;
+  pagingStore: StoreApi<PagingStore>;
+  carouselStore: StoreApi<CarouselStore>;
+}) => {
+  const [pos, step, setTotal] = useStore(pagingStore, (s) => [
     s.pos,
     s.step,
     s.setTotal,
   ]);
 
-  const filtering = useContextStore((s) => s.filtering);
+  const filtering = useStore(contextStore, (s) => s.filtering);
 
-  const setCarouselStateData = useCarouselStore((s) => s.setStateData);
+  const setCarouselData = useStore(carouselStore, (s) => s.setCarouselData);
 
   const useCarouselSizeQuery = () =>
     useQuery(
@@ -51,8 +60,7 @@ export const useCarouselQueries = () => {
               'upload_time'
             ),
       {
-        onSuccess: (carouselStateData) =>
-          setCarouselStateData(carouselStateData),
+        onSuccess: (carouselStateData) => setCarouselData(carouselStateData),
         keepPreviousData: true,
         refetchOnWindowFocus: false,
       }

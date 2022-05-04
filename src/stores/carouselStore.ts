@@ -1,6 +1,7 @@
 import produce from 'immer';
-import create, { State } from 'zustand';
-import createContext from 'zustand/context';
+import { createContext } from 'react';
+import { createStore, State, StoreApi } from 'zustand';
+import { newUseStore } from './factory';
 
 interface DetectionProps {
   x: number;
@@ -23,7 +24,20 @@ export interface ImageProps {
   annotations: DetectionProps[];
 }
 
-interface CarouselStoreState extends State {
+interface StoreData extends State {
+  carouselData: { [key: string]: ImageProps };
+  selection: {
+    selectable: boolean;
+    selected: { [key: string]: boolean };
+  };
+}
+
+const storeDataDefault = {
+  carouselData: {},
+  selection: { selectable: false, selected: {} },
+};
+
+interface Store extends State {
   carouselData: { [key: string]: ImageProps };
   selection: {
     selectable: boolean;
@@ -32,32 +46,20 @@ interface CarouselStoreState extends State {
     toggleImageSelect: (name: string) => void;
     toggleSelectAll: () => void;
   };
-  setStateData: (data: CarouselStoreStateData) => void;
+  setCarouselData: (data: StoreData) => void;
   getNames: () => string[];
 }
 
-export interface CarouselStoreStateData extends State {
-  carouselData: { [key: string]: ImageProps };
-  selection: {
-    selectable: boolean;
-    selected: { [key: string]: boolean };
-  };
-}
-
-export const { Provider: CarouselStoreProvider, useStore: useCarouselStore } =
-  createContext<CarouselStoreState>();
-
-export const createCarouselStore = (
-  initState: CarouselStoreStateData = {
-    carouselData: {},
-    selection: { selectable: false, selected: {} },
-  }
-) =>
-  create<CarouselStoreState>((set, get) => ({
-    carouselData: initState.carouselData,
+const createStoreFromData = (data: Partial<StoreData> = storeDataDefault) =>
+  createStore<Store>((set, get) => ({
+    carouselData: { ...storeDataDefault.carouselData, ...data.carouselData },
     selection: {
-      selectable: initState.selection.selectable,
-      selected: initState.selection.selected,
+      selectable:
+        data.selection?.selectable || storeDataDefault.selection.selectable,
+      selected: {
+        ...storeDataDefault.selection.selected,
+        ...data.selection?.selected,
+      },
       toggleSelectable: () =>
         set(
           produce((s) => {
@@ -81,7 +83,7 @@ export const createCarouselStore = (
           })
         ),
     },
-    setStateData: (data: CarouselStoreStateData) =>
+    setCarouselData: (data: StoreData) =>
       set(
         produce((s) => {
           s.carouselData = data.carouselData;
@@ -90,3 +92,19 @@ export const createCarouselStore = (
       ),
     getNames: () => Object.keys(get().carouselData),
   }));
+
+const storeDefault = createStoreFromData(storeDataDefault);
+const StoreContext = createContext<StoreApi<Store>>(storeDefault);
+
+const useStore = newUseStore<Store, StoreData>(
+  createStoreFromData,
+  storeDataDefault
+);
+
+export {
+  StoreContext as CarouselStoreContext,
+  StoreData as CarouselStoreData,
+  storeDataDefault as CarouselStoreDataDefault,
+  Store as CarouselStore,
+  useStore as useCarouselStore,
+};

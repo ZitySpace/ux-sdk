@@ -63,7 +63,10 @@ const createStoreFromData = (data: Partial<StoreData> = storeDataDefault) =>
 const storeDefault = createStoreFromData(storeDataDefault);
 const StoreContext = createContext<StoreApi<Store>>(storeDefault);
 
-const useStore = newUseStore<Store>(createStoreFromData, storeDataDefault);
+const useStore = newUseStore<Store, StoreData>(
+  createStoreFromData,
+  storeDataDefault
+);
 
 export {
   StoreContext as PagingStoreContext,

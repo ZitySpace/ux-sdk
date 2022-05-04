@@ -6,11 +6,10 @@ import {
 } from '@heroicons/react/solid';
 import React, { useRef, useEffect } from 'react';
 import shallow from 'zustand/shallow';
-import { useStore, StoreApi } from 'zustand';
+import { useStore } from 'zustand';
 import {
   pagingStoreDataDefault,
   PagingStoreData,
-  PagingStore,
   usePagingStore,
 } from '../../stores/pagingStore';
 import { useContainerQueries } from '../../utils/hooks/useContainerQueries';
@@ -18,21 +17,21 @@ import { useContainerQueries } from '../../utils/hooks/useContainerQueries';
 const PaginationBar = ({
   storeName = '.pagingStore',
   storeInit = pagingStoreDataDefault,
-  resetStoreOnFirstMount = true,
+  resetOnFirstMount = false,
 }: {
-  storeName: string;
+  storeName?: string;
   storeInit?: PagingStoreData;
-  resetStoreOnFirstMount?: boolean;
+  resetOnFirstMount?: boolean;
 }) => {
   const mounted = useRef(false);
   useEffect(() => {
     mounted.current = true;
   }, []);
 
-  const store: StoreApi<PagingStore> = usePagingStore(
+  const store = usePagingStore(
     storeName,
     storeInit,
-    resetStoreOnFirstMount && !mounted.current
+    resetOnFirstMount && !mounted.current
   );
 
   const [
