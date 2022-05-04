@@ -11,7 +11,7 @@ const ImageTag = ({
   carouselStoreName = '.carouselStore',
 }: {
   name: string;
-  carouselStoreName: string;
+  carouselStoreName?: string;
 }) => {
   const [
     selectable,

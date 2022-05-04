@@ -2,20 +2,11 @@ import { ComponentMeta, ComponentStory } from '@storybook/react';
 import React from 'react';
 import ImageList from './ImageList';
 import { QueryClient, QueryClientProvider } from 'react-query';
-import {
-  CarouselStoreProvider,
-  createCarouselStore,
-} from '../../stores/carouselStore';
 
-import {
-  PagingStoreProvider,
-  createPagingStore,
-} from '../../stores/pagingStore';
-
-import {
-  ContextStoreProvider,
-  createContextStore,
-} from '../../stores/contextStore';
+import { useContextStore } from '../../stores/contextStore';
+import { usePagingStore } from '../../stores/pagingStore';
+import { useCarouselStore } from '../../stores/carouselStore';
+import { useCarouselQueries } from '../../utils/hooks/useCarouselQueries';
 
 export default {
   title: 'UX-SDK/ImageList',
@@ -24,17 +15,40 @@ export default {
 
 const queryClient = new QueryClient();
 
-const Template: ComponentStory<typeof ImageList> = (args) => (
-  <QueryClientProvider client={queryClient}>
-    <ContextStoreProvider createStore={createContextStore}>
-      <PagingStoreProvider createStore={createPagingStore}>
-        <CarouselStoreProvider createStore={createCarouselStore}>
-          <ImageList {...args} />
-        </CarouselStoreProvider>
-      </PagingStoreProvider>
-    </ContextStoreProvider>
-  </QueryClientProvider>
-);
+const Template: ComponentStory<any> = (args) => {
+  const Story = () => {
+    const contextStore = useContextStore(args.context.storeName);
+    const pagingStore = usePagingStore(args.paginationBar.storeName);
+    const carouselStore = useCarouselStore(args.imageCarousel.storeName);
+
+    const { useCarouselPageQuery } = useCarouselQueries({
+      contextStore: contextStore,
+      pagingStore: pagingStore,
+      carouselStore: carouselStore,
+    });
+
+    const pageQuery = useCarouselPageQuery();
+    if (pageQuery.isLoading) return <></>;
+
+    return <ImageList storeName={args.imageCarousel.storeName} />;
+  };
+
+  return (
+    <QueryClientProvider client={queryClient}>
+      <Story />
+    </QueryClientProvider>
+  );
+};
 
 export const Story = Template.bind({});
-Story.args = {};
+Story.args = {
+  imageCarousel: {
+    storeName: 'ImageList.stories.carouselStore',
+  },
+  paginationBar: {
+    storeName: 'ImageList.stories.pagingStore',
+  },
+  context: {
+    storeName: 'ImageList.stories.contextStore',
+  },
+};

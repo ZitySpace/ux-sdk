@@ -17,8 +17,17 @@ const queryClient = new QueryClient();
 
 const Template: ComponentStory<any> = (args) => {
   const Story = () => {
+    const mounted = useRef(false);
+    useEffect(() => {
+      mounted.current = true;
+    }, []);
+
     const contextStore = useContextStore(args.context.storeName);
-    const pagingStore = usePagingStore(args.paginationBar.storeName);
+    const pagingStore = usePagingStore(
+      args.paginationBar.storeName,
+      { pos: 0 },
+      !mounted.current
+    );
     const carouselStore = useCarouselStore(args.imageCarousel.storeName);
 
     const { useCarouselSizeQuery, useCarouselPageQuery } = useCarouselQueries({
@@ -26,6 +35,7 @@ const Template: ComponentStory<any> = (args) => {
       pagingStore: pagingStore,
       carouselStore: carouselStore,
     });
+
     const sizeQuery = useCarouselSizeQuery();
     const pageQuery = useCarouselPageQuery();
 

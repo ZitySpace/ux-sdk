@@ -1,11 +1,16 @@
 import { useMutation, useQueryClient } from 'react-query';
-import { useCarouselStore } from '../../stores/carouselStore';
+import { useStore, StoreApi } from 'zustand';
+import { CarouselStore } from '../../stores/carouselStore';
 import { useAPIs } from '../apis';
 import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
-export const useDelImages = () => {
-  const selectedImageNames = useCarouselStore((s) => {
+export const useDelImages = ({
+  carouselStore,
+}: {
+  carouselStore: StoreApi<CarouselStore>;
+}) => {
+  const selectedImageNames = useStore(carouselStore, (s) => {
     const selected = s.selection.selected;
     return Object.keys(selected).filter((name) => selected[name]);
   });

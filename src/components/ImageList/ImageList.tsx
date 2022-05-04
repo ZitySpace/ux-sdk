@@ -1,16 +1,36 @@
-import React, { useState } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { TrashIcon } from '@heroicons/react/solid';
-import { useCarouselQueries } from '../../utils/hooks/useCarouselQueries';
 import { useDelImages } from '../../utils/hooks/useDelImages';
-import { useCarouselStore } from '../../stores/carouselStore';
+import {
+  useCarouselStore,
+  CarouselStoreData,
+  CarouselStoreDataDefault,
+} from '../../stores/carouselStore';
 import Modal from '../Generic/modal';
 import { ToastContainer } from 'react-toastify';
+import { useStore } from 'zustand';
 
-const ImageList = () => {
-  const { useCarouselPageQuery } = useCarouselQueries();
-  const deleteSelectedImages = useDelImages();
+const ImageList = ({
+  storeName = '.carouselStore',
+  storeInit = CarouselStoreDataDefault,
+  resetOnFirstMount = false,
+}: {
+  storeName?: string;
+  storeInit?: CarouselStoreData;
+  resetOnFirstMount?: boolean;
+}) => {
+  const mounted = useRef(false);
+  useEffect(() => {
+    mounted.current = true;
+  }, []);
 
-  const pageQuery = useCarouselPageQuery();
+  const store = useCarouselStore(
+    storeName,
+    storeInit,
+    resetOnFirstMount && !mounted.current
+  );
+
+  const deleteSelectedImages = useDelImages({ carouselStore: store });
 
   const [
     selectable,
@@ -20,7 +40,7 @@ const ImageList = () => {
     toggleImageSelect,
     toggleSelectAll,
     carouselData,
-  ] = useCarouselStore((s) => [
+  ] = useStore(store, (s) => [
     s.selection.selectable,
     s.selection.selected,
     !Object.values(s.selection.selected).includes(false),
@@ -31,11 +51,6 @@ const ImageList = () => {
   ]);
 
   const [delImgModalOpen, setDelImgModalOpen] = useState(false);
-
-  if (pageQuery.isLoading)
-    return (
-      <div className='h-full flex justify-center items-center'>loading...</div>
-    );
 
   return (
     <>
