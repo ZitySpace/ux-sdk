@@ -39,9 +39,8 @@ const Template: ComponentStory<typeof CodeEditor> = (args) => {
         initCode={code}
         placeholder='write pandas dataframe query here'
         onCodeRun={runCode}
-        atom={queryAtom}
       />
-      <DataFrame title='Query Result' atom={queryAtom} />
+      {/* <DataFrame title='Query Result' atom={queryAtom} /> */}
     </>
   );
 };
