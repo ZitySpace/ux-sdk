@@ -15,8 +15,6 @@ const PaginationBar = ({
 }: {
   pagingStoreName?: string;
 }) => {
-  const store = usePagingStore(pagingStoreName);
-
   const [
     pos,
     step,
@@ -30,7 +28,7 @@ const PaginationBar = ({
     toNextPage,
     toPage,
   ] = useStore(
-    store,
+    usePagingStore(pagingStoreName),
     (s) => [
       s.pos,
       s.step,

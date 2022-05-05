@@ -1,9 +1,9 @@
-import React, { useEffect, useState } from 'react';
-import { useCarouselQueries } from '../../utils/hooks/useCarouselQueries';
+import React, { useEffect } from 'react';
 import { useContainerQueries } from '../../utils/hooks/useContainerQueries';
 import { useCarouselStore } from '../../stores/carouselStore';
 import { usePagingStore } from '../../stores/pagingStore';
 import PaginationBar from '../PaginationBar';
+import { useStore } from 'zustand';
 
 interface ComponentProps {
   name: string;
@@ -13,19 +13,21 @@ const Comparer = ({
   Components,
   nItems = 6,
   title = 'Comparer',
+  pagingStoreName = '.pagingStore',
+  carouselStoreName = '.carouselStore',
 }: {
   Components: React.FC<ComponentProps>[];
   nItems?: number;
   title?: string;
+  pagingStoreName?: string;
+  carouselStoreName?: string;
 }) => {
-  const setStep = usePagingStore((s) => s.setStep);
+  const setStep = useStore(usePagingStore(pagingStoreName), (s) => s.setStep);
 
-  const { useCarouselSizeQuery, useCarouselPageQuery } = useCarouselQueries();
-
-  const sizeQuery = useCarouselSizeQuery();
-  const pageQuery = useCarouselPageQuery();
-
-  const getImageNames = useCarouselStore((s) => s.getNames);
+  const getImageNames = useStore(
+    useCarouselStore(carouselStoreName),
+    (s) => s.getNames
+  );
 
   useEffect(() => {
     setStep(nItems);
@@ -33,13 +35,6 @@ const Comparer = ({
 
   const { ref, observeCSS } = useContainerQueries();
   const _ = ['grid-cols-2', 'gap-2'];
-
-  if (sizeQuery?.isLoading || pageQuery?.isLoading)
-    return (
-      <div className='h-full flex justify-center items-center' ref={ref}>
-        loading...
-      </div>
-    );
 
   return (
     <div
@@ -71,7 +66,7 @@ const Comparer = ({
           ))}
         </div>
       </div>
-      <PaginationBar />
+      <PaginationBar pagingStoreName={pagingStoreName} />
     </div>
   );
 };

@@ -9,9 +9,10 @@ const ImageCarousel = ({
 }: {
   carouselStoreName?: string;
 }) => {
-  const store = useCarouselStore(carouselStoreName);
-
-  const getImageNames = useStore(store, (s) => s.getNames);
+  const getImageNames = useStore(
+    useCarouselStore(carouselStoreName),
+    (s) => s.getNames
+  );
 
   const { ref, observeCSS } = useContainerQueries();
   const _ = ['grid-cols-10', 'gap-2'];
