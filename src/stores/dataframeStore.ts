@@ -15,7 +15,7 @@ const storeDataDefault = {
 
 interface Store extends StoreData {
   selected: boolean[];
-  setDataframe: (df: StoreData) => void;
+  setDataframe: (df: StoreData | null) => void;
   toggleSelect: (i: number) => void;
   toggleSelectSlice: (i: number, step: number) => void;
 }
@@ -26,7 +26,10 @@ const createStoreFromData = (pdf: Partial<StoreData> = storeDataDefault) => {
   return createStore<Store>((set) => ({
     ...df,
     selected: Array(df.data.length).fill(false),
-    setDataframe: (df: StoreData) => set(df),
+    setDataframe: (df: StoreData | null) => {
+      const dfNew = df ? df : storeDataDefault;
+      set({ ...dfNew, selected: Array(dfNew.data.length).fill(false) });
+    },
     toggleSelect: (i: number) =>
       set(
         produce((s) => {

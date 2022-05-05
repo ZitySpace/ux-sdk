@@ -18,14 +18,15 @@ const DataFrame = ({
     (s) => [s.header, s.data, s.selected, s.toggleSelect, s.toggleSelectSlice]
   );
 
-  const [pos, step, setTotal] = useStore(
+  const [pos, step, setPos, setTotal] = useStore(
     usePagingStore(pagingStoreName),
-    (s) => [s.pos, s.step, s.setTotal]
+    (s) => [s.pos, s.step, s.setPos, s.setTotal]
   );
 
   useEffect(() => {
+    setPos(0);
     setTotal(data.length);
-  }, []);
+  }, [header, data]);
 
   return (
     <div className='bg-gray-100 h-full flex flex-col rounded-md shadow-lg'>
@@ -44,7 +45,11 @@ const DataFrame = ({
                 <input
                   type='checkbox'
                   className='border-none focus:outline-none focus:ring-0 focus:ring-offset-0 bg-white w-3.5 h-3.5'
-                  checked={!selected.slice(pos, pos + step).includes(false)}
+                  checked={
+                    selected.slice(pos, pos + step).length
+                      ? !selected.slice(pos, pos + step).includes(false)
+                      : false
+                  }
                   readOnly
                 />
               </th>

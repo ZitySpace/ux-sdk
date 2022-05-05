@@ -23,12 +23,14 @@ const ACECodeEditor = ({
   placeholder = '',
   readOnly = false,
   onCodeRun = null,
+  onSuccessCallback = null,
 }: {
   title?: string;
   initCode?: string;
   placeholder?: string;
   readOnly?: boolean;
   onCodeRun?: Function | null;
+  onSuccessCallback?: Function | null;
 }) => {
   const code = useRef<string>(initCode);
 
@@ -49,11 +51,14 @@ const ACECodeEditor = ({
             ? runResult.log
             : 'no log returned'
         );
-        setResult(
-          runResult && runResult.hasOwnProperty('result')
-            ? runResult.result
-            : 'no result returned'
-        );
+
+        const pass = runResult && runResult.hasOwnProperty('result');
+        setResult(pass ? runResult.result : 'no result returned');
+
+        if (pass && onSuccessCallback)
+          await onSuccessCallback(
+            typeof runResult.result === 'string' ? null : runResult.result
+          );
       } catch (err) {
         const errMsg = err instanceof Error ? err.message : (err as string);
         setLog('Exception: ' + errMsg);
