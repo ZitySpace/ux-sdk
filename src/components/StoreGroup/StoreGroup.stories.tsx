@@ -4,7 +4,7 @@ import ImageCarousel from '../ImageCarousel';
 import ImageList from '../ImageList';
 import PaginationBar from '../PaginationBar';
 import StoreGroup from './StoreGroup';
-import { useHooks } from '../../utils';
+import { useSetFiltering } from '../../utils';
 import { QueryClient, QueryClientProvider } from 'react-query';
 import { useContextStore } from '../../stores/contextStore';
 import { usePagingStore } from '../../stores/pagingStore';
@@ -83,7 +83,7 @@ const TemplateDynamic: ComponentStory<any> = (args) => {
     const sizeQuery = useCarouselSizeQuery();
     const pageQuery = useCarouselPageQuery();
 
-    const { setFiltering } = useHooks({
+    const { setFiltering } = useSetFiltering({
       pagingStore: pagingStore,
       contextStore: contextStore,
     });
