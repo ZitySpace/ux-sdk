@@ -28,19 +28,70 @@ const fetchData = async (jsonUri: string) => {
   return data;
 };
 
+type ActionOptions =
+  | 'click'
+  | 'dblclick'
+  | 'mousedown'
+  | 'mousemove'
+  | 'mouseup'
+  | 'mouseover'
+  | 'mouseout';
+
+export type EventParams = {
+  // The component name clicked,
+  // component type, could be 'series'、'markLine'、'markPoint'、'timeLine', etc..
+  componentType: string;
+  // series type, could be 'line'、'bar'、'pie', etc.. Works when componentType is 'series'.
+  seriesType: string;
+  // the index in option.series. Works when componentType is 'series'.
+  seriesIndex: number;
+  // series name, works when componentType is 'series'.
+  seriesName: string;
+  // name of data (categories).
+  name: string;
+  // the index in 'data' array.
+  dataIndex: number;
+  // incoming raw data item
+  data: Object;
+  // charts like 'sankey' and 'graph' included nodeData and edgeData as the same time.
+  // dataType can be 'node' or 'edge', indicates whether the current click is on node or edge.
+  // most of charts have one kind of data, the dataType is meaningless
+  dataType: string;
+  // incoming data value
+  value: number | Array<number>;
+  // color of the shape, works when componentType is 'series'.
+  color: string;
+};
+
+type ElementActionsProps = {
+  actionName: ActionOptions;
+  elementQuery?: string | Object;
+  action: (params: EventParams) => void;
+}[];
+
+type ResetActionProps = {
+  actionName: ActionOptions;
+  action: () => void;
+};
+
 const Chart = ({
   title = 'Chart',
   dataset = null,
   option,
+  elementActions = null,
+  resetAction = null,
 }: {
   title?: string;
   dataset?: ChartDatasetProps | ChartExternalDatasetProps | null;
   option: echarts.EChartsOption;
+  elementActions: ElementActionsProps | null;
+  resetAction: ResetActionProps | null;
 }) => {
   const forceUpdate = useReducer(() => ({}), {})[1] as () => void;
   const chartRef = useRef<echarts.EChartsType | null>(null);
   const chartDivRef = useRef<HTMLDivElement | null>(null);
   const dataRef = useRef<ChartDatasetProps | null>(null);
+  const actionsBinded = useRef<boolean>(false);
 
   const dataframeStore = useDataframeStore(
     dataset && 'dataframeStoreName' in dataset
@@ -94,6 +145,26 @@ const Chart = ({
             ...option,
           }
     );
+
+    window.addEventListener('resize', () => chart.resize());
+
+    if (!actionsBinded.current && elementActions)
+      elementActions.map((a) =>
+        a.elementQuery
+          ? chart.on(a.actionName, a.elementQuery, (params) =>
+              a.action(params as any)
+            )
+          : chart.on(a.actionName, (params) => a.action(params as any))
+      );
+
+    if (!actionsBinded.current && resetAction)
+      chart.getZr().on(resetAction.actionName, function (event) {
+        if (!event.target) {
+          resetAction.action();
+        }
+      });
+
+    actionsBinded.current = true;
   }
 
   return (

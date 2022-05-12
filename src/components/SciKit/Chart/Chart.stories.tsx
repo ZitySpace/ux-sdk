@@ -1,6 +1,6 @@
 import { ComponentMeta, ComponentStory } from '@storybook/react';
 import React, { useState } from 'react';
-import Chart from './Chart';
+import Chart, { EventParams } from './Chart';
 import { useDataframeStore } from '../../../stores/dataframeStore';
 
 export default {
@@ -43,13 +43,6 @@ Story.args = {
   common: {
     title: 'Chart Preview',
     option: {
-      grid: {
-        left: '8%',
-        right: '5%',
-        top: '18%',
-        bottom: '20%',
-        containLabel: false,
-      },
       toolbox: {
         feature: {
           dataView: { readOnly: false },
@@ -57,6 +50,25 @@ Story.args = {
           saveAsImage: {},
         },
         show: true,
+      },
+      grid: {
+        left: '8%',
+        right: '5%',
+        top: '18%',
+        bottom: '20%',
+        containLabel: false,
+        show: false,
+      },
+      dataZoom: {
+        type: 'inside',
+        orient: 'vertical',
+        filterMode: 'none',
+      },
+      tooltip: {
+        trigger: 'item',
+        axisPointer: {
+          type: 'shadow',
+        },
       },
       xAxis: {
         type: 'category',
@@ -66,8 +78,9 @@ Story.args = {
       },
       series: [
         {
+          name: 'ValueOfDay',
           type: 'bar',
-          showBackground: true,
+          showBackground: false,
           backgroundStyle: {
             color: 'rgba(180, 180, 180, 0.2)',
           },
@@ -77,6 +90,17 @@ Story.args = {
           },
         },
       ],
+    },
+    elementActions: [
+      {
+        actionName: 'click',
+        elementQuery: { seriesName: 'ValueOfDay' },
+        action: (params: EventParams) => console.log(params.data),
+      },
+    ],
+    resetAction: {
+      actionName: 'click',
+      action: () => console.log('reset: background clicked'),
     },
   },
   datasets: {
