@@ -77,10 +77,10 @@ const Template: ComponentStory<any> = (args) => {
     // https://react-query.tanstack.com/guides/query-keys
     // due to how react query compare queryKeys, when update context filters, it is recommended:
     // 1. regenerate filterOpt when dependencies changed
-    // 2. use a unique filterOpt.value identify this update
+    // 2. use a unique filterOpt.value to identify this update
     // Otherwise, for filterOpt with {value: null, dependsOnValue: false}, useCarouselSizeQuery
     // and useCarouselPageQuery won't be able to pick up filtering's change, thus will
-    // return cached query results. However, paging will trigger the latest query because change
+    // return cached query results. However, paging will trigger the latest query due to change
     // of pos and step.
 
     useEffect(() => {
