@@ -1,6 +1,7 @@
 import { ComponentMeta, ComponentStory } from '@storybook/react';
-import React, { useState, useEffect, useRef } from 'react';
-import Chart, { EventParams } from './Chart';
+import React, { useState } from 'react';
+import Chart from './Chart';
+import { useBarChartOptions } from './useChartOptions';
 
 import AceEditor from 'react-ace';
 import 'ace-builds/src-noconflict/mode-json';
@@ -49,6 +50,8 @@ const ChartEditor = () => {
   const [chartOptCode, setChartOptCode] = useState<string>(
     chartOptCodeDefault[typeOptSelect]
   );
+
+  const { opt: chartOpt, Editor } = useBarChartOptions(true);
 
   return (
     <div className='bg-gray-100 h-full flex flex-col text-xs rounded-md shadow-lg select-none'>
@@ -256,6 +259,7 @@ const ChartEditor = () => {
               Heatmap
             </button>
           </div>
+          {Editor}
         </div>
         <div className='pt-4'>
           <h3 className='text-lg '>Chart Action</h3>
