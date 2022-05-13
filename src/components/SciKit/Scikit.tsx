@@ -6,34 +6,42 @@ import Input from './Input';
 import MultiSelect from './MultiSelect';
 import { CheckCircleIcon, RefreshIcon } from '@heroicons/react/outline';
 
-type YesCallbackType = (params: { [key: string]: unknown }) => unknown;
+type YesCallbackProps = (params: { [key: string]: unknown }) => unknown;
+
+type ChildRefProps = { getValue: Function; reset: Function };
 
 const ScikitGroup = forwardRef(
   (
     {
       title = 'Scikit Group',
       yesCallback = (params) => {},
+      reactive = false,
       children,
     }: {
       title?: string;
-      yesCallback?: YesCallbackType;
+      yesCallback?: YesCallbackProps;
+      reactive?: boolean;
       children: React.ReactNode;
     },
     ref
   ) => {
     const childRefs: {
       [key: string]: React.MutableRefObject<
-        { getValue: Function; reset: Function } | undefined
+        ChildRefProps | undefined | { reactiveCallback: () => unknown }
       >;
     } = {};
 
     const getValue = () =>
       Object.entries(childRefs).reduce(
-        (prev, [key, r]) => ({ ...prev, [key]: r.current!.getValue() }),
+        (prev, [key, r]) => ({
+          ...prev,
+          [key]: (r.current as ChildRefProps).getValue(),
+        }),
         {}
       );
 
-    const reset = () => Object.values(childRefs).map((r) => r.current!.reset());
+    const reset = () =>
+      Object.values(childRefs).map((r) => (r.current as ChildRefProps).reset());
 
     useImperativeHandle(ref, () => ({ getValue: getValue }));
 
@@ -56,7 +64,12 @@ const ScikitGroup = forwardRef(
               if (!pass) return c;
 
               const name = c.props.name;
-              if (!(name in childRefs)) childRefs[name] = useRef();
+              if (!(name in childRefs))
+                childRefs[name] = useRef(
+                  reactive
+                    ? { reactiveCallback: () => yesCallback(getValue()) }
+                    : undefined
+                );
 
               return React.cloneElement(c, {
                 ...c.props,
@@ -64,6 +77,7 @@ const ScikitGroup = forwardRef(
               });
             })}
 
+            {/* {!reactive && ( */}
             <div className='pt-3 flex space-x-2 justify-start ml-28 pl-3'>
               <button
                 type='button'
@@ -80,6 +94,7 @@ const ScikitGroup = forwardRef(
                 <CheckCircleIcon className='h-5 w-5' aria-hidden='true' />
               </button>
             </div>
+            {/* )} */}
           </div>
         </div>
       </div>

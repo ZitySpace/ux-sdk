@@ -1,4 +1,10 @@
-import React, { useState, forwardRef, useImperativeHandle } from 'react';
+import React, {
+  useState,
+  forwardRef,
+  useImperativeHandle,
+  useRef,
+  useEffect,
+} from 'react';
 
 const Input = forwardRef(
   (
@@ -16,6 +22,23 @@ const Input = forwardRef(
     ref
   ) => {
     const [value, setValue] = useState(defaultValue);
+
+    const reactiveCallbackRef = useRef<Function | null>(null);
+
+    if (
+      (ref as React.MutableRefObject<any>).current &&
+      (ref as React.MutableRefObject<any>).current.hasOwnProperty(
+        'reactiveCallback'
+      )
+    ) {
+      reactiveCallbackRef.current = (
+        ref as React.MutableRefObject<any>
+      ).current.reactiveCallback;
+    }
+
+    useEffect(() => {
+      reactiveCallbackRef.current && reactiveCallbackRef.current();
+    }, [value]);
 
     useImperativeHandle(ref, () => ({
       getValue: () => value,

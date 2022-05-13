@@ -2,6 +2,7 @@ import React, {
   Fragment,
   useState,
   useRef,
+  useEffect,
   forwardRef,
   useImperativeHandle,
 } from 'react';
@@ -34,6 +35,23 @@ const Select = forwardRef(
       optionList.current[0];
 
     const [selected, setSelected] = useState(initValue);
+
+    const reactiveCallbackRef = useRef<Function | null>(null);
+
+    if (
+      (ref as React.MutableRefObject<any>).current &&
+      (ref as React.MutableRefObject<any>).current.hasOwnProperty(
+        'reactiveCallback'
+      )
+    ) {
+      reactiveCallbackRef.current = (
+        ref as React.MutableRefObject<any>
+      ).current.reactiveCallback;
+    }
+
+    useEffect(() => {
+      reactiveCallbackRef.current && reactiveCallbackRef.current();
+    }, [selected]);
 
     useImperativeHandle(ref, () => ({
       getValue: () => selected.value,

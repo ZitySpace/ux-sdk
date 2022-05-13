@@ -1,4 +1,10 @@
-import React, { useState, forwardRef, useImperativeHandle } from 'react';
+import React, {
+  useState,
+  forwardRef,
+  useImperativeHandle,
+  useRef,
+  useEffect,
+} from 'react';
 import { Switch } from '@headlessui/react';
 
 function classNames(...classes: any) {
@@ -17,6 +23,23 @@ const Toggle = forwardRef(
     ref
   ) => {
     const [enabled, setEnabled] = useState<boolean>(defaultValue);
+
+    const reactiveCallbackRef = useRef<Function | null>(null);
+
+    if (
+      (ref as React.MutableRefObject<any>).current &&
+      (ref as React.MutableRefObject<any>).current.hasOwnProperty(
+        'reactiveCallback'
+      )
+    ) {
+      reactiveCallbackRef.current = (
+        ref as React.MutableRefObject<any>
+      ).current.reactiveCallback;
+    }
+
+    useEffect(() => {
+      reactiveCallbackRef.current && reactiveCallbackRef.current();
+    }, [enabled]);
 
     useImperativeHandle(ref, () => ({
       getValue: () => enabled,

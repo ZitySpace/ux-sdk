@@ -1,4 +1,10 @@
-import React, { forwardRef, useState, useImperativeHandle } from 'react';
+import React, {
+  forwardRef,
+  useState,
+  useImperativeHandle,
+  useRef,
+  useEffect,
+} from 'react';
 import SliderRc from 'rc-slider';
 import 'rc-slider/assets/index.css';
 import 'rc-tooltip/assets/bootstrap.css';
@@ -123,6 +129,23 @@ const Slider = forwardRef(
     const stepFinal = step !== null ? step : (range[1] - range[0]) / 100;
 
     const [value, setValue] = useState(defaultValue);
+
+    const reactiveCallbackRef = useRef<Function | null>(null);
+
+    if (
+      (ref as React.MutableRefObject<any>).current &&
+      (ref as React.MutableRefObject<any>).current.hasOwnProperty(
+        'reactiveCallback'
+      )
+    ) {
+      reactiveCallbackRef.current = (
+        ref as React.MutableRefObject<any>
+      ).current.reactiveCallback;
+    }
+
+    useEffect(() => {
+      reactiveCallbackRef.current && reactiveCallbackRef.current();
+    }, [value]);
 
     useImperativeHandle(ref, () => ({
       getValue: () => value,

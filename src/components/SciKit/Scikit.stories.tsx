@@ -100,3 +100,55 @@ const TemplateTight: ComponentStory<typeof ScikitGroup> = (args) => (
 );
 
 export const StoryTight = TemplateTight.bind({});
+
+const TemplateReactive: ComponentStory<typeof ScikitGroup> = (args) => {
+  const sgRef = useRef<{ getValue: Function }>();
+  const [value, setValue] = useState<any | null>(null);
+
+  useEffect(() => {
+    setValue(sgRef.current.getValue());
+  }, []);
+
+  return (
+    <div className='flex flex-col space-y-4'>
+      <ScikitGroup ref={sgRef} reactive={true} yesCallback={setValue}>
+        <Toggle name='do_Blur' defaultValue={false} />
+        <Toggle name='do_Blackout' defaultValue={false} />
+        <Select
+          name='dataset'
+          defaultValue='CoCo'
+          options={['ImageNet', 'CoCo', 'CUB1000', 'Some Long Option']}
+        />
+        <MultiSelect
+          name='dataset_multi'
+          defaultValue={['CoCo']}
+          options={['ImageNet', 'CoCo', 'CUB1000', 'Some Long Option']}
+        />
+
+        <Slider name='do_AffineOrPerspectiveTransform' defaultValue={0.5} />
+        <Slider
+          name='jiggle_x_max'
+          defaultValue={0.5}
+          breakpoints={[0.1, 0.3, 0.5, 0.7, 0.9]}
+          discrete={true}
+        />
+        <Slider
+          name='jiggle_x'
+          defaultValue={[-0.5, 1]}
+          range={[-1, 1]}
+          asRange={true}
+        />
+        <Slider name='do_ColorQuantizationOrGray' defaultValue={0.5} />
+        <Input name='image' defaultValue='kol_batch1_118.jpg' />
+      </ScikitGroup>
+
+      <div className='flex items-center space-x-6'>
+        <span className='bg-gray-200 p-3 rounded-md text-xs'>
+          {JSON.stringify(value)}
+        </span>
+      </div>
+    </div>
+  );
+};
+
+export const StoryReactive = TemplateReactive.bind({});
