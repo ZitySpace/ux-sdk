@@ -51,6 +51,10 @@ const ScikitGroup = forwardRef(
     const reset = () =>
       Object.values(childRefs).map((r) => (r.current as ChildRefProps).reset());
 
+    const reactiveCallback = reactive
+      ? () => yesCallback(getValue())
+      : undefined;
+
     useImperativeHandle(ref, () => ({ getValue: getValue }));
 
     return (
@@ -80,15 +84,11 @@ const ScikitGroup = forwardRef(
               if (!pass) return c;
 
               const name = c.props.name;
-              if (!(name in childRefs))
-                childRefs[name] = useRef(
-                  reactive
-                    ? { reactiveCallback: () => yesCallback(getValue()) }
-                    : undefined
-                );
+              if (!(name in childRefs)) childRefs[name] = useRef();
 
               return React.cloneElement(c, {
                 ...c.props,
+                reactiveCallback,
                 ref: childRefs[name],
               });
             })}

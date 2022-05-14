@@ -108,6 +108,7 @@ const Slider = forwardRef(
       asRange = false,
       reverse = false,
       discrete = false,
+      reactiveCallback = undefined,
     }: {
       name: string;
       defaultValue: number | number[];
@@ -117,6 +118,7 @@ const Slider = forwardRef(
       asRange?: boolean;
       reverse?: boolean;
       discrete?: boolean;
+      reactiveCallback?: () => unknown | undefined;
     },
     ref
   ) => {
@@ -130,21 +132,8 @@ const Slider = forwardRef(
 
     const [value, setValue] = useState(defaultValue);
 
-    const reactiveCallbackRef = useRef<Function | null>(null);
-
-    if (
-      (ref as React.MutableRefObject<any>).current &&
-      (ref as React.MutableRefObject<any>).current.hasOwnProperty(
-        'reactiveCallback'
-      )
-    ) {
-      reactiveCallbackRef.current = (
-        ref as React.MutableRefObject<any>
-      ).current.reactiveCallback;
-    }
-
     useEffect(() => {
-      reactiveCallbackRef.current && reactiveCallbackRef.current();
+      reactiveCallback && reactiveCallback();
     }, [value]);
 
     useImperativeHandle(ref, () => ({

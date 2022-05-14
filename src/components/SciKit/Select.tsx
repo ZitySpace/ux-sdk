@@ -19,10 +19,12 @@ const Select = forwardRef(
       name,
       options = [],
       defaultValue = null,
+      reactiveCallback = undefined,
     }: {
       name: string;
       options?: string[];
       defaultValue?: string | null;
+      reactiveCallback?: () => unknown | undefined;
     },
     ref
   ) => {
@@ -36,21 +38,8 @@ const Select = forwardRef(
 
     const [selected, setSelected] = useState(initValue);
 
-    const reactiveCallbackRef = useRef<Function | null>(null);
-
-    if (
-      (ref as React.MutableRefObject<any>).current &&
-      (ref as React.MutableRefObject<any>).current.hasOwnProperty(
-        'reactiveCallback'
-      )
-    ) {
-      reactiveCallbackRef.current = (
-        ref as React.MutableRefObject<any>
-      ).current.reactiveCallback;
-    }
-
     useEffect(() => {
-      reactiveCallbackRef.current && reactiveCallbackRef.current();
+      reactiveCallback && reactiveCallback();
     }, [selected]);
 
     useImperativeHandle(ref, () => ({

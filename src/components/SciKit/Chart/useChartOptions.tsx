@@ -1,4 +1,5 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
+import produce from 'immer';
 import ScikitGroup from '../Scikit';
 import Input from '../Input';
 
@@ -17,7 +18,13 @@ const objectToString = (obj: object) => {
 
 const stringToObject = (str: string) => eval('(' + str + ')');
 
-export const useBarChartOptions = (withEditor: boolean = false) => {
+export const useBarChartOptions = ({
+  idx = null,
+  withEditor = false,
+}: {
+  idx?: number | string | null;
+  withEditor?: boolean;
+}) => {
   const opt = {
     toolbox: {
       feature: {
@@ -70,16 +77,39 @@ export const useBarChartOptions = (withEditor: boolean = false) => {
 
   const [code, setCode] = useState<string>(objectToString(opt));
 
+  const prevIdxRef = useRef<number | string | null>();
+  useEffect(() => {
+    setCode(objectToString(opt));
+    prevIdxRef.current = idx;
+  }, [idx]);
+
+  const updateParams = (params: any) => {
+    if (prevIdxRef.current !== idx) return;
+
+    const curOpt = stringToObject(code);
+    const newOpt = produce(curOpt, (opt: any) => {
+      opt.series[0].encode = { x: params.xAxis, y: params.yAxis };
+    });
+    setCode(objectToString(newOpt));
+  };
+
+  const getOpt = () => stringToObject(code);
+
   if (!withEditor) return { opt };
 
   const Editor = (
     <div className='grid grid-cols-4 gap-8'>
-      <div className='overflow-auto'>
+      <div
+        className='overflow-auto'
+        key={`bar${idx === null ? '-' + idx : ''}`}
+      >
         <ScikitGroup
           hideTitle={true}
           hideFooter={true}
           flat={true}
           scroll={false}
+          yesCallback={updateParams}
+          reactive={true}
         >
           <Input name='xAxis' defaultValue='' />
           <Input name='yAxis' defaultValue='' />
@@ -114,5 +144,126 @@ export const useBarChartOptions = (withEditor: boolean = false) => {
     </div>
   );
 
-  return { opt, Editor };
+  return { opt, Editor, getOpt };
+};
+
+export const usePieChartOptions = ({
+  idx = null,
+  withEditor = false,
+}: {
+  idx?: number | string | null;
+  withEditor?: boolean;
+}) => {
+  const opt = {
+    toolbox: {
+      feature: {
+        dataView: { readOnly: false },
+        restore: {},
+        saveAsImage: {},
+      },
+      show: true,
+    },
+    grid: {
+      left: '8%',
+      right: '5%',
+      top: '18%',
+      bottom: '20%',
+      containLabel: false,
+      show: false,
+    },
+    tooltip: {
+      trigger: 'item',
+      axisPointer: {
+        type: 'shadow',
+      },
+    },
+    series: {
+      name: 'SeriesName',
+      type: 'pie',
+      radius: 50,
+      center: ['50%', '50%'],
+      encode: {
+        x: '',
+        y: '',
+      },
+      emphasis: {
+        itemStyle: {
+          shadowBlur: 10,
+          shadowOffsetX: 0,
+          shadowColor: 'rgba(0, 0, 0, 0.5)',
+        },
+      },
+    },
+  };
+
+  const [code, setCode] = useState<string>(objectToString(opt));
+
+  const prevIdxRef = useRef<number | string | null>();
+  useEffect(() => {
+    setCode(objectToString(opt));
+    prevIdxRef.current = idx;
+  }, [idx]);
+
+  const updateParams = (params: any) => {
+    if (prevIdxRef.current !== idx) return;
+
+    const curOpt = stringToObject(code);
+    const newOpt = produce(curOpt, (opt: any) => {
+      opt.series.encode = { x: params.name, y: params.value };
+    });
+    setCode(objectToString(newOpt));
+  };
+
+  const getOpt = () => stringToObject(code);
+
+  if (!withEditor) return { opt };
+
+  const Editor = (
+    <div className='grid grid-cols-4 gap-8'>
+      <div
+        className='overflow-auto'
+        key={`pie${idx === null ? '-' + idx : ''}`}
+      >
+        <ScikitGroup
+          hideTitle={true}
+          hideFooter={true}
+          flat={true}
+          scroll={false}
+          yesCallback={updateParams}
+          reactive={true}
+        >
+          <Input name='name' defaultValue='' />
+          <Input name='value' defaultValue='' />
+        </ScikitGroup>
+      </div>
+
+      <div
+        className='resize-y overflow-auto h-48 pt-1 col-span-3'
+        style={{ backgroundColor: '#272822' }}
+      >
+        <AceEditor
+          mode='typescript'
+          theme='monokai'
+          name='Dataset'
+          fontSize={14}
+          readOnly={false}
+          value={code}
+          placeholder='Write Apache Echarts option here'
+          editorProps={{ $blockScrolling: true }}
+          setOptions={{
+            enableBasicAutocompletion: true,
+            enableLiveAutocompletion: true,
+            enableSnippets: false,
+          }}
+          //   height='100%'
+          maxLines={Infinity}
+          width='100%'
+          showPrintMargin={false}
+          onChange={(curCode) => setCode(curCode)}
+        />
+      </div>
+    </div>
+  );
+
+  return { opt, Editor, getOpt };
 };

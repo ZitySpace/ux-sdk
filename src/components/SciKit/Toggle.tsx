@@ -16,29 +16,18 @@ const Toggle = forwardRef(
     {
       name,
       defaultValue = false,
+      reactiveCallback = undefined,
     }: {
       name: string;
       defaultValue?: boolean;
+      reactiveCallback?: () => unknown | undefined;
     },
     ref
   ) => {
     const [enabled, setEnabled] = useState<boolean>(defaultValue);
 
-    const reactiveCallbackRef = useRef<Function | null>(null);
-
-    if (
-      (ref as React.MutableRefObject<any>).current &&
-      (ref as React.MutableRefObject<any>).current.hasOwnProperty(
-        'reactiveCallback'
-      )
-    ) {
-      reactiveCallbackRef.current = (
-        ref as React.MutableRefObject<any>
-      ).current.reactiveCallback;
-    }
-
     useEffect(() => {
-      reactiveCallbackRef.current && reactiveCallbackRef.current();
+      reactiveCallback && reactiveCallback();
     }, [enabled]);
 
     useImperativeHandle(ref, () => ({

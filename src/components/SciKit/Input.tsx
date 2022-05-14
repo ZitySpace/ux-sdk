@@ -13,31 +13,20 @@ const Input = forwardRef(
       defaultValue = '',
       type = 'text',
       required = true,
+      reactiveCallback = undefined,
     }: {
       name: string;
       defaultValue?: string;
       type?: string;
       required?: boolean;
+      reactiveCallback?: () => unknown | undefined;
     },
     ref
   ) => {
     const [value, setValue] = useState(defaultValue);
 
-    const reactiveCallbackRef = useRef<Function | null>(null);
-
-    if (
-      (ref as React.MutableRefObject<any>).current &&
-      (ref as React.MutableRefObject<any>).current.hasOwnProperty(
-        'reactiveCallback'
-      )
-    ) {
-      reactiveCallbackRef.current = (
-        ref as React.MutableRefObject<any>
-      ).current.reactiveCallback;
-    }
-
     useEffect(() => {
-      reactiveCallbackRef.current && reactiveCallbackRef.current();
+      reactiveCallback && reactiveCallback();
     }, [value]);
 
     useImperativeHandle(ref, () => ({

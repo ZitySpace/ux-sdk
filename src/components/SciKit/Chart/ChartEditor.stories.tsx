@@ -1,7 +1,7 @@
 import { ComponentMeta, ComponentStory } from '@storybook/react';
 import React, { useState } from 'react';
 import Chart from './Chart';
-import { useBarChartOptions } from './useChartOptions';
+import { useBarChartOptions, usePieChartOptions } from './useChartOptions';
 
 import AceEditor from 'react-ace';
 import 'ace-builds/src-noconflict/mode-json';
@@ -45,13 +45,15 @@ const ChartEditor = () => {
 
   const [typeOptSelect, setTypeOptSelect] = useState<string>('bar');
 
-  const chartOptCodeDefault = { bar: 'bar' };
-
-  const [chartOptCode, setChartOptCode] = useState<string>(
-    chartOptCodeDefault[typeOptSelect]
-  );
-
-  const { opt: chartOpt, Editor } = useBarChartOptions(true);
+  const {
+    opt: chartOption,
+    Editor,
+    getOpt: getChartOption,
+  } = typeOptSelect === 'bar'
+    ? useBarChartOptions({ idx: 0, withEditor: true })
+    : typeOptSelect === 'pie'
+    ? usePieChartOptions({ idx: 1, withEditor: true })
+    : useBarChartOptions({ withEditor: true });
 
   return (
     <div className='bg-gray-100 h-full flex flex-col text-xs rounded-md shadow-lg select-none'>
@@ -168,7 +170,6 @@ const ChartEditor = () => {
                         }`}
               onClick={() => {
                 setTypeOptSelect('bar');
-                setChartOptCode(chartOptCodeDefault['bar']);
               }}
             >
               Bar
@@ -185,7 +186,6 @@ const ChartEditor = () => {
                         }`}
               onClick={() => {
                 setTypeOptSelect('scatter');
-                setChartOptCode(chartOptCodeDefault['scatter']);
               }}
             >
               Scatter
@@ -202,7 +202,6 @@ const ChartEditor = () => {
                         }`}
               onClick={() => {
                 setTypeOptSelect('line');
-                setChartOptCode(chartOptCodeDefault['line']);
               }}
             >
               Line
@@ -219,7 +218,6 @@ const ChartEditor = () => {
                         }`}
               onClick={() => {
                 setTypeOptSelect('pie');
-                setChartOptCode(chartOptCodeDefault['pie']);
               }}
             >
               Pie
@@ -236,7 +234,6 @@ const ChartEditor = () => {
                         }`}
               onClick={() => {
                 setTypeOptSelect('calendar');
-                setChartOptCode(chartOptCodeDefault['calendar']);
               }}
             >
               Calendar
@@ -253,7 +250,6 @@ const ChartEditor = () => {
                         }`}
               onClick={() => {
                 setTypeOptSelect('heatmap');
-                setChartOptCode(chartOptCodeDefault['heatmap']);
               }}
             >
               Heatmap
