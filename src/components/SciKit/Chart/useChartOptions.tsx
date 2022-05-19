@@ -8,7 +8,7 @@ import 'ace-builds/src-noconflict/mode-typescript';
 import 'ace-builds/src-noconflict/theme-monokai';
 import 'ace-builds/src-noconflict/ext-language_tools';
 
-const objectToString = (obj: object) => {
+export const objectToString = (obj: object) => {
   const str = JSON.stringify(obj, null, 2);
 
   return str
@@ -16,7 +16,7 @@ const objectToString = (obj: object) => {
     .replace(/"/g, "'");
 };
 
-const stringToObject = (str: string) => eval('(' + str + ')');
+export const stringToObject = (str: string) => eval('(' + str + ')');
 
 export const useBarChartOptions = ({
   idx = null,
@@ -25,7 +25,7 @@ export const useBarChartOptions = ({
   idx?: number | string | null;
   withEditor?: boolean;
 }) => {
-  const opt = {
+  const optionInit = {
     toolbox: {
       feature: {
         dataView: { readOnly: false },
@@ -75,27 +75,38 @@ export const useBarChartOptions = ({
     ],
   };
 
-  const [code, setCode] = useState<string>(objectToString(opt));
+  const [option, setOption] = useState<object>(optionInit);
+  const [code, setCode] = useState<string>(objectToString(optionInit));
 
   const prevIdxRef = useRef<number | string | null>();
   useEffect(() => {
-    setCode(objectToString(opt));
+    setOption(optionInit);
+    setCode(objectToString(optionInit));
     prevIdxRef.current = idx;
   }, [idx]);
 
   const updateParams = (params: any) => {
-    if (prevIdxRef.current !== idx) return;
+    if (prevIdxRef.current !== idx) return; // code reset not completed yet
 
-    const curOpt = stringToObject(code);
-    const newOpt = produce(curOpt, (opt: any) => {
+    const newOpt = produce(option, (opt: any) => {
       opt.series[0].encode = { x: params.xAxis, y: params.yAxis };
     });
+    setOption(newOpt);
     setCode(objectToString(newOpt));
   };
 
-  const getOpt = () => stringToObject(code);
+  const updateCode = (code: string) => {
+    try {
+      const newOpt = stringToObject(code);
+      setOption(newOpt);
+    } catch (error) {
+      if (error instanceof SyntaxError) console.log('SyntaxError in code');
+    }
 
-  if (!withEditor) return { opt };
+    setCode(code);
+  };
+
+  if (!withEditor) return { option };
 
   const Editor = (
     <div className='grid grid-cols-4 gap-8'>
@@ -123,7 +134,7 @@ export const useBarChartOptions = ({
         <AceEditor
           mode='typescript'
           theme='monokai'
-          name='Dataset'
+          name='Option'
           fontSize={14}
           readOnly={false}
           value={code}
@@ -138,13 +149,13 @@ export const useBarChartOptions = ({
           maxLines={Infinity}
           width='100%'
           showPrintMargin={false}
-          onChange={(curCode) => setCode(curCode)}
+          onChange={(curCode) => updateCode(curCode)}
         />
       </div>
     </div>
   );
 
-  return { opt, Editor, getOpt };
+  return { option, Editor };
 };
 
 export const usePieChartOptions = ({
@@ -154,7 +165,7 @@ export const usePieChartOptions = ({
   idx?: number | string | null;
   withEditor?: boolean;
 }) => {
-  const opt = {
+  const optionInit = {
     toolbox: {
       feature: {
         dataView: { readOnly: false },
@@ -196,27 +207,38 @@ export const usePieChartOptions = ({
     },
   };
 
-  const [code, setCode] = useState<string>(objectToString(opt));
+  const [option, setOption] = useState<object>(optionInit);
+  const [code, setCode] = useState<string>(objectToString(optionInit));
 
   const prevIdxRef = useRef<number | string | null>();
   useEffect(() => {
-    setCode(objectToString(opt));
+    setOption(optionInit);
+    setCode(objectToString(optionInit));
     prevIdxRef.current = idx;
   }, [idx]);
 
   const updateParams = (params: any) => {
-    if (prevIdxRef.current !== idx) return;
+    if (prevIdxRef.current !== idx) return; // code reset not completed yet
 
-    const curOpt = stringToObject(code);
-    const newOpt = produce(curOpt, (opt: any) => {
+    const newOpt = produce(option, (opt: any) => {
       opt.series.encode = { x: params.name, y: params.value };
     });
+    setOption(newOpt);
     setCode(objectToString(newOpt));
   };
 
-  const getOpt = () => stringToObject(code);
+  const updateCode = (code: string) => {
+    try {
+      const newOpt = stringToObject(code);
+      setOption(newOpt);
+    } catch (error) {
+      if (error instanceof SyntaxError) console.log('SyntaxError in code');
+    }
 
-  if (!withEditor) return { opt };
+    setCode(code);
+  };
+
+  if (!withEditor) return { option };
 
   const Editor = (
     <div className='grid grid-cols-4 gap-8'>
@@ -244,7 +266,7 @@ export const usePieChartOptions = ({
         <AceEditor
           mode='typescript'
           theme='monokai'
-          name='Dataset'
+          name='Option'
           fontSize={14}
           readOnly={false}
           value={code}
@@ -259,11 +281,11 @@ export const usePieChartOptions = ({
           maxLines={Infinity}
           width='100%'
           showPrintMargin={false}
-          onChange={(curCode) => setCode(curCode)}
+          onChange={(curCode) => updateCode(curCode)}
         />
       </div>
     </div>
   );
 
-  return { opt, Editor, getOpt };
+  return { option, Editor };
 };

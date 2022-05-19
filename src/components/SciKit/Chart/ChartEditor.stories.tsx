@@ -1,7 +1,8 @@
 import { ComponentMeta, ComponentStory } from '@storybook/react';
 import React, { useState } from 'react';
-import Chart from './Chart';
+import Chart, { EventParams } from './Chart';
 import { useBarChartOptions, usePieChartOptions } from './useChartOptions';
+import { useChartActions } from './useChartActions';
 
 import AceEditor from 'react-ace';
 import 'ace-builds/src-noconflict/mode-json';
@@ -45,15 +46,15 @@ const ChartEditor = () => {
 
   const [typeOptSelect, setTypeOptSelect] = useState<string>('bar');
 
-  const {
-    opt: chartOption,
-    Editor,
-    getOpt: getChartOption,
-  } = typeOptSelect === 'bar'
-    ? useBarChartOptions({ idx: 0, withEditor: true })
-    : typeOptSelect === 'pie'
-    ? usePieChartOptions({ idx: 1, withEditor: true })
-    : useBarChartOptions({ withEditor: true });
+  const { option: chartOption, Editor: ChartOptionEditor } =
+    typeOptSelect === 'bar'
+      ? useBarChartOptions({ idx: 0, withEditor: true })
+      : typeOptSelect === 'pie'
+      ? usePieChartOptions({ idx: 1, withEditor: true })
+      : useBarChartOptions({ withEditor: true });
+
+  const { actions: chartActions, Editor: ChartActionEditor } =
+    useChartActions();
 
   return (
     <div className='bg-gray-100 h-full flex flex-col text-xs rounded-md shadow-lg select-none'>
@@ -255,10 +256,11 @@ const ChartEditor = () => {
               Heatmap
             </button>
           </div>
-          {Editor}
+          {ChartOptionEditor}
         </div>
-        <div className='pt-4'>
+        <div className='pt-4 flex flex-col space-y-2'>
           <h3 className='text-lg '>Chart Action</h3>
+          {ChartActionEditor}
         </div>
       </div>
     </div>
