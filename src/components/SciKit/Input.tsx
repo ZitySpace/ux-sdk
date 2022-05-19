@@ -19,7 +19,7 @@ const Input = forwardRef(
       defaultValue?: string;
       type?: string;
       required?: boolean;
-      reactiveCallback?: () => unknown | undefined;
+      reactiveCallback?: () => unknown;
     },
     ref
   ) => {

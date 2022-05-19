@@ -24,7 +24,7 @@ const Select = forwardRef(
       name: string;
       options?: string[];
       defaultValue?: string | null;
-      reactiveCallback?: () => unknown | undefined;
+      reactiveCallback?: () => unknown;
     },
     ref
   ) => {

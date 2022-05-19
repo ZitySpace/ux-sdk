@@ -20,7 +20,7 @@ const Toggle = forwardRef(
     }: {
       name: string;
       defaultValue?: boolean;
-      reactiveCallback?: () => unknown | undefined;
+      reactiveCallback?: () => unknown;
     },
     ref
   ) => {

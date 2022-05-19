@@ -48,13 +48,14 @@ const ChartEditor = () => {
 
   const { option: chartOption, Editor: ChartOptionEditor } =
     typeOptSelect === 'bar'
-      ? useBarChartOptions({ idx: 0, withEditor: true })
+      ? useBarChartOptions({ idx: 0, editable: true })
       : typeOptSelect === 'pie'
-      ? usePieChartOptions({ idx: 1, withEditor: true })
-      : useBarChartOptions({ withEditor: true });
+      ? usePieChartOptions({ idx: 1, editable: true })
+      : useBarChartOptions({ editable: true });
 
-  const { actions: chartActions, Editor: ChartActionEditor } =
-    useChartActions();
+  const { actions: chartActions, Editor: ChartActionEditor } = useChartActions({
+    editable: true,
+  });
 
   return (
     <div className='bg-gray-100 h-full flex flex-col text-xs rounded-md shadow-lg select-none'>

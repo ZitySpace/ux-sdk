@@ -8,7 +8,7 @@ import 'ace-builds/src-noconflict/mode-typescript';
 import 'ace-builds/src-noconflict/theme-monokai';
 import 'ace-builds/src-noconflict/ext-language_tools';
 
-export const objectToString = (obj: object) => {
+const objectToString = (obj: object) => {
   const str = JSON.stringify(obj, null, 2);
 
   return str
@@ -16,14 +16,14 @@ export const objectToString = (obj: object) => {
     .replace(/"/g, "'");
 };
 
-export const stringToObject = (str: string) => eval('(' + str + ')');
+const stringToObject = (str: string) => eval('(' + str + ')');
 
 export const useBarChartOptions = ({
   idx = null,
-  withEditor = false,
+  editable = false,
 }: {
   idx?: number | string | null;
-  withEditor?: boolean;
+  editable?: boolean;
 }) => {
   const optionInit = {
     toolbox: {
@@ -106,7 +106,7 @@ export const useBarChartOptions = ({
     setCode(code);
   };
 
-  if (!withEditor) return { option };
+  if (!editable) return { option };
 
   const Editor = (
     <div className='grid grid-cols-4 gap-8'>
@@ -160,10 +160,10 @@ export const useBarChartOptions = ({
 
 export const usePieChartOptions = ({
   idx = null,
-  withEditor = false,
+  editable = false,
 }: {
   idx?: number | string | null;
-  withEditor?: boolean;
+  editable?: boolean;
 }) => {
   const optionInit = {
     toolbox: {
@@ -238,7 +238,7 @@ export const usePieChartOptions = ({
     setCode(code);
   };
 
-  if (!withEditor) return { option };
+  if (!editable) return { option };
 
   const Editor = (
     <div className='grid grid-cols-4 gap-8'>

@@ -118,7 +118,7 @@ const Slider = forwardRef(
       asRange?: boolean;
       reverse?: boolean;
       discrete?: boolean;
-      reactiveCallback?: () => unknown | undefined;
+      reactiveCallback?: () => unknown;
     },
     ref
   ) => {

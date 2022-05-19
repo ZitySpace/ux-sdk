@@ -24,7 +24,7 @@ const MultiSelect = forwardRef(
       name: string;
       options?: string[];
       defaultValue?: string[];
-      reactiveCallback?: () => unknown | undefined;
+      reactiveCallback?: () => unknown;
     },
     ref
   ) => {
