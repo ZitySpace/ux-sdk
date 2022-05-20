@@ -24,8 +24,10 @@ const defaultBackgroundAction = () => console.log('reset: background clicked');
 
 export const useChartActions = ({
   editable = false,
+  queryCallback = (code: string) => console.log(code),
 }: {
   editable?: boolean;
+  queryCallback?: Function;
 }) => {
   const actionsInit = {
     elementActions: [
@@ -68,35 +70,39 @@ export const useChartActions = ({
   const [backgroundActionQuery, setBackgroundActionQuery] =
     useState<string>('');
 
+  const parseParamsInCode = (params: EventParams, code: string) => {
+    console.log(params, code);
+    return code;
+  };
+
   const updateElementActionQuery = (code: string) => {
     setElementActionQuery(code);
 
-    if (code === '') {
-      setActions({
-        ...actions,
-        elementActions: [
-          { ...actions.elementActions[0], action: defaultElementAction },
-        ],
-      });
-    } else {
-      console.log(code, actions);
-    }
+    const newAction =
+      code === ''
+        ? defaultElementAction
+        : (params: EventParams) =>
+            queryCallback(parseParamsInCode(params, code));
+
+    setActions({
+      ...actions,
+      elementActions: [{ ...actions.elementActions[0], action: newAction }],
+    });
   };
 
   const updateBackgroundActionQuery = (code: string) => {
     setBackgroundActionQuery(code);
 
-    if (code === '') {
-      setActions({
-        ...actions,
-        resetAction: {
-          ...actions.resetAction,
-          action: defaultBackgroundAction,
-        },
-      });
-    } else {
-      console.log(code, actions);
-    }
+    const newAction =
+      code === '' ? defaultBackgroundAction : () => queryCallback(code);
+
+    setActions({
+      ...actions,
+      resetAction: {
+        ...actions.resetAction,
+        action: newAction,
+      },
+    });
   };
 
   const Editor = (

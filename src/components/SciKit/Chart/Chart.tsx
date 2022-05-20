@@ -58,7 +58,7 @@ export type EventParams = {
   // most of charts have one kind of data, the dataType is meaningless
   dataType: string;
   // incoming data value
-  value: number | Array<number>;
+  value: any | Array<any>;
   // color of the shape, works when componentType is 'series'.
   color: string;
 };

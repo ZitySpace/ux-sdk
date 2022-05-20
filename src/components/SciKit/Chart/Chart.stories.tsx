@@ -32,7 +32,7 @@ const Template: ComponentStory<any> = (args) => {
         ))}
       </div>
       <div className='h-64'>
-        <Chart {...args.common} dataset={args.datasets[opt]} />
+        <Chart {...args.common} dataset={args.datasets[opt]} key={opt} />
       </div>
     </>
   );
