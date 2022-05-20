@@ -28,7 +28,7 @@ const fetchData = async (jsonUri: string) => {
   return data;
 };
 
-type ActionOptions =
+export type ActionOptions =
   | 'click'
   | 'dblclick'
   | 'mousedown'
@@ -63,13 +63,13 @@ export type EventParams = {
   color: string;
 };
 
-type ElementActionsProps = {
+export type ElementActionsProps = {
   actionName: ActionOptions;
   elementQuery?: string | Object;
   action: (params: EventParams) => void;
 }[];
 
-type ResetActionProps = {
+export type ResetActionProps = {
   actionName: ActionOptions;
   action: () => void;
 };

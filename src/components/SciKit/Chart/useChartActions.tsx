@@ -2,7 +2,12 @@ import React, { useState } from 'react';
 import ScikitGroup from '../Scikit';
 import Select from '../Select';
 import Input from '../Input';
-import { EventParams } from './Chart';
+import {
+  ElementActionsProps,
+  ResetActionProps,
+  EventParams,
+  ActionOptions,
+} from './Chart';
 
 import AceEditor from 'react-ace';
 import 'ace-builds/src-noconflict/mode-python';
@@ -14,6 +19,9 @@ enum ActionTarget {
   Background = 'background',
 }
 
+const defaultElementAction = (params: EventParams) => console.log(params.data);
+const defaultBackgroundAction = () => console.log('reset: background clicked');
+
 export const useChartActions = ({
   editable = false,
 }: {
@@ -22,22 +30,74 @@ export const useChartActions = ({
   const actionsInit = {
     elementActions: [
       {
-        actionName: 'click',
+        actionName: 'click' as ActionOptions,
         elementQuery: 'series',
-        action: (params: EventParams) => console.log(params.data),
+        action: defaultElementAction,
       },
     ],
     resetAction: {
-      actionName: 'click',
-      action: () => console.log('reset: background clicked'),
+      actionName: 'click' as ActionOptions,
+      action: defaultBackgroundAction,
     },
   };
 
-  const [actions, setActions] = useState<object>(actionsInit);
+  const [actions, setActions] = useState<{
+    elementActions: ElementActionsProps;
+    resetAction: ResetActionProps;
+  }>(actionsInit);
 
   const [actionTarget, setActionTarget] = useState<ActionTarget>(
     ActionTarget.Element
   );
+
+  const setElementActions = (params: any) => {
+    setActions({
+      ...actions,
+      elementActions: [{ ...params, action: actions.elementActions[0].action }],
+    });
+  };
+
+  const setBackgroundAction = (params: any) => {
+    setActions({
+      ...actions,
+      resetAction: { ...params, action: actions.resetAction.action },
+    });
+  };
+
+  const [elementActionQuery, setElementActionQuery] = useState<string>('');
+  const [backgroundActionQuery, setBackgroundActionQuery] =
+    useState<string>('');
+
+  const updateElementActionQuery = (code: string) => {
+    setElementActionQuery(code);
+
+    if (code === '') {
+      setActions({
+        ...actions,
+        elementActions: [
+          { ...actions.elementActions[0], action: defaultElementAction },
+        ],
+      });
+    } else {
+      console.log(code, actions);
+    }
+  };
+
+  const updateBackgroundActionQuery = (code: string) => {
+    setBackgroundActionQuery(code);
+
+    if (code === '') {
+      setActions({
+        ...actions,
+        resetAction: {
+          ...actions.resetAction,
+          action: defaultBackgroundAction,
+        },
+      });
+    } else {
+      console.log(code, actions);
+    }
+  };
 
   const Editor = (
     <div>
@@ -83,7 +143,7 @@ export const useChartActions = ({
               hideFooter={true}
               flat={true}
               scroll={false}
-              yesCallback={undefined}
+              yesCallback={setElementActions}
               reactive={true}
               key={0}
             >
@@ -108,7 +168,7 @@ export const useChartActions = ({
               hideFooter={true}
               flat={true}
               scroll={false}
-              yesCallback={undefined}
+              yesCallback={setBackgroundAction}
               reactive={true}
               key={1}
             >
@@ -137,7 +197,11 @@ export const useChartActions = ({
               name='Option'
               fontSize={14}
               readOnly={false}
-              value={''}
+              value={
+                actionTarget === ActionTarget.Element
+                  ? elementActionQuery
+                  : backgroundActionQuery
+              }
               placeholder='Write pandas DataFrame query here'
               editorProps={{ $blockScrolling: true }}
               setOptions={{
@@ -149,7 +213,11 @@ export const useChartActions = ({
               maxLines={Infinity}
               width='100%'
               showPrintMargin={false}
-              onChange={undefined}
+              onChange={
+                actionTarget === ActionTarget.Element
+                  ? updateElementActionQuery
+                  : updateBackgroundActionQuery
+              }
             />
           </div>
         </div>
