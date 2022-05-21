@@ -43,7 +43,7 @@ const ImageTag = ({
   useEffect(() => {
     (async () => setSrc(await getImage(name)))();
     imgLoadedRef.current = true;
-  }, [name]);
+  }, [name, annotations]);
 
   const { width, height } = useResizeDetector({
     targetRef: imgElRef,
