@@ -42,52 +42,106 @@ export const useSetDataframe = ({
   };
 };
 
-export const useFilterFromDataframe = ({
-  header,
-  data,
-}: DataframeStoreData) => {
-  const filterOpt: FilteringProps = {
-    by: 'Dataframe',
-    value: data,
-    dependsOnValue: false,
-    sizeFilter: () => data.length,
-    pageFilter: (pos: number, step: number) => {
-      const required = ['image_hash', 'x', 'y', 'w', 'h', 'category'];
-      if (required.length && required.some((field) => !header.includes(field)))
-        return CarouselStoreDataDefault;
+export const useFilterFromDataframe = (
+  { header, data }: DataframeStoreData,
+  groupByImage: boolean = false
+) => {
+  const idx = header.findIndex((v) => v === 'image_hash');
 
-      const rowDataToAnno = (d: any[]) =>
-        header.reduce((anno, h, i) => {
-          if (!required.includes(h)) return anno;
-          const k = h === 'image_hash' ? 'name' : h;
-          return { ...anno, [k]: d[i] };
-        }, {}) as { name: any; x: any; y: any; w: any; h: any; category: any };
+  if (!header.includes('image_hash')) {
+    return {
+      by: 'Dataframe',
+      value: data,
+      dependsOnValue: false,
+      sizeFilter: () =>
+        groupByImage && header.includes('image_hash')
+          ? new Set(data.map((d) => d[idx])).size
+          : data.length,
+      pageFilter: (pos: number, step: number) => CarouselStoreDataDefault,
+    };
+  }
 
-      const carouselData = data
-        .slice(pos, pos + step)
-        .reduce((res: CarouselStore['carouselData'], d: any[]) => {
-          const anno = rowDataToAnno(d);
-          const name = anno.name;
-          return {
-            ...res,
-            [name]: {
-              name: name,
-              annotations: [...(res[name] ? res[name].annotations : []), anno],
-            },
-          };
-        }, {});
+  const required = ['x', 'y', 'w', 'h'];
+  const optional = ['category'];
+  const pass = !required.some((field) => !header.includes(field));
 
-      const selection = {
-        selectable: false,
-        selected: Object.keys(carouselData).reduce(
-          (sel, name) => ({ ...sel, [name]: false }),
-          {}
-        ),
+  const rowDataToAnno = (d: any[]) =>
+    pass
+      ? Object.fromEntries(
+          header
+            .map((h, i) =>
+              h === 'image_hash'
+                ? ['name', d[i]]
+                : required.includes(h) || optional.includes(h)
+                ? [h, d[i]]
+                : []
+            )
+            .filter((e) => e.length)
+        )
+      : { name: d[idx] };
+
+  const groupByImageFunc: (data: any[][]) => CarouselStore['carouselData'] = (
+    data: any[][]
+  ) =>
+    data.reduce((res: CarouselStore['carouselData'], d: any[]) => {
+      const anno = rowDataToAnno(d);
+      const name = anno.name;
+      return {
+        ...res,
+        [name]: {
+          name: name,
+          annotations: pass
+            ? [...(name in res ? res[name].annotations! : []), anno]
+            : null,
+        },
       };
+    }, {});
 
-      return { carouselData, selection };
-    },
-  };
+  const initSelectionFunc = (carouselData: CarouselStore['carouselData']) => ({
+    selectable: false,
+    selected: Object.keys(carouselData).reduce(
+      (sel, name) => ({ ...sel, [name]: false }),
+      {}
+    ),
+  });
+
+  let filterOpt: FilteringProps;
+
+  if (groupByImage) {
+    const dataGroupByImage = groupByImageFunc(data);
+    const images = Object.keys(dataGroupByImage);
+
+    filterOpt = {
+      by: 'DataframeGroupByImage',
+      value: dataGroupByImage,
+      dependsOnValue: false,
+      sizeFilter: () => images.length,
+      pageFilter: (pos: number, step: number) => {
+        const carouselData = images
+          .slice(pos, pos + step)
+          .reduce(
+            (res, name) => ({ ...res, [name]: dataGroupByImage[name] }),
+            {}
+          );
+        const selection = initSelectionFunc(carouselData);
+
+        return { carouselData, selection };
+      },
+    };
+  } else {
+    filterOpt = {
+      by: 'Dataframe',
+      value: data,
+      dependsOnValue: false,
+      sizeFilter: () => data.length,
+      pageFilter: (pos: number, step: number) => {
+        const carouselData = groupByImageFunc(data.slice(pos, pos + step));
+        const selection = initSelectionFunc(carouselData);
+
+        return { carouselData, selection };
+      },
+    };
+  }
 
   return filterOpt;
 };

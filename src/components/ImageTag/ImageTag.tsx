@@ -69,21 +69,22 @@ const ImageTag = ({
     canvas.setWidth(cw);
     canvas.setHeight(ch);
 
-    annotations.map(({ x, y, w, h, category }: any) => {
-      canvas.add(
-        new fabric.Rect({
-          left: (x * cw) / iw,
-          top: (y * ch) / ih,
-          originX: 'left',
-          originY: 'top',
-          width: (w * cw) / iw,
-          height: (h * ch) / ih,
-          fill: 'rgba(255,0,0,0)',
-          stroke: 'red',
-          strokeWidth: 1.5,
-        })
-      );
-    });
+    annotations &&
+      annotations.map(({ x, y, w, h, category }: any) => {
+        canvas.add(
+          new fabric.Rect({
+            left: (x * cw) / iw,
+            top: (y * ch) / ih,
+            originX: 'left',
+            originY: 'top',
+            width: (w * cw) / iw,
+            height: (h * ch) / ih,
+            fill: 'rgba(255,0,0,0)',
+            stroke: 'red',
+            strokeWidth: 1.5,
+          })
+        );
+      });
 
     canvas.renderAll();
   };

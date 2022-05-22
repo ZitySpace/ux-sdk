@@ -61,6 +61,8 @@ export type EventParams = {
   value: any | Array<any>;
   // color of the shape, works when componentType is 'series'.
   color: string;
+  // dimension names
+  dimensionNames: string[];
 };
 
 export type ElementActionsProps = {

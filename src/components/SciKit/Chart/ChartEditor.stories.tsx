@@ -1,10 +1,16 @@
 import { ComponentMeta, ComponentStory } from '@storybook/react';
-import React, { useState, useRef, useReducer } from 'react';
+import React, { useState, useRef, useReducer, useEffect } from 'react';
 import Chart from './Chart';
+import PaginationBar from '../../PaginationBar';
+import ImageCarousel from '../../ImageCarousel';
 import { useBarChartOptions, usePieChartOptions } from './useChartOptions';
 import { useChartActions } from './useChartActions';
 import { requestTemplate } from '../../../utils/apis';
-import * as echarts from 'echarts';
+import { QueryClient, QueryClientProvider } from 'react-query';
+import { useContextStore } from '../../../stores/contextStore';
+import { usePagingStore } from '../../../stores/pagingStore';
+import { useCarouselStore } from '../../../stores/carouselStore';
+import { useCarouselQueries } from '../../../utils/hooks/useCarouselQueries';
 
 import AceEditor from 'react-ace';
 import 'ace-builds/src-noconflict/mode-json';
@@ -13,6 +19,7 @@ import 'ace-builds/src-noconflict/theme-monokai';
 import 'ace-builds/src-noconflict/ext-language_tools';
 import ace from 'ace-builds';
 import { PlayIcon } from '@heroicons/react/solid';
+import { useFilterFromDataframe, useSetFiltering } from '../../../utils';
 ace.config.set(
   'basePath',
   'https://cdn.jsdelivr.net/npm/ace-builds@1.4.14/src-noconflict/'
@@ -53,7 +60,38 @@ const runQuery = async (code: string) => {
   }
 };
 
-const ChartEditor = () => {
+const ChartEditor = ({
+  contextStoreName = '.contextStore',
+  pagingStoreName = '.pagingStore',
+  carouselStoreName = '.carouselStore',
+}: {
+  contextStoreName?: string;
+  pagingStoreName?: string;
+  carouselStoreName?: string;
+}) => {
+  const contextStore = useContextStore(contextStoreName);
+  const pagingStore = usePagingStore(pagingStoreName);
+  const carouselStore = useCarouselStore(carouselStoreName);
+
+  const { useCarouselSizeQuery, useCarouselPageQuery } = useCarouselQueries({
+    contextStore: contextStore,
+    pagingStore: pagingStore,
+    carouselStore: carouselStore,
+  });
+
+  const sizeQuery = useCarouselSizeQuery();
+  const pageQuery = useCarouselPageQuery();
+
+  const { setFiltering } = useSetFiltering({
+    pagingStore: pagingStore,
+    contextStore: contextStore,
+  });
+
+  useEffect(() => {
+    const filterOpt = useFilterFromDataframe({ header: [], data: [] });
+    setFiltering(filterOpt);
+  }, []);
+
   const forceUpdate = useReducer(() => ({}), {})[1] as () => void;
   const [datasetOptSelect, setDatasetOptSelect] = useState<string>('raw');
 
@@ -89,6 +127,12 @@ const ChartEditor = () => {
 
   const { actions: chartActions, Editor: ChartActionEditor } = useChartActions({
     editable: true,
+    queryCallback: async (code: string) => {
+      const df = await runQuery(code);
+      const { header, data } = df ? df : { header: [], data: [] };
+      const filterOpt = useFilterFromDataframe({ header, data }, true);
+      setFiltering(filterOpt);
+    },
   });
 
   const chartPropsRef = useRef<any>({
@@ -123,7 +167,7 @@ const ChartEditor = () => {
   };
 
   return (
-    <>
+    <div className='flex flex-col space-y-4'>
       <div className='bg-gray-100 h-full flex flex-col text-xs rounded-md shadow-lg select-none'>
         <div className='bg-indigo-400 py-1 px-8 rounded-t-md inline-grid grid-cols-3'>
           <PlayIcon
@@ -339,13 +383,27 @@ const ChartEditor = () => {
       <div className='h-64'>
         <Chart {...chartPropsRef.current} key={chartKeyRef.current} />
       </div>
-    </>
+      <div>
+        <ImageCarousel carouselStoreName={carouselStoreName} />
+        <PaginationBar pagingStoreName={pagingStoreName} />
+      </div>
+    </div>
   );
 };
 
+const queryClient = new QueryClient();
+
 const Template: ComponentStory<any> = (args) => {
-  return <ChartEditor />;
+  return (
+    <QueryClientProvider client={queryClient}>
+      <ChartEditor {...args} />
+    </QueryClientProvider>
+  );
 };
 
 export const Story = Template.bind({});
-Story.args = {};
+Story.args = {
+  contextStoreName: 'ChartEditor.stories.contextStore',
+  pagingStoreName: 'ChartEditor.stories.pagingStore',
+  carouselStoreName: 'ChartEditor.stories.carouselStore',
+};

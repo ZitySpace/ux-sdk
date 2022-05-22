@@ -19,7 +19,15 @@ enum ActionTarget {
   Background = 'background',
 }
 
-const defaultElementAction = (params: EventParams) => console.log(params.data);
+const defaultElementAction = (params: EventParams) =>
+  console.log(
+    Object.fromEntries(
+      params.dimensionNames.map((_, i) => [
+        params.dimensionNames[i],
+        params.value[i],
+      ])
+    )
+  );
 const defaultBackgroundAction = () => console.log('reset: background clicked');
 
 export const useChartActions = ({
@@ -71,8 +79,14 @@ export const useChartActions = ({
     useState<string>('');
 
   const parseParamsInCode = (params: EventParams, code: string) => {
-    console.log(params, code);
-    return code;
+    const data = Object.fromEntries(
+      params.dimensionNames.map((_, i) => [
+        params.dimensionNames[i],
+        params.value[i],
+      ])
+    );
+
+    return `data = ${JSON.stringify(data)}\n${code}`;
   };
 
   const updateElementActionQuery = (code: string) => {
@@ -81,8 +95,8 @@ export const useChartActions = ({
     const newAction =
       code === ''
         ? defaultElementAction
-        : (params: EventParams) =>
-            queryCallback(parseParamsInCode(params, code));
+        : async (params: EventParams) =>
+            await queryCallback(parseParamsInCode(params, code));
 
     setActions({
       ...actions,
@@ -94,7 +108,9 @@ export const useChartActions = ({
     setBackgroundActionQuery(code);
 
     const newAction =
-      code === '' ? defaultBackgroundAction : () => queryCallback(code);
+      code === ''
+        ? defaultBackgroundAction
+        : async () => await queryCallback(code);
 
     setActions({
       ...actions,

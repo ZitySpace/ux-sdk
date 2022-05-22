@@ -8,7 +8,7 @@ interface DetectionProps {
   y: number;
   w: number;
   h: number;
-  category: string;
+  category?: string;
   timestamp_z?: string;
   unique_hash_z?: string;
 }
@@ -21,7 +21,7 @@ export interface ImageProps {
   height?: number;
   width?: number;
   upload_time?: string;
-  annotations: DetectionProps[];
+  annotations?: DetectionProps[] | null;
 }
 
 interface StoreData extends State {
