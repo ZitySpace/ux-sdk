@@ -82,6 +82,19 @@ const ChartEditor = ({
   const sizeQuery = useCarouselSizeQuery();
   const pageQuery = useCarouselPageQuery();
 
+  const examples = [
+    'Custom',
+    'CategoryDistribution_Bar',
+    'CategoryDistribution_Pie',
+    'ImageSizeDistribution_Scatter',
+    'ImageSizeDistribution_Heatmap',
+    'BoxSizeDistribution_Scatter',
+    'BoxSizeDistribution_Heatmap',
+    'AnnotationDateDistribution_Line',
+    'AnnotationDateDistribution_Calendar',
+  ];
+  const [example, setExample] = useState<string>('Custom');
+
   const { setFiltering } = useSetFiltering({
     pagingStore: pagingStore,
     contextStore: contextStore,
@@ -118,14 +131,24 @@ const ChartEditor = ({
 
   const [typeOptSelect, setTypeOptSelect] = useState<string>('bar');
 
-  const { option: chartOption, Editor: ChartOptionEditor } =
-    typeOptSelect === 'bar'
-      ? useBarChartOptions({ idx: 0, editable: true })
-      : typeOptSelect === 'pie'
-      ? usePieChartOptions({ idx: 1, editable: true })
-      : useBarChartOptions({ editable: true });
+  const {
+    option: chartOption,
+    Editor: ChartOptionEditor,
+    setOption: setChartOption,
+  } = typeOptSelect === 'bar'
+    ? useBarChartOptions({ idx: 0, editable: true })
+    : typeOptSelect === 'pie'
+    ? usePieChartOptions({ idx: 1, editable: true })
+    : useBarChartOptions({ editable: true });
 
-  const { actions: chartActions, Editor: ChartActionEditor } = useChartActions({
+  const {
+    actions: chartActions,
+    Editor: ChartActionEditor,
+    setElementAction: setChartElementAction,
+    setElementActionQuery: setChartElementActionQuery,
+    setBackgroundAction: setChartBackgroundAction,
+    setBackgroundActionQuery: setChartBackgroundActionQuery,
+  } = useChartActions({
     editable: true,
     queryCallback: async (code: string) => {
       const df = await runQuery(code);
@@ -134,6 +157,8 @@ const ChartEditor = ({
       setFiltering(filterOpt);
     },
   });
+
+  useEffect(() => {}, [example]);
 
   const chartPropsRef = useRef<any>({
     dataset: null,
@@ -168,6 +193,33 @@ const ChartEditor = ({
 
   return (
     <div className='flex flex-col space-y-4'>
+      <div className='relative flex items-center w-full'>
+        <div className='flex-grow border-t border-indigo-200'></div>
+        <span className='flex-shrink mx-4 text-indigo-400 text-xl font-semibold'>
+          Chart Examples
+        </span>
+        <div className='flex-grow border-t border-indigo-200'></div>
+      </div>
+      <div className='flex flex-wrap'>
+        {examples.map((emp, i) => (
+          <button
+            type='button'
+            key={i}
+            className={`mr-4 mb-2 inline-flex justify-center items-center px-3.5 py-2 border
+                  text-xs font-semibold rounded-lg shadow-sm
+                  hover:border-indigo-600 hover:ring-1 hover:ring-indigo-600
+                  ${
+                    example === emp
+                      ? 'text-gray-50 bg-indigo-600 outline-none'
+                      : 'text-gray-600 bg-transparent border-gray-400'
+                  }`}
+            onClick={() => setExample(emp)}
+          >
+            {emp}
+          </button>
+        ))}
+      </div>
+
       <div className='bg-gray-100 h-full flex flex-col text-xs rounded-md shadow-lg select-none'>
         <div className='bg-indigo-400 py-1 px-8 rounded-t-md inline-grid grid-cols-3'>
           <PlayIcon

@@ -51,7 +51,7 @@ export const useChartActions = ({
     resetAction: ResetActionProps;
   }>(actionsInit);
 
-  const setElementActions = (params: any) => {
+  const setElementAction = (params: any) => {
     setActions({
       ...actions,
       elementActions: [{ ...params, action: actions.elementActions[0].action }],
@@ -115,7 +115,7 @@ export const useChartActions = ({
   const Editor = (
     <>
       <div>
-        <div className='relative flex items-center w-full'>
+        <div className='relative flex items-center w-full px-8'>
           <div className='flex-grow border-t border-indigo-200'></div>
           <span className='flex-shrink mx-4 text-indigo-400 text-xs font-semibold'>
             @element
@@ -128,7 +128,7 @@ export const useChartActions = ({
             hideFooter={true}
             flat={true}
             scroll={false}
-            yesCallback={setElementActions}
+            yesCallback={setElementAction}
             reactive={true}
           >
             <Select
@@ -183,7 +183,7 @@ export const useChartActions = ({
       </div>
 
       <div>
-        <div className='relative flex items-center w-full'>
+        <div className='relative flex items-center w-full px-8'>
           <div className='flex-grow border-t border-indigo-200'></div>
           <span className='flex-shrink mx-4 text-indigo-400 text-xs font-semibold'>
             @background
@@ -243,5 +243,12 @@ export const useChartActions = ({
     </>
   );
 
-  return { actions, Editor };
+  return {
+    actions,
+    setElementAction,
+    setElementActionQuery,
+    setBackgroundAction,
+    setBackgroundActionQuery,
+    Editor,
+  };
 };

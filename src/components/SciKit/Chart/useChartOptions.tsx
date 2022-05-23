@@ -155,7 +155,7 @@ export const useBarChartOptions = ({
     </div>
   );
 
-  return { option, Editor };
+  return { option, setOption: updateCode, Editor };
 };
 
 export const usePieChartOptions = ({
@@ -287,5 +287,5 @@ export const usePieChartOptions = ({
     </div>
   );
 
-  return { option, Editor };
+  return { option, setOption: updateCode, Editor };
 };
