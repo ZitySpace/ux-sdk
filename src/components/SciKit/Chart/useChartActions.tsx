@@ -1,13 +1,9 @@
-import React, { useState } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import ScikitGroup from '../Scikit';
 import Select from '../Select';
 import Input from '../Input';
-import {
-  ElementActionsProps,
-  ResetActionProps,
-  EventParams,
-  ActionOptions,
-} from './Chart';
+import { EventParams, ActionOptions } from './Chart';
+import { stringToObject } from '../../../utils/misc';
 
 import AceEditor from 'react-ace';
 import 'ace-builds/src-noconflict/mode-python';
@@ -23,6 +19,7 @@ const defaultElementAction = (params: EventParams) =>
       ])
     )
   );
+
 const defaultBackgroundAction = () => console.log('reset: background clicked');
 
 export const useChartActions = ({
@@ -32,41 +29,28 @@ export const useChartActions = ({
   editable?: boolean;
   queryCallback?: Function;
 }) => {
-  const actionsInit = {
-    elementActions: [
-      {
-        actionName: 'click' as ActionOptions,
-        elementQuery: 'series',
-        action: defaultElementAction,
-      },
-    ],
-    resetAction: {
-      actionName: 'click' as ActionOptions,
-      action: defaultBackgroundAction,
-    },
-  };
-
-  const [actions, setActions] = useState<{
-    elementActions: ElementActionsProps;
-    resetAction: ResetActionProps;
-  }>(actionsInit);
+  const [elementAction, setElementActionCore] = useState<{
+    actionName: ActionOptions;
+    elementQuery: string | Object;
+  }>({
+    actionName: 'click' as ActionOptions,
+    elementQuery: 'series',
+  });
 
   const setElementAction = (params: any) => {
-    setActions({
-      ...actions,
-      elementActions: [{ ...params, action: actions.elementActions[0].action }],
+    const elementQuery_ = stringToObject(params.elementQuery);
+
+    setElementActionCore({
+      actionName: params.actionName,
+      elementQuery:
+        elementQuery_ === null ? elementAction.elementQuery : elementQuery_,
     });
   };
 
-  const setBackgroundAction = (params: any) => {
-    setActions({
-      ...actions,
-      resetAction: { ...params, action: actions.resetAction.action },
-    });
-  };
-
-  const [elementActionQuery, setElementActionQuery] = useState<string>('');
-  const [backgroundActionQuery, setBackgroundActionQuery] =
+  const [elementActionQuery, setElementActionQuery] = useState<{
+    action: (params: EventParams) => void;
+  }>({ action: defaultElementAction });
+  const [elementActionQueryCode, setElementActionQueryCode] =
     useState<string>('');
 
   const parseParamsInCode = (params: EventParams, code: string) => {
@@ -80,36 +64,54 @@ export const useChartActions = ({
     return `data = ${JSON.stringify(data)}\n${code}`;
   };
 
-  const updateElementActionQuery = (code: string) => {
-    setElementActionQuery(code);
-
+  useEffect(() => {
     const newAction =
-      code === ''
+      elementActionQueryCode === ''
         ? defaultElementAction
         : async (params: EventParams) =>
-            await queryCallback(parseParamsInCode(params, code));
+            await queryCallback(
+              parseParamsInCode(params, elementActionQueryCode)
+            );
 
-    setActions({
-      ...actions,
-      elementActions: [{ ...actions.elementActions[0], action: newAction }],
-    });
+    setElementActionQuery({ action: newAction });
+  }, [elementActionQueryCode]);
+
+  const [backgroundAction, setBackgroundActionCore] = useState<{
+    actionName: ActionOptions;
+  }>({
+    actionName: 'click' as ActionOptions,
+  });
+
+  const setBackgroundAction = (params: any) => {
+    setBackgroundActionCore({ actionName: params.actionName });
   };
 
-  const updateBackgroundActionQuery = (code: string) => {
-    setBackgroundActionQuery(code);
+  const [backgroundActionQuery, setBackgroundActionQuery] = useState<{
+    action: () => void;
+  }>({ action: defaultBackgroundAction });
+  const [backgroundActionQueryCode, setBackgroundActionQueryCode] =
+    useState<string>('');
 
+  useEffect(() => {
     const newAction =
-      code === ''
+      backgroundActionQueryCode === ''
         ? defaultBackgroundAction
-        : async () => await queryCallback(code);
+        : async () => await queryCallback(backgroundActionQueryCode);
 
-    setActions({
-      ...actions,
-      resetAction: {
-        ...actions.resetAction,
-        action: newAction,
-      },
-    });
+    setBackgroundActionQuery({ action: newAction });
+  }, [backgroundActionQueryCode]);
+
+  const elementActionScikitRef = useRef<{ getSetValue: Function }>();
+  const backgroundActionScikitRef = useRef<{ getSetValue: Function }>();
+
+  const setElementActionByScikit = (params: { [key: string]: any }) => {
+    const setValues = elementActionScikitRef.current?.getSetValue();
+    Object.keys(params).map((k) => setValues[k](params[k]));
+  };
+
+  const setBackgroundActionByScikit = (params: { [key: string]: any }) => {
+    const setValues = backgroundActionScikitRef.current?.getSetValue();
+    Object.keys(params).map((k) => setValues[k](params[k]));
   };
 
   const Editor = (
@@ -130,6 +132,7 @@ export const useChartActions = ({
             scroll={false}
             yesCallback={setElementAction}
             reactive={true}
+            ref={elementActionScikitRef}
           >
             <Select
               name='actionName'
@@ -164,7 +167,7 @@ export const useChartActions = ({
               name='Option'
               fontSize={14}
               readOnly={false}
-              value={elementActionQuery}
+              value={elementActionQueryCode}
               placeholder='Write pandas DataFrame query for element action'
               editorProps={{ $blockScrolling: true }}
               setOptions={{
@@ -176,7 +179,7 @@ export const useChartActions = ({
               maxLines={Infinity}
               width='100%'
               showPrintMargin={false}
-              onChange={updateElementActionQuery}
+              onChange={setElementActionQueryCode}
             />
           </div>
         </div>
@@ -198,6 +201,7 @@ export const useChartActions = ({
             scroll={false}
             yesCallback={setBackgroundAction}
             reactive={true}
+            ref={backgroundActionScikitRef}
           >
             <Select
               name='actionName'
@@ -223,7 +227,7 @@ export const useChartActions = ({
               name='Option'
               fontSize={14}
               readOnly={false}
-              value={backgroundActionQuery}
+              value={backgroundActionQueryCode}
               placeholder='Write pandas DataFrame query for background query'
               editorProps={{ $blockScrolling: true }}
               setOptions={{
@@ -235,7 +239,7 @@ export const useChartActions = ({
               maxLines={Infinity}
               width='100%'
               showPrintMargin={false}
-              onChange={updateBackgroundActionQuery}
+              onChange={setBackgroundActionQueryCode}
             />
           </div>
         </div>
@@ -244,11 +248,14 @@ export const useChartActions = ({
   );
 
   return {
-    actions,
-    setElementAction,
-    setElementActionQuery,
-    setBackgroundAction,
-    setBackgroundActionQuery,
+    actions: {
+      elementActions: [{ ...elementAction, ...elementActionQuery }],
+      resetAction: { ...backgroundAction, ...backgroundActionQuery },
+    },
+    setElementAction: setElementActionByScikit,
+    setElementActionQuery: setElementActionQueryCode,
+    setBackgroundAction: setBackgroundActionByScikit,
+    setBackgroundActionQuery: setBackgroundActionQueryCode,
     Editor,
   };
 };

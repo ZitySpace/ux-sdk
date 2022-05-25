@@ -137,9 +137,9 @@ const ChartEditor = ({
     setOption: setChartOption,
   } = typeOptSelect === 'bar'
     ? useBarChartOptions({ idx: 0, editable: true })
-    : typeOptSelect === 'pie'
-    ? usePieChartOptions({ idx: 1, editable: true })
-    : useBarChartOptions({ editable: true });
+    : // : typeOptSelect === 'pie'
+      // ? usePieChartOptions({ idx: 1, editable: true })
+      useBarChartOptions({ editable: true });
 
   const {
     actions: chartActions,
@@ -158,7 +158,79 @@ const ChartEditor = ({
     },
   });
 
-  useEffect(() => {}, [example]);
+  const prepareExample = (example: string) => {
+    if (example === 'CategoryDistribution_Bar') {
+      setDatasetOptSelect('query');
+      setDatasetCode(
+        `res = df.groupby('category').size().sort_values(ascending=False).to_frame('count')`
+      );
+      setTypeOptSelect('bar');
+      setChartOption({
+        toolbox: {
+          feature: {
+            dataView: { readOnly: false },
+            restore: {},
+            saveAsImage: {},
+          },
+          show: true,
+        },
+        grid: {
+          left: '4%',
+          right: '4%',
+          top: '10%',
+          bottom: '36%',
+          containLabel: false,
+          show: false,
+        },
+        dataZoom: {
+          type: 'inside',
+          orient: 'vertical',
+          filterMode: 'none',
+        },
+        tooltip: {
+          trigger: 'item',
+          axisPointer: {
+            type: 'shadow',
+          },
+        },
+        xAxis: {
+          type: 'category',
+          axisTick: {
+            alignWithLabel: true,
+          },
+          axisLabel: {
+            rotate: 45,
+          },
+        },
+        yAxis: {
+          type: 'value',
+        },
+        series: [
+          {
+            name: 'CountOfSamples',
+            type: 'bar',
+            showBackground: false,
+            backgroundStyle: {
+              color: 'rgba(180, 180, 180, 0.2)',
+            },
+            encode: {
+              x: 'category',
+              y: 'count',
+            },
+          },
+        ],
+      });
+      setChartElementAction({
+        actionName: 'click',
+        elementQuery: "{seriesName: 'CountOfSamples'}",
+      });
+      setChartElementActionQuery("res = df[df.category == data['category']]");
+      setChartBackgroundAction({
+        actionName: 'click',
+      });
+      setChartBackgroundActionQuery('res = df');
+    }
+  };
 
   const chartPropsRef = useRef<any>({
     dataset: null,
@@ -181,6 +253,7 @@ const ChartEditor = ({
     chartPropsRef.current.option = chartOption;
 
     // actions
+    console.log(chartActions);
     chartPropsRef.current.elementActions = chartActions.elementActions;
     chartPropsRef.current.resetAction = chartActions.resetAction;
 
@@ -213,7 +286,10 @@ const ChartEditor = ({
                       ? 'text-gray-50 bg-indigo-600 outline-none'
                       : 'text-gray-600 bg-transparent border-gray-400'
                   }`}
-            onClick={() => setExample(emp)}
+            onClick={() => {
+              setExample(emp);
+              prepareExample(emp);
+            }}
           >
             {emp}
           </button>
@@ -427,12 +503,12 @@ const ChartEditor = ({
             {ChartOptionEditor}
           </div>
           <div className='pt-4 flex flex-col space-y-2'>
-            <h3 className='text-lg '>Chart Action</h3>
+            <h3 className='text-lg'>Chart Action</h3>
             {ChartActionEditor}
           </div>
         </div>
       </div>
-      <div className='h-64'>
+      <div className='h-80'>
         <Chart {...chartPropsRef.current} key={chartKeyRef.current} />
       </div>
       <div>

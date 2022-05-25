@@ -45,6 +45,10 @@ const Select = forwardRef(
     useImperativeHandle(ref, () => ({
       getValue: () => selected.value,
       reset: () => setSelected(initValue),
+      setValue: (v: string) =>
+        setSelected(
+          optionList.current.filter((o) => o.value === v)[0] || selected
+        ),
     }));
 
     return (

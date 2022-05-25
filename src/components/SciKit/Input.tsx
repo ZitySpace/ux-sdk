@@ -32,6 +32,7 @@ const Input = forwardRef(
     useImperativeHandle(ref, () => ({
       getValue: () => value,
       reset: () => setValue(defaultValue),
+      setValue,
     }));
 
     return (

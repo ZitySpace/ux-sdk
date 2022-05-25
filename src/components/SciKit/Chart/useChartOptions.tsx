@@ -2,21 +2,12 @@ import React, { useEffect, useState, useRef } from 'react';
 import produce from 'immer';
 import ScikitGroup from '../Scikit';
 import Input from '../Input';
+import { objectToString, stringToObject } from '../../../utils/misc';
 
 import AceEditor from 'react-ace';
 import 'ace-builds/src-noconflict/mode-typescript';
 import 'ace-builds/src-noconflict/theme-monokai';
 import 'ace-builds/src-noconflict/ext-language_tools';
-
-const objectToString = (obj: object) => {
-  const str = JSON.stringify(obj, null, 2);
-
-  return str
-    .replace(/^[\t ]*"[^:\n\r]+(?<!\\)":/gm, (match) => match.replace(/"/g, ''))
-    .replace(/"/g, "'");
-};
-
-const stringToObject = (str: string) => eval('(' + str + ')');
 
 export const useBarChartOptions = ({
   idx = null,
@@ -95,16 +86,29 @@ export const useBarChartOptions = ({
     setCode(objectToString(newOpt));
   };
 
-  const updateCode = (code: string) => {
-    try {
-      const newOpt = stringToObject(code);
-      setOption(newOpt);
-    } catch (error) {
-      if (error instanceof SyntaxError) console.log('SyntaxError in code');
-    }
+  const paramsScikitRef =
+    useRef<{ getValue: Function; getSetValue: Function }>();
 
+  useEffect(() => {
     setCode(code);
-  };
+
+    const newOpt = stringToObject(code);
+    if (
+      newOpt !== null &&
+      typeof newOpt !== 'string' &&
+      !(newOpt instanceof String)
+    ) {
+      setOption(newOpt);
+
+      const params = paramsScikitRef.current?.getValue();
+      const { x, y } = (newOpt as any).series[0].encode;
+      const xAxisNew = x || '';
+      const yAxisNew = y || '';
+      const setValues = paramsScikitRef.current?.getSetValue();
+      if (params['xAxis'] !== xAxisNew) setValues['xAxis'](xAxisNew);
+      if (params['yAxis'] !== yAxisNew) setValues['yAxis'](yAxisNew);
+    }
+  }, [code]);
 
   if (!editable) return { option };
 
@@ -121,6 +125,7 @@ export const useBarChartOptions = ({
           scroll={false}
           yesCallback={updateParams}
           reactive={true}
+          ref={paramsScikitRef}
         >
           <Input name='xAxis' defaultValue='' />
           <Input name='yAxis' defaultValue='' />
@@ -149,13 +154,17 @@ export const useBarChartOptions = ({
           maxLines={Infinity}
           width='100%'
           showPrintMargin={false}
-          onChange={(curCode) => updateCode(curCode)}
+          onChange={setCode}
         />
       </div>
     </div>
   );
 
-  return { option, setOption: updateCode, Editor };
+  return {
+    option,
+    setOption: (opt: object) => setCode(objectToString(opt)),
+    Editor,
+  };
 };
 
 export const usePieChartOptions = ({
@@ -228,12 +237,13 @@ export const usePieChartOptions = ({
   };
 
   const updateCode = (code: string) => {
-    try {
-      const newOpt = stringToObject(code);
+    const newOpt = stringToObject(code);
+    if (
+      newOpt !== null &&
+      typeof newOpt !== 'string' &&
+      !(newOpt instanceof String)
+    )
       setOption(newOpt);
-    } catch (error) {
-      if (error instanceof SyntaxError) console.log('SyntaxError in code');
-    }
 
     setCode(code);
   };
@@ -281,7 +291,7 @@ export const usePieChartOptions = ({
           maxLines={Infinity}
           width='100%'
           showPrintMargin={false}
-          onChange={(curCode) => updateCode(curCode)}
+          onChange={updateCode}
         />
       </div>
     </div>

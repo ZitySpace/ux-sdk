@@ -8,7 +8,11 @@ import { CheckCircleIcon, RefreshIcon } from '@heroicons/react/outline';
 
 type YesCallbackProps = (params: { [key: string]: unknown }) => unknown;
 
-type ChildRefProps = { getValue: Function; reset: Function };
+type ChildRefProps = {
+  getValue: Function;
+  reset: Function;
+  setValue: Function;
+};
 
 const ScikitGroup = forwardRef(
   (
@@ -48,6 +52,15 @@ const ScikitGroup = forwardRef(
         {}
       );
 
+    const getSetValue = () =>
+      Object.entries(childRefs).reduce(
+        (prev, [key, r]) => ({
+          ...prev,
+          [key]: (r.current as ChildRefProps).setValue,
+        }),
+        {}
+      );
+
     const reset = () =>
       Object.values(childRefs).map((r) => (r.current as ChildRefProps).reset());
 
@@ -55,7 +68,10 @@ const ScikitGroup = forwardRef(
       ? () => yesCallback(getValue())
       : undefined;
 
-    useImperativeHandle(ref, () => ({ getValue: getValue }));
+    useImperativeHandle(ref, () => ({
+      getValue: getValue,
+      getSetValue: getSetValue,
+    }));
 
     return (
       <div
