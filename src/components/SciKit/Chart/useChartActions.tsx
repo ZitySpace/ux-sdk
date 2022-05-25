@@ -10,15 +10,20 @@ import 'ace-builds/src-noconflict/mode-python';
 import 'ace-builds/src-noconflict/theme-monokai';
 import 'ace-builds/src-noconflict/ext-language_tools';
 
-const defaultElementAction = (params: EventParams) =>
-  console.log(
-    Object.fromEntries(
+const transformParams = (params: EventParams) => {
+  if (params.dimensionNames.length)
+    return Object.fromEntries(
       params.dimensionNames.map((_, i) => [
         params.dimensionNames[i],
         params.value[i],
       ])
-    )
-  );
+    );
+
+  return params.value;
+};
+
+const defaultElementAction = (params: EventParams) =>
+  console.log(transformParams(params));
 
 const defaultBackgroundAction = () => console.log('reset: background clicked');
 
@@ -54,12 +59,7 @@ export const useChartActions = ({
     useState<string>('');
 
   const parseParamsInCode = (params: EventParams, code: string) => {
-    const data = Object.fromEntries(
-      params.dimensionNames.map((_, i) => [
-        params.dimensionNames[i],
-        params.value[i],
-      ])
-    );
+    const data = transformParams(params);
 
     return `data = ${JSON.stringify(data)}\n${code}`;
   };

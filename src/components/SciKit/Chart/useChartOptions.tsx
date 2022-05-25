@@ -183,28 +183,25 @@ export const usePieChartOptions = ({
       },
       show: true,
     },
-    grid: {
-      left: '8%',
-      right: '5%',
-      top: '18%',
-      bottom: '20%',
-      containLabel: false,
-      show: false,
-    },
+    grid: {},
     tooltip: {
       trigger: 'item',
       axisPointer: {
         type: 'shadow',
       },
     },
+    legend: {
+      orient: 'vertical',
+      left: '20%',
+    },
     series: {
       name: 'SeriesName',
       type: 'pie',
-      radius: 50,
+      radius: '80%',
       center: ['50%', '50%'],
       encode: {
-        x: '',
-        y: '',
+        itemName: '',
+        value: '',
       },
       emphasis: {
         itemStyle: {
@@ -230,23 +227,35 @@ export const usePieChartOptions = ({
     if (prevIdxRef.current !== idx) return; // code reset not completed yet
 
     const newOpt = produce(option, (opt: any) => {
-      opt.series.encode = { x: params.name, y: params.value };
+      opt.series.encode = { itemName: params.name, value: params.value };
     });
     setOption(newOpt);
     setCode(objectToString(newOpt));
   };
 
-  const updateCode = (code: string) => {
+  const paramsScikitRef =
+    useRef<{ getValue: Function; getSetValue: Function }>();
+
+  useEffect(() => {
+    setCode(code);
+
     const newOpt = stringToObject(code);
     if (
       newOpt !== null &&
       typeof newOpt !== 'string' &&
       !(newOpt instanceof String)
-    )
+    ) {
       setOption(newOpt);
 
-    setCode(code);
-  };
+      const params = paramsScikitRef.current?.getValue();
+      const { itemName, value } = (newOpt as any).series.encode;
+      const nameNew = itemName || '';
+      const valueNew = value || '';
+      const setValues = paramsScikitRef.current?.getSetValue();
+      if (params['name'] !== nameNew) setValues['name'](nameNew);
+      if (params['value'] !== valueNew) setValues['value'](valueNew);
+    }
+  }, [code]);
 
   if (!editable) return { option };
 
@@ -263,6 +272,7 @@ export const usePieChartOptions = ({
           scroll={false}
           yesCallback={updateParams}
           reactive={true}
+          ref={paramsScikitRef}
         >
           <Input name='name' defaultValue='' />
           <Input name='value' defaultValue='' />
@@ -291,11 +301,15 @@ export const usePieChartOptions = ({
           maxLines={Infinity}
           width='100%'
           showPrintMargin={false}
-          onChange={updateCode}
+          onChange={setCode}
         />
       </div>
     </div>
   );
 
-  return { option, setOption: updateCode, Editor };
+  return {
+    option,
+    setOption: (opt: object) => setCode(objectToString(opt)),
+    Editor,
+  };
 };

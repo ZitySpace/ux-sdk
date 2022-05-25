@@ -137,9 +137,9 @@ const ChartEditor = ({
     setOption: setChartOption,
   } = typeOptSelect === 'bar'
     ? useBarChartOptions({ idx: 0, editable: true })
-    : // : typeOptSelect === 'pie'
-      // ? usePieChartOptions({ idx: 1, editable: true })
-      useBarChartOptions({ editable: true });
+    : typeOptSelect === 'pie'
+    ? usePieChartOptions({ idx: 1, editable: true })
+    : useBarChartOptions({ editable: true });
 
   const {
     actions: chartActions,
@@ -213,6 +213,10 @@ const ChartEditor = ({
             backgroundStyle: {
               color: 'rgba(180, 180, 180, 0.2)',
             },
+            colorBy: 'data',
+            emphasis: {
+              focus: 'self',
+            },
             encode: {
               x: 'category',
               y: 'count',
@@ -225,6 +229,61 @@ const ChartEditor = ({
         elementQuery: "{seriesName: 'CountOfSamples'}",
       });
       setChartElementActionQuery("res = df[df.category == data['category']]");
+      setChartBackgroundAction({
+        actionName: 'click',
+      });
+      setChartBackgroundActionQuery('res = df');
+    }
+
+    if (example === 'CategoryDistribution_Pie') {
+      setDatasetOptSelect('query');
+      setDatasetCode(
+        `res = df.groupby('category').size().sort_values(ascending=False).to_frame('count')`
+      );
+      setTypeOptSelect('pie');
+      setChartOption({
+        toolbox: {
+          feature: {
+            dataView: { readOnly: false },
+            restore: {},
+            saveAsImage: {},
+          },
+          show: true,
+        },
+        grid: {},
+        tooltip: {
+          trigger: 'item',
+          axisPointer: {
+            type: 'shadow',
+          },
+        },
+        legend: {
+          orient: 'vertical',
+          left: 'left',
+        },
+        series: {
+          name: 'CountOfSamples',
+          type: 'pie',
+          radius: ['30%', '70%'],
+          center: ['75%', '50%'],
+          encode: {
+            itemName: 'category',
+            value: 'count',
+          },
+          emphasis: {
+            itemStyle: {
+              shadowBlur: 10,
+              shadowOffsetX: 0,
+              shadowColor: 'rgba(0, 0, 0, 0.5)',
+            },
+          },
+        },
+      });
+      setChartElementAction({
+        actionName: 'click',
+        elementQuery: "{seriesName: 'CountOfSamples'}",
+      });
+      setChartElementActionQuery('res = df[df.category == data[0]]');
       setChartBackgroundAction({
         actionName: 'click',
       });
@@ -253,7 +312,6 @@ const ChartEditor = ({
     chartPropsRef.current.option = chartOption;
 
     // actions
-    console.log(chartActions);
     chartPropsRef.current.elementActions = chartActions.elementActions;
     chartPropsRef.current.resetAction = chartActions.resetAction;
 
