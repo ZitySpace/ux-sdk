@@ -3,7 +3,11 @@ import React, { useState, useRef, useReducer, useEffect } from 'react';
 import Chart from './Chart';
 import PaginationBar from '../../PaginationBar';
 import ImageCarousel from '../../ImageCarousel';
-import { useBarChartOptions, usePieChartOptions } from './useChartOptions';
+import {
+  useBarChartOptions,
+  usePieChartOptions,
+  useScatterChartOptions,
+} from './useChartOptions';
 import { useChartActions } from './useChartActions';
 import { requestTemplate } from '../../../utils/apis';
 import { QueryClient, QueryClientProvider } from 'react-query';
@@ -110,17 +114,17 @@ const ChartEditor = ({
 
   const datasetCodeDefault = {
     raw: `{
-  "header": ["Day", "Value"],
-  "data": [
-    ["Mon", 120],
-    ["Tue", 200],
-    ["Wed", 150],
-    ["Thu", 80],
-    ["Fri", 70],
-    ["Sat", 110],
-    ["Sun", 130]
-  ]
-}`,
+      "header": ["Day", "ValueA", "Month", "ValueB", "ValueC"],
+      "data": [
+        ["Mon", 120, "Jan", 230, 130],
+        ["Tue", 200, "Jan", 345, 110],
+        ["Wed", 150, "Feb", 765, 70],
+        ["Thu", 80, "Feb", 123, 550],
+        ["Fri", 70, "Mar", 987, 808],
+        ["Sat", 110, "mar", 765, 300],
+        ["Sun", 130, "Apr", 678, 120]
+      ]
+    }`,
     query: `res = df.groupby('category').size().to_frame('count')`,
     dataframeStore: `dataframeStoreName`,
   };
@@ -139,6 +143,8 @@ const ChartEditor = ({
     ? useBarChartOptions({ idx: 0, editable: true })
     : typeOptSelect === 'pie'
     ? usePieChartOptions({ idx: 1, editable: true })
+    : typeOptSelect === 'scatter'
+    ? useScatterChartOptions({ idx: 2, editable: true })
     : useBarChartOptions({ editable: true });
 
   const {
@@ -205,24 +211,22 @@ const ChartEditor = ({
         yAxis: {
           type: 'value',
         },
-        series: [
-          {
-            name: 'CountOfSamples',
-            type: 'bar',
-            showBackground: false,
-            backgroundStyle: {
-              color: 'rgba(180, 180, 180, 0.2)',
-            },
-            colorBy: 'data',
-            emphasis: {
-              focus: 'self',
-            },
-            encode: {
-              x: 'category',
-              y: 'count',
-            },
+        series: {
+          name: 'CountOfSamples',
+          type: 'bar',
+          showBackground: false,
+          backgroundStyle: {
+            color: 'rgba(180, 180, 180, 0.2)',
           },
-        ],
+          colorBy: 'data',
+          emphasis: {
+            focus: 'self',
+          },
+          encode: {
+            x: 'category',
+            y: 'count',
+          },
+        },
       });
       setChartElementAction({
         actionName: 'click',

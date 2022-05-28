@@ -50,20 +50,18 @@ export const useBarChartOptions = ({
     yAxis: {
       type: 'value',
     },
-    series: [
-      {
-        name: 'SeriesName',
-        type: 'bar',
-        showBackground: false,
-        backgroundStyle: {
-          color: 'rgba(180, 180, 180, 0.2)',
-        },
-        encode: {
-          x: '',
-          y: '',
-        },
+    series: {
+      name: 'SeriesName',
+      type: 'bar',
+      showBackground: false,
+      backgroundStyle: {
+        color: 'rgba(180, 180, 180, 0.2)',
       },
-    ],
+      encode: {
+        x: '',
+        y: '',
+      },
+    },
   };
 
   const [option, setOption] = useState<object>(optionInit);
@@ -80,7 +78,7 @@ export const useBarChartOptions = ({
     if (prevIdxRef.current !== idx) return; // code reset not completed yet
 
     const newOpt = produce(option, (opt: any) => {
-      opt.series[0].encode = { x: params.xAxis, y: params.yAxis };
+      opt.series.encode = { x: params.xAxis, y: params.yAxis };
     });
     setOption(newOpt);
     setCode(objectToString(newOpt));
@@ -90,6 +88,13 @@ export const useBarChartOptions = ({
     useRef<{ getValue: Function; getSetValue: Function }>();
 
   useEffect(() => {
+    // this is super hacky but required:
+    // [code] effect happens after [idx] effect
+    // without setCode here: setCode in [idx] effect
+    // will trigger the next [code] effect and reset code to optionInit
+    // with setCode here: setCode in [idx] effect and setCode here will be
+    // batched, and setCode here which is the last setCode in the queue
+    // will be executed and setCode in [idx] will be skipped
     setCode(code);
 
     const newOpt = stringToObject(code);
@@ -101,7 +106,7 @@ export const useBarChartOptions = ({
       setOption(newOpt);
 
       const params = paramsScikitRef.current?.getValue();
-      const { x, y } = (newOpt as any).series[0].encode;
+      const { x, y } = (newOpt as any).series.encode;
       const xAxisNew = x || '';
       const yAxisNew = y || '';
       const setValues = paramsScikitRef.current?.getSetValue();
@@ -276,6 +281,344 @@ export const usePieChartOptions = ({
         >
           <Input name='name' defaultValue='' />
           <Input name='value' defaultValue='' />
+        </ScikitGroup>
+      </div>
+
+      <div
+        className='resize-y overflow-auto h-48 pt-1 col-span-3'
+        style={{ backgroundColor: '#272822' }}
+      >
+        <AceEditor
+          mode='typescript'
+          theme='monokai'
+          name='Option'
+          fontSize={14}
+          readOnly={false}
+          value={code}
+          placeholder='Write Apache Echarts option here'
+          editorProps={{ $blockScrolling: true }}
+          setOptions={{
+            enableBasicAutocompletion: true,
+            enableLiveAutocompletion: true,
+            enableSnippets: false,
+          }}
+          //   height='100%'
+          maxLines={Infinity}
+          width='100%'
+          showPrintMargin={false}
+          onChange={setCode}
+        />
+      </div>
+    </div>
+  );
+
+  return {
+    option,
+    setOption: (opt: object) => setCode(objectToString(opt)),
+    Editor,
+  };
+};
+
+export const useLineChartOptions = ({
+  idx = null,
+  editable = false,
+}: {
+  idx?: number | string | null;
+  editable?: boolean;
+}) => {
+  const optionInit = {
+    toolbox: {
+      feature: {
+        dataView: { readOnly: false },
+        restore: {},
+        saveAsImage: {},
+      },
+      show: true,
+    },
+    grid: {
+      left: '8%',
+      right: '5%',
+      top: '18%',
+      bottom: '20%',
+      containLabel: false,
+      show: false,
+    },
+    dataZoom: {
+      type: 'inside',
+      orient: 'vertical',
+      filterMode: 'none',
+    },
+    tooltip: {
+      trigger: 'item',
+      axisPointer: {
+        type: 'shadow',
+      },
+    },
+    xAxis: {
+      type: 'category',
+    },
+    yAxis: {
+      type: 'value',
+    },
+    series: {
+      name: 'SeriesName',
+      type: 'bar',
+      showBackground: false,
+      backgroundStyle: {
+        color: 'rgba(180, 180, 180, 0.2)',
+      },
+      encode: {
+        x: '',
+        y: '',
+      },
+    },
+  };
+
+  const [option, setOption] = useState<object>(optionInit);
+  const [code, setCode] = useState<string>(objectToString(optionInit));
+
+  const prevIdxRef = useRef<number | string | null>();
+  useEffect(() => {
+    setOption(optionInit);
+    setCode(objectToString(optionInit));
+    prevIdxRef.current = idx;
+  }, [idx]);
+
+  const updateParams = (params: any) => {
+    if (prevIdxRef.current !== idx) return; // code reset not completed yet
+
+    const newOpt = produce(option, (opt: any) => {
+      opt.series.encode = { x: params.xAxis, y: params.yAxis };
+    });
+    setOption(newOpt);
+    setCode(objectToString(newOpt));
+  };
+
+  const paramsScikitRef =
+    useRef<{ getValue: Function; getSetValue: Function }>();
+
+  useEffect(() => {
+    setCode(code);
+
+    const newOpt = stringToObject(code);
+    if (
+      newOpt !== null &&
+      typeof newOpt !== 'string' &&
+      !(newOpt instanceof String)
+    ) {
+      setOption(newOpt);
+
+      const params = paramsScikitRef.current?.getValue();
+      const { x, y } = (newOpt as any).series.encode;
+      const xAxisNew = x || '';
+      const yAxisNew = y || '';
+      const setValues = paramsScikitRef.current?.getSetValue();
+      if (params['xAxis'] !== xAxisNew) setValues['xAxis'](xAxisNew);
+      if (params['yAxis'] !== yAxisNew) setValues['yAxis'](yAxisNew);
+    }
+  }, [code]);
+
+  if (!editable) return { option };
+
+  const Editor = (
+    <div className='grid grid-cols-4 gap-8'>
+      <div
+        className='overflow-auto'
+        key={`bar${idx === null ? '-' + idx : ''}`}
+      >
+        <ScikitGroup
+          hideTitle={true}
+          hideFooter={true}
+          flat={true}
+          scroll={false}
+          yesCallback={updateParams}
+          reactive={true}
+          ref={paramsScikitRef}
+        >
+          <Input name='xAxis' defaultValue='' />
+          <Input name='yAxis' defaultValue='' />
+        </ScikitGroup>
+      </div>
+
+      <div
+        className='resize-y overflow-auto h-48 pt-1 col-span-3'
+        style={{ backgroundColor: '#272822' }}
+      >
+        <AceEditor
+          mode='typescript'
+          theme='monokai'
+          name='Option'
+          fontSize={14}
+          readOnly={false}
+          value={code}
+          placeholder='Write Apache Echarts option here'
+          editorProps={{ $blockScrolling: true }}
+          setOptions={{
+            enableBasicAutocompletion: true,
+            enableLiveAutocompletion: true,
+            enableSnippets: false,
+          }}
+          //   height='100%'
+          maxLines={Infinity}
+          width='100%'
+          showPrintMargin={false}
+          onChange={setCode}
+        />
+      </div>
+    </div>
+  );
+
+  return {
+    option,
+    setOption: (opt: object) => setCode(objectToString(opt)),
+    Editor,
+  };
+};
+
+export const useScatterChartOptions = ({
+  idx = null,
+  editable = false,
+}: {
+  idx?: number | string | null;
+  editable?: boolean;
+}) => {
+  const optionInit = {
+    toolbox: {
+      feature: {
+        dataView: { readOnly: false },
+        restore: {},
+        saveAsImage: {},
+      },
+      show: true,
+    },
+    grid: {
+      left: '8%',
+      right: '5%',
+      top: '18%',
+      bottom: '20%',
+      containLabel: false,
+      show: false,
+    },
+    animation: true,
+    dataZoom: [
+      {
+        type: 'inside',
+        filterMode: 'empty',
+      },
+      { type: 'inside', orient: 'vertical', filterMode: 'empty' },
+    ],
+    tooltip: {
+      borderWidth: 0,
+      trigger: 'item',
+      axisPointer: {
+        type: 'cross',
+      },
+      valueFormatter: (v: number) => '$' + v,
+    },
+    xAxis: {
+      name: '',
+      nameLocation: 'middle',
+      nameGap: 30,
+      nameTextStyle: {
+        fontWeight: 'bold',
+      },
+      type: 'value',
+    },
+    yAxis: {
+      name: '',
+      nameLocation: 'middle',
+      nameGap: 40,
+      nameTextStyle: {
+        fontWeight: 'bold',
+      },
+      type: 'value',
+    },
+    series: {
+      name: 'SeriesName',
+      type: 'scatter',
+      showBackground: false,
+      backgroundStyle: {
+        color: 'rgba(180, 180, 180, 0.2)',
+      },
+      symbolSize: 15,
+      itemStyle: {
+        borderWidth: 1,
+      },
+      encode: {
+        x: '',
+        y: '',
+        tooltip: [],
+      },
+    },
+  };
+
+  const [option, setOption] = useState<object>(optionInit);
+  const [code, setCode] = useState<string>(objectToString(optionInit));
+
+  const prevIdxRef = useRef<number | string | null>();
+  useEffect(() => {
+    setOption(optionInit);
+    setCode(objectToString(optionInit));
+    prevIdxRef.current = idx;
+  }, [idx]);
+
+  const updateParams = (params: any) => {
+    if (prevIdxRef.current !== idx) return; // code reset not completed yet
+
+    const newOpt = produce(option, (opt: any) => {
+      opt.xAxis.name = params.xAxis;
+      opt.yAxis.name = params.yAxis;
+      opt.series.encode.x = params.xAxis;
+      opt.series.encode.y = params.yAxis;
+      opt.series.encode.tooltip = [params.xAxis, params.yAxis];
+    });
+    setOption(newOpt);
+    setCode(objectToString(newOpt));
+  };
+
+  const paramsScikitRef =
+    useRef<{ getValue: Function; getSetValue: Function }>();
+
+  useEffect(() => {
+    setCode(code);
+
+    const newOpt = stringToObject(code);
+    if (
+      newOpt !== null &&
+      typeof newOpt !== 'string' &&
+      !(newOpt instanceof String)
+    ) {
+      setOption(newOpt);
+
+      const params = paramsScikitRef.current?.getValue();
+      const { x, y } = (newOpt as any).series.encode;
+      const xAxisNew = x || '';
+      const yAxisNew = y || '';
+      const setValues = paramsScikitRef.current?.getSetValue();
+      if (params['xAxis'] !== xAxisNew) setValues['xAxis'](xAxisNew);
+      if (params['yAxis'] !== yAxisNew) setValues['yAxis'](yAxisNew);
+    }
+  }, [code]);
+
+  if (!editable) return { option };
+
+  const Editor = (
+    <div className='grid grid-cols-4 gap-8'>
+      <div
+        className='overflow-auto'
+        key={`bar${idx === null ? '-' + idx : ''}`}
+      >
+        <ScikitGroup
+          hideTitle={true}
+          hideFooter={true}
+          flat={true}
+          scroll={false}
+          yesCallback={updateParams}
+          reactive={true}
+          ref={paramsScikitRef}
+        >
+          <Input name='xAxis' defaultValue='' />
+          <Input name='yAxis' defaultValue='' />
         </ScikitGroup>
       </div>
 
