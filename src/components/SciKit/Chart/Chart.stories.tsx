@@ -1,7 +1,10 @@
 import { ComponentMeta, ComponentStory } from '@storybook/react';
 import React, { useState } from 'react';
-import Chart, { EventParams } from './Chart';
+import Chart from './Chart';
+import { Option } from './Option';
+import { EventParams } from './Option/Base';
 import { useDataframeStore } from '../../../stores/dataframeStore';
+import { useStore } from 'zustand';
 
 export default {
   title: 'UX-SDK/Chart',
@@ -9,17 +12,34 @@ export default {
 } as ComponentMeta<typeof Chart>;
 
 const Template: ComponentStory<any> = (args) => {
-  const dataframeStore = useDataframeStore(
-    args.datasets.E.dataframeStoreName,
-    args.datasets.A
+  const datasetFromDF = useStore(
+    useDataframeStore(args.datasets.E.dataframeStoreName, args.datasets.A),
+    (s) => ({
+      header: s.header,
+      data: s.data,
+    })
   );
 
   const [opt, setOpt] = useState<string>('A');
 
+  const option = Option.makeBar()
+    .setData(opt === 'E' ? datasetFromDF : args.datasets[opt])
+    .setX(opt === 'G' ? 'category' : 'Day')
+    .setY(opt === 'G' ? 'count' : 'Value')
+    .setBackgroundAction({
+      name: 'click',
+      action: () => console.log('background clicked'),
+    })
+    .addElementAction({
+      name: 'click',
+      query: 'series',
+      action: (params: EventParams) => console.log(params.data),
+    });
+
   return (
     <>
       <div className='p-2'>
-        {['A', 'B', 'C', 'D', 'E', 'F'].map((o, i) => (
+        {['A', 'B', 'C', 'D', 'E', 'F', 'G'].map((o, i) => (
           <button
             onClick={() => {
               setOpt(o);
@@ -32,7 +52,7 @@ const Template: ComponentStory<any> = (args) => {
         ))}
       </div>
       <div className='h-64'>
-        <Chart {...args.common} dataset={args.datasets[opt]} key={opt} />
+        <Chart title='Chart Preview' option={option} key={opt} />
       </div>
     </>
   );
@@ -40,69 +60,6 @@ const Template: ComponentStory<any> = (args) => {
 
 export const Story = Template.bind({});
 Story.args = {
-  common: {
-    title: 'Chart Preview',
-    option: {
-      toolbox: {
-        feature: {
-          dataView: { readOnly: false },
-          restore: {},
-          saveAsImage: {},
-        },
-        show: true,
-      },
-      grid: {
-        left: '8%',
-        right: '5%',
-        top: '18%',
-        bottom: '20%',
-        containLabel: false,
-        show: false,
-      },
-      dataZoom: {
-        type: 'inside',
-        orient: 'vertical',
-        filterMode: 'none',
-      },
-      tooltip: {
-        trigger: 'item',
-        axisPointer: {
-          type: 'shadow',
-        },
-      },
-      xAxis: {
-        type: 'category',
-      },
-      yAxis: {
-        type: 'value',
-      },
-      series: [
-        {
-          name: 'ValueOfDay',
-          type: 'bar',
-          showBackground: false,
-          backgroundStyle: {
-            color: 'rgba(180, 180, 180, 0.2)',
-          },
-          encode: {
-            x: 'Day',
-            y: 'Value',
-          },
-        },
-      ],
-    },
-    elementActions: [
-      {
-        actionName: 'click',
-        elementQuery: { seriesName: 'ValueOfDay' },
-        action: (params: EventParams) => console.log(params.data),
-      },
-    ],
-    resetAction: {
-      actionName: 'click',
-      action: () => console.log('reset: background clicked'),
-    },
-  },
   datasets: {
     A: {
       header: ['Day', 'Value'],
@@ -151,6 +108,12 @@ Story.args = {
     F: {
       jsonUri:
         'https://mock-api-static-files.oss-cn-shenzhen.aliyuncs.com/ux-sdk/Chart.stories.data.json',
+    },
+    G: {
+      queryApi: {
+        host: 'http://localhost:8008',
+        query: 'res = df.groupby("category").size().to_frame("count").head(10)',
+      },
     },
   },
 };
