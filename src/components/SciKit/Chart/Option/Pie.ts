@@ -43,5 +43,31 @@ export class Pie extends Base {
         },
       ],
     };
+
+    this.methods = { ...this.methods, setX: this.setXRun, setY: this.setYRun };
   }
+
+  setX = (dimName: string, seriesIndex: number = 0) => {
+    this.callStack = [
+      ...this.callStack,
+      { name: 'setX', params: [dimName, seriesIndex] },
+    ];
+
+    return this;
+  };
+
+  protected setXRun = (dimName: string, seriesIndex: number = 0) =>
+    ((this.option as any).series[seriesIndex].encode.itemName = dimName);
+
+  setY = (dimName: string, seriesIndex: number = 0) => {
+    this.callStack = [
+      ...this.callStack,
+      { name: 'setY', params: [dimName, seriesIndex] },
+    ];
+
+    return this;
+  };
+
+  protected setYRun = (dimName: string, seriesIndex: number = 0) =>
+    ((this.option as any).series[seriesIndex].encode.value = dimName);
 }

@@ -254,19 +254,31 @@ export class Base {
 
   protected updateOptionRun = (option: object) => {
     if (!option.hasOwnProperty('series')) {
-      this.option = merge(this.option, option);
+      this.option = merge.withOptions(
+        { mergeArrays: false },
+        this.option,
+        option
+      );
     } else {
       const [nonSeriesThis, seriesThis] = splitSeriesOption(this.option);
       const [nonSeries, series] = splitSeriesOption(option);
 
-      const nonSeriesMerged = merge(nonSeriesThis, nonSeries);
+      const nonSeriesMerged = merge.withOptions(
+        { mergeArrays: false },
+        nonSeriesThis,
+        nonSeries
+      );
       const seriesMerged =
         series.length > seriesThis.length
           ? series.map((s: object, i: number) =>
-              i >= seriesThis.length ? s : merge(seriesThis[i], s)
+              i >= seriesThis.length
+                ? s
+                : merge.withOptions({ mergeArrays: false }, seriesThis[i], s)
             )
           : seriesThis.map((s: object, i: number) =>
-              i >= series.length ? s : merge(s, series[i])
+              i >= series.length
+                ? s
+                : merge.withOptions({ mergeArrays: false }, s, series[i])
             );
 
       this.option = { ...nonSeriesMerged, series: seriesMerged };

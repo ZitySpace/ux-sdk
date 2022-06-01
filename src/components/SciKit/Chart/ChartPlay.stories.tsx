@@ -136,6 +136,48 @@ const ChartPlay = ({
               )
             ),
         });
+    } else if (emp === 'CategoryDistribution_Pie') {
+      optionRef.current = Option.makePie()
+        .setData({
+          queryApi: {
+            host: HOST,
+            query:
+              'res = df.groupby("category").size().sort_values(ascending=False).to_frame("count")',
+          },
+        })
+        .updateOption({
+          legend: { left: 'left' },
+          series: [
+            {
+              name: 'CountOfSamples',
+              radius: ['30%', '70%'],
+              center: ['75%', '50%'],
+              encode: {
+                itemName: 'category',
+                value: 'count',
+              },
+            },
+          ],
+        })
+        .setBackgroundAction({
+          name: 'click',
+          action: async (chart: echarts.ECharts) => {
+            // Option.unselectAll(chart);
+            setFiltering(await Option.filterOptionFromQuery(HOST, 'res = df'));
+          },
+        })
+        .addElementAction({
+          name: 'click',
+          query: 'series',
+          action: async (params: EventParams) =>
+            setFiltering(
+              await Option.filterOptionFromQuery(
+                HOST,
+                'res = df[df.category == data[0]]',
+                params
+              )
+            ),
+        });
     }
 
     if (emp !== example) {
