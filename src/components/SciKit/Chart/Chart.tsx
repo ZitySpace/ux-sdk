@@ -34,7 +34,7 @@ const Chart = ({
   }, [option]);
 
   const chart = chartRef.current;
-  const ready = chart && option.option.dataset;
+  const ready = chart && (option.data === null || option.option.dataset);
 
   if (ready) {
     chart.setOption(option.option);
@@ -45,15 +45,17 @@ const Chart = ({
     if (!actionsBinded.current && elementActions)
       elementActions.map((a) =>
         a.query
-          ? chart.on(a.name, a.query, (params) => a.action(params as any))
-          : chart.on(a.name, (params) => a.action(params as any))
+          ? chart.on(a.name, a.query, (params) =>
+              a.action(params as any, chart)
+            )
+          : chart.on(a.name, (params) => a.action(params as any, chart))
       );
 
     const backgroundAction = option.actions.background;
     if (!actionsBinded.current && backgroundAction)
       chart.getZr().on(backgroundAction.name, function (event) {
         if (!event.target) {
-          backgroundAction.action();
+          backgroundAction.action(chart);
         }
       });
 

@@ -1,5 +1,6 @@
 import { ComponentMeta, ComponentStory } from '@storybook/react';
 import React, { useState } from 'react';
+import * as echarts from 'echarts';
 import Chart from './Chart';
 import { Option } from './Option';
 import { EventParams } from './Option/Base';
@@ -26,14 +27,37 @@ const Template: ComponentStory<any> = (args) => {
     .setData(opt === 'E' ? datasetFromDF : args.datasets[opt])
     .setX(opt === 'G' ? 'category' : 'Day')
     .setY(opt === 'G' ? 'count' : 'Value')
+    .updateOption({
+      series: [
+        {
+          colorBy: 'data',
+          emphasis: {
+            focus: 'self',
+          },
+          selectedMode: 'multiple',
+          select: {
+            itemStyle: {
+              borderColor: 'rgba(0,0,0,0)',
+              borderWidth: 0,
+              shadowBlur: 10,
+            },
+          },
+        },
+      ],
+    })
     .setBackgroundAction({
       name: 'click',
-      action: () => console.log('background clicked'),
+      action: (chart: echarts.ECharts) => {
+        console.log('background clicked');
+        Option.unselectAll(chart);
+      },
     })
     .addElementAction({
       name: 'click',
       query: 'series',
-      action: (params: EventParams) => console.log(params.data),
+      action: (params: EventParams) => {
+        console.log(params.data);
+      },
     });
 
   return (

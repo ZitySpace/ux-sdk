@@ -1,5 +1,7 @@
 import { requestTemplate } from '../../../../utils/apis';
+import { useFilterFromDataframe } from '../../../../utils';
 import * as echarts from 'echarts';
+import merge from 'ts-deepmerge';
 
 interface ChartDatasetProps {
   header?: string[];
@@ -58,6 +60,29 @@ const fetchData = async (jsonUri: string) => {
   return data;
 };
 
+const splitSeriesOption = (option: echarts.EChartsOption | object) => {
+  if (!option.hasOwnProperty('series')) return [option, []];
+
+  return [
+    Object.fromEntries(
+      Object.entries(option).filter(([key]) => key !== 'series')
+    ),
+    (option as any)['series'],
+  ];
+};
+
+const transformParams = (params: EventParams) => {
+  if (params.dimensionNames.length)
+    return Object.fromEntries(
+      params.dimensionNames.map((_, i) => [
+        params.dimensionNames[i],
+        params.value[i],
+      ])
+    );
+
+  return params.value;
+};
+
 export type EventParams = {
   // The component name clicked,
   // component type, could be 'series'、'markLine'、'markPoint'、'timeLine', etc..
@@ -89,12 +114,12 @@ export type EventParams = {
 type ElementActionProps = {
   name: string;
   query?: string | Object;
-  action: (params: EventParams) => void;
+  action: (params: EventParams, chart?: echarts.ECharts) => void;
 };
 
 type BackgroundActionProps = {
   name: string;
-  action: () => void;
+  action: (chart?: echarts.ECharts) => void;
 };
 
 export class Base {
@@ -115,6 +140,7 @@ export class Base {
       setData: this.setDataRun,
       setBackgroundAction: this.setBackgroundActionRun,
       addElementAction: this.addElementActionRun,
+      updateOption: this.updateOptionRun,
     };
     this.callStack = [];
   }
@@ -158,6 +184,39 @@ export class Base {
       };
   };
 
+  public static filterOptionFromQuery = async (
+    host: string,
+    query: string,
+    params?: EventParams
+  ) => {
+    let query_: string = query;
+    if (params !== undefined) {
+      const data = transformParams(params);
+      query_ = `data = ${JSON.stringify(data)}\n${query}`;
+    }
+    const df = await queryData(host, query_);
+    const { header, data } = df ? df : { header: [], data: [] };
+    const filterOption = useFilterFromDataframe({ header, data }, true);
+    return filterOption;
+  };
+
+  public static unselectAll = (chart: echarts.ECharts) => {
+    const selected = (chart.getOption().series as any).reduce(
+      (res: any, s: any) =>
+        s.selectedMap
+          ? [
+              ...res,
+              ...Object.keys(s.selectedMap).filter((k) => s.selectedMap[k]),
+            ]
+          : res,
+      []
+    );
+    chart.dispatchAction({
+      type: 'unselect',
+      name: selected,
+    });
+  };
+
   setBackgroundAction = (action: BackgroundActionProps) => {
     this.callStack = [
       ...this.callStack,
@@ -182,5 +241,35 @@ export class Base {
   protected addElementActionRun = (action: ElementActionProps) => {
     if (this.actions.element === null) this.actions.element = [action];
     else this.actions.element = [...this.actions.element, action];
+  };
+
+  updateOption = (option: object) => {
+    this.callStack = [
+      ...this.callStack,
+      { name: 'updateOption', params: [option] },
+    ];
+
+    return this;
+  };
+
+  protected updateOptionRun = (option: object) => {
+    if (!option.hasOwnProperty('series')) {
+      this.option = merge(this.option, option);
+    } else {
+      const [nonSeriesThis, seriesThis] = splitSeriesOption(this.option);
+      const [nonSeries, series] = splitSeriesOption(option);
+
+      const nonSeriesMerged = merge(nonSeriesThis, nonSeries);
+      const seriesMerged =
+        series.length > seriesThis.length
+          ? series.map((s: object, i: number) =>
+              i >= seriesThis.length ? s : merge(seriesThis[i], s)
+            )
+          : seriesThis.map((s: object, i: number) =>
+              i >= series.length ? s : merge(s, series[i])
+            );
+
+      this.option = { ...nonSeriesMerged, series: seriesMerged };
+    }
   };
 }
