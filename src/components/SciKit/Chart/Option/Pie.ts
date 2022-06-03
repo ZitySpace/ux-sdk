@@ -19,10 +19,7 @@ export class Pie extends Base {
           type: 'shadow',
         },
       },
-      legend: {
-        orient: 'vertical',
-        left: '20%',
-      },
+      legend: {},
       series: [
         {
           name: 'SeriesName',

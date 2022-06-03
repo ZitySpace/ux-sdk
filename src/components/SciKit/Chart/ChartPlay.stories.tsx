@@ -150,7 +150,10 @@ const ChartPlay = ({
           },
         })
         .updateOption({
-          legend: { left: 'left' },
+          legend: {
+            left: 'left',
+            orient: 'vertical',
+          },
           series: [
             {
               name: 'CountOfSamples',
@@ -199,6 +202,11 @@ const ChartPlay = ({
           grid: {
             left: '50%',
           },
+          legend: {
+            left: 'left',
+            orient: 'vertical',
+            selectedMode: 'multiple',
+          },
           xAxis: {
             name: 'BoxWidth',
             splitLine: {
@@ -217,8 +225,9 @@ const ChartPlay = ({
               name: 'BoxSize',
               symbolSize: 6,
               emphasis: {
-                focus: 'self',
+                focus: 'series',
               },
+              selectedMode: 'series',
               encode: {
                 x: 'w',
                 y: 'h',
@@ -227,26 +236,34 @@ const ChartPlay = ({
             },
           ],
         })
-        .setColor('category');
-      // .setBackgroundAction({
-      //   name: 'click',
-      //   action: async (chart: echarts.ECharts) => {
-      //     Option.unselectAll(chart);
-      //     setFiltering(await Option.filterOptionFromQuery(HOST, 'res = df'));
-      //   },
-      // })
-      // .addElementAction({
-      //   name: 'click',
-      //   query: 'series',
-      //   action: async (params: EventParams) =>
-      //     setFiltering(
-      //       await Option.filterOptionFromQuery(
-      //         HOST,
-      //         'res = df[df.category == data[0]]',
-      //         params
-      //       )
-      //     ),
-      // });
+        .setColor('category')
+        .setBackgroundAction({
+          name: 'click',
+          action: async (chart: echarts.ECharts) => {
+            Option.unselectAll(chart);
+            setFiltering(await Option.filterOptionFromQuery(HOST, 'res = df'));
+          },
+        })
+        .addElementAction({
+          name: 'click',
+          query: 'series',
+          action: async (params: EventParams, chart: echarts.ECharts) => {
+            Option.unselectAll(chart);
+            chart.dispatchAction({
+              type: 'select',
+              seriesName: params.seriesName,
+              dataIndex: Array.from({ length: 10000 }, (_, i) => i),
+            });
+
+            setFiltering(
+              await Option.filterOptionFromQuery(
+                HOST,
+                'res = df[df.category == data["category"]]',
+                params
+              )
+            );
+          },
+        });
     }
 
     if (emp !== example) {

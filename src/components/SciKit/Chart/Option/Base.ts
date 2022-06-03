@@ -184,8 +184,8 @@ export class Base {
       this.option = {
         dataset:
           'header' in dataset
-            ? { dimensions: dataset['header'], source: dataset['data'] }
-            : { source: dataset['data'] },
+            ? [{ dimensions: dataset['header'], source: dataset['data'] }]
+            : [{ source: dataset['data'] }],
         ...this.option,
       };
   };
@@ -207,27 +207,23 @@ export class Base {
   };
 
   public static unselectAll = (chart: echarts.ECharts) => {
-    const selected = (chart.getOption().series as any).reduce(
-      (res: any, s: any) =>
-        s.selectedMap
-          ? [
-              ...res,
-              ...Object.keys(s.selectedMap).filter((k) => s.selectedMap[k]),
-            ]
-          : res,
-      []
-    );
     chart.dispatchAction({
       type: 'unselect',
-      name: selected,
+      seriesIndex: Array.from({ length: 100 }, (_, i) => i),
+      dataIndex: Array.from({ length: 10000 }, (_, i) => i),
     });
   };
 
-  protected getColumn = (nameOrIdx: string | number) => {
+  protected getColumn = (
+    nameOrIdx: string | number,
+    datasetIndex: number = 0
+  ) => {
     if (!this.option.dataset) return [];
 
-    const dataset = this.option.dataset as ChartDatasetProps;
-    const data = dataset.source;
+    const dataset = (this.option.dataset as ChartDatasetProps[])[datasetIndex];
+    if (!dataset) return [];
+
+    const source = dataset.source;
 
     if (dataset.hasOwnProperty('dimensions')) {
       const ndim = dataset.dimensions!.length;
@@ -243,11 +239,11 @@ export class Base {
         typeof nameOrIdx === 'number'
           ? nameOrIdx
           : dataset.dimensions?.findIndex((name) => name === nameOrIdx)!;
-      return (data as any[][]).map((d) => d[index]);
+      return (source as any[][]).map((d) => d[index]);
     }
 
-    if (Array.isArray(data)) {
-      const first = data[0];
+    if (Array.isArray(source)) {
+      const first = source[0];
       if (Array.isArray(first)) {
         const ndim = first.length;
 
@@ -259,7 +255,7 @@ export class Base {
           typeof nameOrIdx === 'number'
             ? nameOrIdx
             : first.findIndex((name) => name === nameOrIdx)!;
-        return (data as any[][]).slice(1).map((d) => d[index]);
+        return (source as any[][]).slice(1).map((d) => d[index]);
       }
 
       const names = Object.keys(first);
@@ -268,22 +264,25 @@ export class Base {
         return [];
 
       const name = typeof nameOrIdx === 'string' ? nameOrIdx : names[nameOrIdx];
-      return (data as { [key: string]: any }[]).map((d) => d[name]);
+      return (source as { [key: string]: any }[]).map((d) => d[name]);
     }
 
-    const names = Object.keys(data);
+    const names = Object.keys(source);
     if (typeof nameOrIdx === 'number' && nameOrIdx >= names.length) return [];
     if (typeof nameOrIdx === 'string' && !names.includes(nameOrIdx)) return [];
 
     const name = typeof nameOrIdx === 'string' ? nameOrIdx : names[nameOrIdx];
 
-    return data[name];
+    return source[name];
   };
 
-  protected getColumns = (nameOrIdxArr: (string | number)[]) => {
+  protected getColumns = (
+    nameOrIdxArr: (string | number)[],
+    datasetIndex: number = 0
+  ) => {
     const columns = nameOrIdxArr.reduce(
       (res: any[][], nameOrIdx: string | number) => {
-        const values = this.getColumn(nameOrIdx);
+        const values = this.getColumn(nameOrIdx, datasetIndex);
         return values === []
           ? res
           : [

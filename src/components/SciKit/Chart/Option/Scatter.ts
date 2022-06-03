@@ -70,6 +70,7 @@ export class Scatter extends Base {
           type: 'cross',
         },
       },
+      legend: {},
       xAxis: {
         name: '',
         nameLocation: 'middle',
@@ -97,13 +98,6 @@ export class Scatter extends Base {
             x: '',
             y: '',
           },
-          // tooltip: {
-          //   formatter: (params: any) => {
-          //     return `${params.seriesName}: (${
-          //       params.value[params.encode.x[0]]
-          //     }, ${params.value[params.encode.y[0]]})`;
-          //   },
-          // },
         },
       ],
     };
@@ -160,38 +154,50 @@ export class Scatter extends Base {
   ) => {
     const thisOption = this.option as any;
 
-    const values = this.getColumn(dimName);
+    const serieOption = thisOption.series[seriesIndex];
+    if (!serieOption) return;
+    const datasetIndex = serieOption.datasetIndex || 0;
+
+    const values = this.getColumn(dimName, datasetIndex);
     if (!values.length) return;
     const uniqValues = Array.from(new Set(values));
     const colors = Array.from(
       { length: Math.ceil(uniqValues.length / palette.length) },
       () => palette
-    ).flat();
+    )
+      .flat()
+      .slice(0, uniqValues.length);
 
-    // as of v5.3.2, unlike legend, visualMap does not
-    // support wrapping/paging/scrollable.
-    // simulate paging by creating multiple visualMaps
-    // https://github.com/apache/echarts/issues/13759
-    // https://github.com/apache/echarts/issues/8413
-    // unfortunately, this still doesn't work, because
-    // all three visual maps will apply on the same data
-    // and only the last visualmap will take effect. points/categories
-    // outOfRange for the last visualmap will be invisible. Sucks.
-    const nPerMap = 12;
-    thisOption.visualMap = Array.from(
-      { length: Math.ceil(uniqValues.length / nPerMap) },
-      (_, i) => ({
-        type: 'piecewise',
-        itemSymbol: 'circle',
-        seriesIndex: seriesIndex,
-        dimension: dimName,
-        top: 'top',
-        left: i * 160,
-        categories: uniqValues.slice(i * nPerMap, (i + 1) * nPerMap),
-        inRange: {
-          color: colors.slice(i * nPerMap, (i + 1) * nPerMap),
+    const start = thisOption.dataset.length;
+    thisOption.dataset = [
+      ...thisOption.dataset,
+
+      ...uniqValues.map((v) => ({
+        fromDatasetIndex: datasetIndex,
+        transform: {
+          type: 'filter',
+          config: { dimension: dimName, value: v },
         },
-      })
-    );
+      })),
+    ];
+
+    thisOption.series = [
+      ...thisOption.series,
+      ...uniqValues.map((v, i) => ({
+        ...serieOption,
+        name: v,
+        datasetIndex: start + i,
+        itemStyle: {
+          ...serieOption.itemStyle,
+          color: colors[i],
+        },
+      })),
+    ];
+
+    serieOption.data = [];
+    thisOption.legend = {
+      ...thisOption.legend,
+      data: uniqValues,
+    };
   };
 }
