@@ -82,7 +82,7 @@ const ChartPlay = ({
         })
         .updateOption({
           grid: {
-            left: '4%',
+            left: '6%',
             right: '4%',
             top: '10%',
             bottom: '36%',
@@ -94,6 +94,10 @@ const ChartPlay = ({
             axisLabel: {
               rotate: 45,
             },
+          },
+          yAxis: {
+            name: 'num of samples',
+            nameGap: 40,
           },
           series: [
             {
@@ -152,6 +156,11 @@ const ChartPlay = ({
               name: 'CountOfSamples',
               radius: ['30%', '70%'],
               center: ['75%', '50%'],
+              emphasis: {
+                focus: 'self',
+              },
+              selectedMode: 'single',
+              selectedOffset: 15,
               encode: {
                 itemName: 'category',
                 value: 'count',
@@ -162,7 +171,7 @@ const ChartPlay = ({
         .setBackgroundAction({
           name: 'click',
           action: async (chart: echarts.ECharts) => {
-            // Option.unselectAll(chart);
+            Option.unselectAll(chart);
             setFiltering(await Option.filterOptionFromQuery(HOST, 'res = df'));
           },
         })
@@ -178,6 +187,66 @@ const ChartPlay = ({
               )
             ),
         });
+    } else if (emp === 'BoxSizeDistribution_Scatter') {
+      optionRef.current = Option.makeScatter()
+        .setData({
+          queryApi: {
+            host: HOST,
+            query: 'res = df',
+          },
+        })
+        .updateOption({
+          grid: {
+            left: '50%',
+          },
+          xAxis: {
+            name: 'BoxWidth',
+            splitLine: {
+              show: false,
+            },
+          },
+          yAxis: {
+            name: 'BoxHeight',
+            nameGap: 50,
+            splitLine: {
+              show: false,
+            },
+          },
+          series: [
+            {
+              name: 'BoxSize',
+              symbolSize: 6,
+              emphasis: {
+                focus: 'self',
+              },
+              encode: {
+                x: 'w',
+                y: 'h',
+                tooltip: ['w', 'h', 'category'],
+              },
+            },
+          ],
+        })
+        .setColor('category');
+      // .setBackgroundAction({
+      //   name: 'click',
+      //   action: async (chart: echarts.ECharts) => {
+      //     Option.unselectAll(chart);
+      //     setFiltering(await Option.filterOptionFromQuery(HOST, 'res = df'));
+      //   },
+      // })
+      // .addElementAction({
+      //   name: 'click',
+      //   query: 'series',
+      //   action: async (params: EventParams) =>
+      //     setFiltering(
+      //       await Option.filterOptionFromQuery(
+      //         HOST,
+      //         'res = df[df.category == data[0]]',
+      //         params
+      //       )
+      //     ),
+      // });
     }
 
     if (emp !== example) {

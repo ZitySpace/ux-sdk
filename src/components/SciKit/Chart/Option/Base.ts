@@ -3,9 +3,14 @@ import { useFilterFromDataframe } from '../../../../utils';
 import * as echarts from 'echarts';
 import merge from 'ts-deepmerge';
 
-interface ChartDatasetProps {
+interface ChartDataProps {
   header?: string[];
   data: any[][] | { [key: string]: any }[] | { [key: string]: any[] };
+}
+
+interface ChartDatasetProps {
+  dimensions?: string[];
+  source: any[][] | { [key: string]: any }[] | { [key: string]: any[] };
 }
 
 type ChartExternalDatasetProps =
@@ -71,6 +76,9 @@ const splitSeriesOption = (option: echarts.EChartsOption | object) => {
   ];
 };
 
+const transposeMatrix = (matrix: any[][]) =>
+  matrix[0].map((_, c) => matrix.map((row, r) => matrix[r][c]));
+
 const transformParams = (params: EventParams) => {
   if (params.dimensionNames.length)
     return Object.fromEntries(
@@ -123,7 +131,7 @@ type BackgroundActionProps = {
 };
 
 export class Base {
-  data: ChartDatasetProps | ChartExternalDatasetProps | null;
+  data: ChartDataProps | ChartExternalDatasetProps | null;
   option: echarts.EChartsOption;
   actions: {
     element: ElementActionProps[] | null;
@@ -146,26 +154,24 @@ export class Base {
   }
 
   run = async () => {
-    await Promise.all(
-      this.callStack.map(async ({ name, params }) => {
-        await this.methods[name](...params);
-      })
-    );
+    for (const { name, params } of this.callStack) {
+      await this.methods[name](...params);
+    }
 
     return this;
   };
 
-  setData = (data: ChartDatasetProps | ChartExternalDatasetProps | null) => {
+  setData = (data: ChartDataProps | ChartExternalDatasetProps | null) => {
     this.callStack = [...this.callStack, { name: 'setData', params: [data] }];
     return this;
   };
 
   protected setDataRun = async (
-    data: ChartDatasetProps | ChartExternalDatasetProps | null
+    data: ChartDataProps | ChartExternalDatasetProps | null
   ) => {
     this.data = data;
 
-    const dataset: ChartDatasetProps | null =
+    const dataset: ChartDataProps | null =
       data === null
         ? null
         : 'jsonUri' in data
@@ -215,6 +221,82 @@ export class Base {
       type: 'unselect',
       name: selected,
     });
+  };
+
+  protected getColumn = (nameOrIdx: string | number) => {
+    if (!this.option.dataset) return [];
+
+    const dataset = this.option.dataset as ChartDatasetProps;
+    const data = dataset.source;
+
+    if (dataset.hasOwnProperty('dimensions')) {
+      const ndim = dataset.dimensions!.length;
+
+      if (typeof nameOrIdx === 'number' && nameOrIdx >= ndim) return [];
+      if (
+        typeof nameOrIdx === 'string' &&
+        !dataset.dimensions?.includes(nameOrIdx)
+      )
+        return [];
+
+      const index =
+        typeof nameOrIdx === 'number'
+          ? nameOrIdx
+          : dataset.dimensions?.findIndex((name) => name === nameOrIdx)!;
+      return (data as any[][]).map((d) => d[index]);
+    }
+
+    if (Array.isArray(data)) {
+      const first = data[0];
+      if (Array.isArray(first)) {
+        const ndim = first.length;
+
+        if (typeof nameOrIdx === 'number' && nameOrIdx >= ndim) return [];
+        if (typeof nameOrIdx === 'string' && !first.includes(nameOrIdx))
+          return [];
+
+        const index =
+          typeof nameOrIdx === 'number'
+            ? nameOrIdx
+            : first.findIndex((name) => name === nameOrIdx)!;
+        return (data as any[][]).slice(1).map((d) => d[index]);
+      }
+
+      const names = Object.keys(first);
+      if (typeof nameOrIdx === 'number' && nameOrIdx >= names.length) return [];
+      if (typeof nameOrIdx === 'string' && !names.includes(nameOrIdx))
+        return [];
+
+      const name = typeof nameOrIdx === 'string' ? nameOrIdx : names[nameOrIdx];
+      return (data as { [key: string]: any }[]).map((d) => d[name]);
+    }
+
+    const names = Object.keys(data);
+    if (typeof nameOrIdx === 'number' && nameOrIdx >= names.length) return [];
+    if (typeof nameOrIdx === 'string' && !names.includes(nameOrIdx)) return [];
+
+    const name = typeof nameOrIdx === 'string' ? nameOrIdx : names[nameOrIdx];
+
+    return data[name];
+  };
+
+  protected getColumns = (nameOrIdxArr: (string | number)[]) => {
+    const columns = nameOrIdxArr.reduce(
+      (res: any[][], nameOrIdx: string | number) => {
+        const values = this.getColumn(nameOrIdx);
+        return values === []
+          ? res
+          : [
+              [...res[0], values],
+              [...res[1], nameOrIdx],
+            ];
+      },
+      [[], []]
+    );
+
+    return columns[1].length
+      ? [transposeMatrix(columns[0]), columns[1]]
+      : [[], []];
   };
 
   setBackgroundAction = (action: BackgroundActionProps) => {

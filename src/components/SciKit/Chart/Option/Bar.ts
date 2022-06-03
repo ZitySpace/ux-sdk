@@ -32,10 +32,22 @@ export class Bar extends Base {
         },
       },
       xAxis: {
+        name: '',
         type: 'category',
+        nameLocation: 'middle',
+        nameGap: 30,
+        nameTextStyle: {
+          fontWeight: 'bold',
+        },
       },
       yAxis: {
+        name: '',
         type: 'value',
+        nameLocation: 'middle',
+        nameGap: 30,
+        nameTextStyle: {
+          fontWeight: 'bold',
+        },
       },
       series: [
         {
