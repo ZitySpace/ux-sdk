@@ -42,6 +42,7 @@ export class Scatter extends Base {
     this.option = {
       toolbox: {
         feature: {
+          brush: { type: [] },
           dataView: { readOnly: false },
           restore: {},
           saveAsImage: {},

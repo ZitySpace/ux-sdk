@@ -11,7 +11,11 @@ import { useCarouselStore } from '../../../stores/carouselStore';
 import { usePagingStore } from '../../../stores/pagingStore';
 import { useCarouselQueries } from '../../../utils/hooks/useCarouselQueries';
 import { useFilterFromDataframe, useSetFiltering } from '../../../utils';
-import { Base, EventParams } from './Option/Base';
+import {
+  Base,
+  BrushSelectedEventParams,
+  MouseEventParams,
+} from './Option/Base';
 
 export default {
   title: 'UX-SDK/ChartPlay',
@@ -131,7 +135,7 @@ const ChartPlay = ({
         .addElementAction({
           name: 'click',
           query: 'series',
-          action: async (params: EventParams) =>
+          action: async (params: MouseEventParams) =>
             setFiltering(
               await Option.filterOptionFromQuery(
                 HOST,
@@ -181,7 +185,7 @@ const ChartPlay = ({
         .addElementAction({
           name: 'click',
           query: 'series',
-          action: async (params: EventParams) =>
+          action: async (params: MouseEventParams) =>
             setFiltering(
               await Option.filterOptionFromQuery(
                 HOST,
@@ -199,6 +203,19 @@ const ChartPlay = ({
           },
         })
         .updateOption({
+          toolbox: {
+            feature: {
+              brush: {
+                type: ['rect', 'polygon', 'lineX', 'lineY', 'keep', 'clear'],
+              },
+            },
+          },
+          brush: {
+            throttleType: 'debounce',
+            throttleDelay: 500,
+            xAxisIndex: 0,
+            yAxisIndex: 0,
+          },
           grid: {
             left: '50%',
           },
@@ -247,7 +264,7 @@ const ChartPlay = ({
         .addElementAction({
           name: 'click',
           query: 'series',
-          action: async (params: EventParams, chart: echarts.ECharts) => {
+          action: async (params: MouseEventParams, chart: echarts.ECharts) => {
             Option.unselectAll(chart);
             chart.dispatchAction({
               type: 'select',
@@ -262,6 +279,15 @@ const ChartPlay = ({
                 params
               )
             );
+          },
+        })
+        .addElementAction({
+          name: 'brushSelected',
+          action: async (
+            params: BrushSelectedEventParams,
+            chart: echarts.ECharts
+          ) => {
+            Option.getBrushedItems(params, chart);
           },
         });
     }

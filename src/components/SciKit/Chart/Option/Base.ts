@@ -65,21 +65,35 @@ const fetchData = async (jsonUri: string) => {
   return data;
 };
 
-const splitSeriesOption = (option: echarts.EChartsOption | object) => {
-  if (!option.hasOwnProperty('series')) return [option, []];
+const ListableOptions = [
+  'grid',
+  'xAxis',
+  'yAxis',
+  'polar',
+  'radiusAxis',
+  'angleAxis',
+  'radar',
+  'dataZoom',
+  'visualMap',
+  'dataset',
+  'series',
+];
 
+const splitListableOption = (option: echarts.EChartsOption | object) => {
   return [
     Object.fromEntries(
-      Object.entries(option).filter(([key]) => key !== 'series')
+      Object.entries(option).filter(([key]) => ListableOptions.includes(key))
     ),
-    (option as any)['series'],
+    Object.fromEntries(
+      Object.entries(option).filter(([key]) => !ListableOptions.includes(key))
+    ),
   ];
 };
 
 const transposeMatrix = (matrix: any[][]) =>
   matrix[0].map((_, c) => matrix.map((row, r) => matrix[r][c]));
 
-const transformParams = (params: EventParams) => {
+const transformParams = (params: MouseEventParams) => {
   if (params.dimensionNames.length)
     return Object.fromEntries(
       params.dimensionNames.map((_, i) => [
@@ -91,7 +105,7 @@ const transformParams = (params: EventParams) => {
   return params.value;
 };
 
-export type EventParams = {
+export type MouseEventParams = {
   // The component name clicked,
   // component type, could be 'series'、'markLine'、'markPoint'、'timeLine', etc..
   componentType: string;
@@ -119,10 +133,32 @@ export type EventParams = {
   dimensionNames: string[];
 };
 
+export type BrushSelectedEventParams = {
+  type: 'brushselected';
+  batch: {
+    brushId: string;
+    brushIndex: number;
+    brushName: string;
+
+    areas: {
+      range: number[];
+      coordRange: number[];
+      coordRanges: number[][];
+    }[];
+
+    selected: {
+      seriesIndex: number;
+      dataIndex: number[];
+    }[];
+  }[];
+};
+
 type ElementActionProps = {
   name: string;
   query?: string | Object;
-  action: (params: EventParams, chart?: echarts.ECharts) => void;
+  action:
+    | { (params: MouseEventParams, chart?: echarts.ECharts): void }
+    | { (params: BrushSelectedEventParams, chart?: echarts.ECharts): void };
 };
 
 type BackgroundActionProps = {
@@ -193,7 +229,7 @@ export class Base {
   public static filterOptionFromQuery = async (
     host: string,
     query: string,
-    params?: EventParams
+    params?: MouseEventParams
   ) => {
     let query_: string = query;
     if (params !== undefined) {
@@ -212,6 +248,14 @@ export class Base {
       seriesIndex: Array.from({ length: 100 }, (_, i) => i),
       dataIndex: Array.from({ length: 10000 }, (_, i) => i),
     });
+  };
+
+  public static getBrushedItems = (
+    params: BrushSelectedEventParams,
+    chart: echarts.ECharts
+  ) => {
+    const { dataset, series } = chart.getOption();
+    console.log(params);
   };
 
   protected getColumn = (
@@ -333,36 +377,57 @@ export class Base {
     return this;
   };
 
-  protected updateOptionRun = (option: object) => {
-    if (!option.hasOwnProperty('series')) {
-      this.option = merge.withOptions(
-        { mergeArrays: false },
-        this.option,
-        option
-      );
-    } else {
-      const [nonSeriesThis, seriesThis] = splitSeriesOption(this.option);
-      const [nonSeries, series] = splitSeriesOption(option);
+  protected updateOptionRun = (option: {
+    [key: string]: object | object[];
+  }) => {
+    const thisOption = this.option;
 
-      const nonSeriesMerged = merge.withOptions(
-        { mergeArrays: false },
-        nonSeriesThis,
-        nonSeries
-      );
-      const seriesMerged =
-        series.length > seriesThis.length
-          ? series.map((s: object, i: number) =>
-              i >= seriesThis.length
+    const mergeListableOpts = (
+      optL_: object | object[],
+      optR_: object | object[]
+    ) => {
+      const optL = Array.isArray(optL_) ? optL_ : [optL_];
+      const optR = Array.isArray(optR_) ? optR_ : [optR_];
+
+      const merged =
+        optL.length >= optR.length
+          ? optL.map((s: object, i: number) =>
+              i >= optR.length
                 ? s
-                : merge.withOptions({ mergeArrays: false }, seriesThis[i], s)
+                : merge.withOptions({ mergeArrays: false }, s, optR[i])
             )
-          : seriesThis.map((s: object, i: number) =>
-              i >= series.length
+          : optR.map((s: object, i: number) =>
+              i >= optL.length
                 ? s
-                : merge.withOptions({ mergeArrays: false }, s, series[i])
+                : merge.withOptions({ mergeArrays: false }, optL[i], s)
             );
 
-      this.option = { ...nonSeriesMerged, series: seriesMerged };
-    }
+      return merged;
+    };
+
+    const [listableThisOpts, nonListableThisOpts] =
+      splitListableOption(thisOption);
+    const [listableOpts, nonListableOpts] = splitListableOption(option);
+    const nonListableMergedOpts = merge.withOptions(
+      { mergeArrays: false },
+      nonListableThisOpts,
+      nonListableOpts
+    );
+    const listableKeys = Array.from(
+      new Set([...Object.keys(listableThisOpts), ...Object.keys(listableOpts)])
+    );
+    const listableMergedOpts = Object.fromEntries(
+      listableKeys.map((k: string) => [
+        k,
+        mergeListableOpts(
+          thisOption.hasOwnProperty(k)
+            ? (thisOption[k] as object | object[])
+            : [],
+          option[k] || []
+        ),
+      ])
+    );
+
+    this.option = { ...nonListableMergedOpts, ...listableMergedOpts };
   };
 }

@@ -3,7 +3,7 @@ import React, { useState } from 'react';
 import * as echarts from 'echarts';
 import Chart from './Chart';
 import { Option } from './Option';
-import { EventParams } from './Option/Base';
+import { MouseEventParams } from './Option/Base';
 import { useDataframeStore } from '../../../stores/dataframeStore';
 import { useStore } from 'zustand';
 
@@ -55,7 +55,7 @@ const Template: ComponentStory<any> = (args) => {
     .addElementAction({
       name: 'click',
       query: 'series',
-      action: (params: EventParams) => {
+      action: (params: MouseEventParams) => {
         console.log(params.data);
       },
     });
