@@ -10,7 +10,7 @@ interface ChartDataProps {
 
 interface ChartDatasetProps {
   dimensions?: string[];
-  source: any[][] | { [key: string]: any }[] | { [key: string]: any[] };
+  source: any[][];
 }
 
 type ChartExternalDatasetProps =
@@ -216,14 +216,39 @@ export class Base {
         ? await queryData(data['queryApi']['host'], data['queryApi']['query'])
         : data;
 
-    if (dataset)
+    if (dataset) {
+      // convert dataset into standard format
+      let dimensions: string[];
+      let source: any[][];
+      const dataContent = dataset['data'];
+
+      if ('header' in dataset) {
+        dimensions = dataset['header']!;
+        source = dataContent as any[][];
+      } else {
+        if (Array.isArray(dataContent)) {
+          if (Array.isArray(dataContent[0])) {
+            dimensions = (dataContent as any[][])[0];
+            source = (dataContent as any[][]).slice(1);
+          } else {
+            dimensions = Object.keys(
+              (dataContent as { [key: string]: any }[])[0]
+            );
+            source = (dataContent as { [key: string]: any }[]).map((r) =>
+              Object.values(r)
+            );
+          }
+        } else {
+          dimensions = Object.keys(dataContent);
+          source = transposeMatrix(Object.values(dataContent));
+        }
+      }
+
       this.option = {
-        dataset:
-          'header' in dataset
-            ? [{ dimensions: dataset['header'], source: dataset['data'] }]
-            : [{ source: dataset['data'] }],
+        dataset: [{ dimensions, source }],
         ...this.option,
       };
+    }
   };
 
   public static filterOptionFromQuery = async (
@@ -255,69 +280,43 @@ export class Base {
     chart: echarts.ECharts
   ) => {
     const { dataset, series } = chart.getOption();
-    console.log(params);
+    console.log(chart.getOption());
+  };
+
+  private columnExist = (
+    nameOrIdx: string | number,
+    datasetIndex: number = 0
+  ) => {
+    if (!this.option.dataset) return false;
+
+    const dataset = (this.option.dataset as ChartDatasetProps[])[datasetIndex];
+    if (!dataset) return false;
+
+    const ndim = dataset.dimensions!.length;
+
+    if (typeof nameOrIdx === 'number' && nameOrIdx >= ndim) return false;
+    if (
+      typeof nameOrIdx === 'string' &&
+      !dataset.dimensions?.includes(nameOrIdx)
+    )
+      return false;
+
+    return true;
   };
 
   protected getColumn = (
     nameOrIdx: string | number,
     datasetIndex: number = 0
   ) => {
-    if (!this.option.dataset) return [];
+    if (!this.columnExist(nameOrIdx, datasetIndex)) return [];
 
     const dataset = (this.option.dataset as ChartDatasetProps[])[datasetIndex];
-    if (!dataset) return [];
+    const index =
+      typeof nameOrIdx === 'number'
+        ? nameOrIdx
+        : dataset.dimensions?.findIndex((name) => name === nameOrIdx)!;
 
-    const source = dataset.source;
-
-    if (dataset.hasOwnProperty('dimensions')) {
-      const ndim = dataset.dimensions!.length;
-
-      if (typeof nameOrIdx === 'number' && nameOrIdx >= ndim) return [];
-      if (
-        typeof nameOrIdx === 'string' &&
-        !dataset.dimensions?.includes(nameOrIdx)
-      )
-        return [];
-
-      const index =
-        typeof nameOrIdx === 'number'
-          ? nameOrIdx
-          : dataset.dimensions?.findIndex((name) => name === nameOrIdx)!;
-      return (source as any[][]).map((d) => d[index]);
-    }
-
-    if (Array.isArray(source)) {
-      const first = source[0];
-      if (Array.isArray(first)) {
-        const ndim = first.length;
-
-        if (typeof nameOrIdx === 'number' && nameOrIdx >= ndim) return [];
-        if (typeof nameOrIdx === 'string' && !first.includes(nameOrIdx))
-          return [];
-
-        const index =
-          typeof nameOrIdx === 'number'
-            ? nameOrIdx
-            : first.findIndex((name) => name === nameOrIdx)!;
-        return (source as any[][]).slice(1).map((d) => d[index]);
-      }
-
-      const names = Object.keys(first);
-      if (typeof nameOrIdx === 'number' && nameOrIdx >= names.length) return [];
-      if (typeof nameOrIdx === 'string' && !names.includes(nameOrIdx))
-        return [];
-
-      const name = typeof nameOrIdx === 'string' ? nameOrIdx : names[nameOrIdx];
-      return (source as { [key: string]: any }[]).map((d) => d[name]);
-    }
-
-    const names = Object.keys(source);
-    if (typeof nameOrIdx === 'number' && nameOrIdx >= names.length) return [];
-    if (typeof nameOrIdx === 'string' && !names.includes(nameOrIdx)) return [];
-
-    const name = typeof nameOrIdx === 'string' ? nameOrIdx : names[nameOrIdx];
-
-    return source[name];
+    return dataset.source.map((d) => d[index]);
   };
 
   protected getColumns = (
@@ -340,6 +339,47 @@ export class Base {
     return columns[1].length
       ? [transposeMatrix(columns[0]), columns[1]]
       : [[], []];
+  };
+
+  protected groupByColumn = (by: string | number, datasetIndex: number = 0) => {
+    if (!this.columnExist(by, datasetIndex)) return {};
+
+    const dataset = (this.option.dataset as ChartDatasetProps[])[datasetIndex];
+    const source = dataset.source;
+
+    const index =
+      typeof by === 'number'
+        ? by
+        : dataset.dimensions?.findIndex((name) => name === by)!;
+    const calcKey = (row: any[]) => row[index];
+
+    return source.reduce(
+      (res: { [key: string]: ChartDatasetProps }, row: any[]) => {
+        const key = calcKey(row);
+
+        res[key] = res[key] || { dimensions: dataset.dimensions, source: [] };
+        res[key].source.push(row);
+        return res;
+      },
+      {}
+    );
+  };
+
+  protected groupByColumns = (
+    by: string[] | number[],
+    datasetIndex: number = 0
+  ) => {};
+
+  protected groupByFunction = (by: Function, datasetIndex: number = 0) => {};
+
+  protected groupBy = (
+    by: string | number | string[] | number[] | Function,
+    datasetIndex: number = 0
+  ) => {
+    if (typeof by === 'string' || typeof by === 'number')
+      return this.groupByColumn(by, datasetIndex);
+
+    return {};
   };
 
   setBackgroundAction = (action: BackgroundActionProps) => {

@@ -159,34 +159,26 @@ export class Scatter extends Base {
     if (!serieOption) return;
     const datasetIndex = serieOption.datasetIndex || 0;
 
-    const values = this.getColumn(dimName, datasetIndex);
-    if (!values.length) return;
-    const uniqValues = Array.from(new Set(values));
+    const groups = this.groupBy(dimName, datasetIndex);
+    const keys = Object.keys(groups);
+    if (!keys.length) return;
+
     const colors = Array.from(
-      { length: Math.ceil(uniqValues.length / palette.length) },
+      { length: Math.ceil(keys.length / palette.length) },
       () => palette
     )
       .flat()
-      .slice(0, uniqValues.length);
+      .slice(0, keys.length);
 
     const start = thisOption.dataset.length;
-    thisOption.dataset = [
-      ...thisOption.dataset,
 
-      ...uniqValues.map((v) => ({
-        fromDatasetIndex: datasetIndex,
-        transform: {
-          type: 'filter',
-          config: { dimension: dimName, value: v },
-        },
-      })),
-    ];
+    thisOption.dataset = [...thisOption.dataset, ...Object.values(groups)];
 
     thisOption.series = [
       ...thisOption.series,
-      ...uniqValues.map((v, i) => ({
+      ...keys.map((k, i) => ({
         ...serieOption,
-        name: v,
+        name: k,
         datasetIndex: start + i,
         itemStyle: {
           ...serieOption.itemStyle,
@@ -198,7 +190,7 @@ export class Scatter extends Base {
     serieOption.data = [];
     thisOption.legend = {
       ...thisOption.legend,
-      data: uniqValues,
+      data: keys,
     };
   };
 }

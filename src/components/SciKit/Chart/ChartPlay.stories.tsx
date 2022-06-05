@@ -287,6 +287,7 @@ const ChartPlay = ({
             params: BrushSelectedEventParams,
             chart: echarts.ECharts
           ) => {
+            if (!params.batch[0].areas.length) return;
             Option.getBrushedItems(params, chart);
           },
         });
