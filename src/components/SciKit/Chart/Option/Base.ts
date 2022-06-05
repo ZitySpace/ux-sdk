@@ -141,6 +141,7 @@ export type BrushSelectedEventParams = {
     brushName: string;
 
     areas: {
+      brushType: string;
       range: number[];
       coordRange: number[];
       coordRanges: number[][];
@@ -279,8 +280,20 @@ export class Base {
     params: BrushSelectedEventParams,
     chart: echarts.ECharts
   ) => {
-    const { dataset, series } = chart.getOption();
-    console.log(chart.getOption());
+    const areas = params.batch[0].areas.map((a) => ({
+      brushType: a.brushType,
+      coordRange: a.coordRange,
+    }));
+    const { dataset, series } = chart.getOption() as any;
+    const selected = params.batch[0].selected
+      .map((serie) => {
+        const source =
+          dataset[series[serie.seriesIndex].datasetIndex || 0].source;
+        return serie.dataIndex.map((i) => source[i]);
+      })
+      .flat();
+
+    return { areas, selected, dimensions: dataset[0].dimensions };
   };
 
   private columnExist = (

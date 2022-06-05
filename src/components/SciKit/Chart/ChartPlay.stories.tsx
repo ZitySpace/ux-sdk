@@ -53,7 +53,6 @@ const ChartPlay = ({
     'ImageSizeDistribution_Scatter',
     'ImageSizeDistribution_Heatmap',
     'BoxSizeDistribution_Scatter',
-    'BoxSizeDistribution_Heatmap',
     'AnnotationDateDistribution_Line',
     'AnnotationDateDistribution_Calendar',
   ];
@@ -288,7 +287,16 @@ const ChartPlay = ({
             chart: echarts.ECharts
           ) => {
             if (!params.batch[0].areas.length) return;
-            Option.getBrushedItems(params, chart);
+            const { selected, dimensions } = Option.getBrushedItems(
+              params,
+              chart
+            );
+            setFiltering(
+              useFilterFromDataframe(
+                { header: dimensions, data: selected },
+                true
+              )
+            );
           },
         });
     }

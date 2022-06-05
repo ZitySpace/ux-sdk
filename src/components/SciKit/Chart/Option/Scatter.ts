@@ -57,7 +57,7 @@ export class Scatter extends Base {
         containLabel: false,
         show: false,
       },
-      animation: true,
+      animation: false,
       dataZoom: [
         {
           type: 'inside',
