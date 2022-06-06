@@ -71,7 +71,6 @@ export class Scatter extends Base {
           type: 'cross',
         },
       },
-      legend: {},
       xAxis: {
         name: '',
         nameLocation: 'middle',
