@@ -1,7 +1,6 @@
 import { ComponentMeta, ComponentStory } from '@storybook/react';
 import React, { useEffect, useState, useReducer, useRef } from 'react';
 import { QueryClient, QueryClientProvider } from 'react-query';
-import { PlayIcon } from '@heroicons/react/solid';
 import Chart from './Chart';
 import { Option } from './Option';
 import PaginationBar from '../../PaginationBar';
@@ -11,11 +10,15 @@ import { useCarouselStore } from '../../../stores/carouselStore';
 import { usePagingStore } from '../../../stores/pagingStore';
 import { useCarouselQueries } from '../../../utils/hooks/useCarouselQueries';
 import { useFilterFromDataframe, useSetFiltering } from '../../../utils';
+import { Base } from './Option/Base';
+
 import {
-  Base,
-  BrushSelectedEventParams,
-  MouseEventParams,
-} from './Option/Base';
+  makeCategoryDistributionBarOption,
+  makeCategoryDistributionPieOption,
+  makeBoxSizeDistributionScatterOption,
+  makeImageSizeDistributionScatterOption,
+  makeImageSizeDistributionHeatmapOption,
+} from './examples';
 
 export default {
   title: 'UX-SDK/ChartPlay',
@@ -55,6 +58,16 @@ const ChartPlay = ({
     'BoxSizeDistribution_Scatter',
     'AnnotationDateDistribution_Line',
     'AnnotationDateDistribution_Calendar',
+    'ConfusionMatrix_Matrix',
+    'MultiLabelConfusionMatrix_Matrix',
+    'Tsne_Scatter',
+    'Tsne_Scatter3D',
+    'HierachicalCategory_Tree',
+    'HierachicalCategory_RadialTree',
+    'HierachicalCategory_TreeMap',
+    'HierachicalCategory_Sunburst',
+    'MultiLabel_Forest',
+    'CategoryAttribute_Sankey',
   ];
   const [example, setExample] = useState<string>('Custom');
 
@@ -70,360 +83,28 @@ const ChartPlay = ({
 
   const optionRef = useRef<Option>(new Base());
   const chartKeyRef = useRef<boolean>(false);
-  const forceUpdate = useReducer(() => ({}), {})[1] as () => void;
 
   const prepareExample = (emp: string) => {
     if (emp === 'Custom') optionRef.current = new Base();
     else if (emp === 'CategoryDistribution_Bar') {
-      optionRef.current = Option.makeBar()
-        .setData({
-          queryApi: {
-            host: HOST,
-            query:
-              "res = df[['image_hash', 'x', 'y', 'w', 'h', 'category']].groupby('category').size().sort_values().to_frame('count')",
-          },
-        })
-        .updateOption({
-          grid: {
-            left: '6%',
-            right: '4%',
-            top: '10%',
-            bottom: '36%',
-          },
-          xAxis: {
-            axisTick: {
-              alignWithLabel: true,
-            },
-            axisLabel: {
-              rotate: 45,
-            },
-          },
-          yAxis: {
-            name: 'num of samples',
-            nameGap: 40,
-          },
-          series: [
-            {
-              name: 'CountOfSamples',
-              colorBy: 'data',
-              emphasis: {
-                focus: 'self',
-              },
-              selectedMode: 'single',
-              select: {
-                itemStyle: {
-                  borderColor: 'rgba(0,0,0,0)',
-                  borderWidth: 0,
-                  shadowBlur: 10,
-                },
-              },
-              encode: {
-                x: 'category',
-                y: 'count',
-              },
-            },
-          ],
-        })
-        .setBackgroundAction({
-          name: 'click',
-          action: async (chart: echarts.ECharts) => {
-            Option.unselectAll(chart);
-            setFiltering(
-              await Option.filterOptionFromQuery(
-                HOST,
-                "res = df[['image_hash', 'x', 'y', 'w', 'h', 'category']]"
-              )
-            );
-          },
-        })
-        .addElementAction({
-          name: 'click',
-          query: 'series',
-          action: async (params: MouseEventParams) =>
-            setFiltering(
-              await Option.filterOptionFromQuery(
-                HOST,
-                "res = df[df.category == data['category']][['image_hash', 'x', 'y', 'w', 'h', 'category']]",
-                params
-              )
-            ),
-        });
+      optionRef.current = makeCategoryDistributionBarOption(HOST, setFiltering);
     } else if (emp === 'CategoryDistribution_Pie') {
-      optionRef.current = Option.makePie()
-        .setData({
-          queryApi: {
-            host: HOST,
-            query:
-              "res = df[['image_hash', 'x', 'y', 'w', 'h', 'category']].groupby('category').size().sort_values(ascending=False).to_frame('count')",
-          },
-        })
-        .updateOption({
-          legend: {
-            left: 'left',
-            orient: 'vertical',
-          },
-          series: [
-            {
-              name: 'CountOfSamples',
-              radius: ['30%', '70%'],
-              center: ['75%', '50%'],
-              emphasis: {
-                focus: 'self',
-              },
-              selectedMode: 'single',
-              selectedOffset: 15,
-              encode: {
-                itemName: 'category',
-                value: 'count',
-              },
-            },
-          ],
-        })
-        .setBackgroundAction({
-          name: 'click',
-          action: async (chart: echarts.ECharts) => {
-            Option.unselectAll(chart);
-            setFiltering(
-              await Option.filterOptionFromQuery(
-                HOST,
-                "res = df[['image_hash', 'x', 'y', 'w', 'h', 'category']]"
-              )
-            );
-          },
-        })
-        .addElementAction({
-          name: 'click',
-          query: 'series',
-          action: async (params: MouseEventParams) =>
-            setFiltering(
-              await Option.filterOptionFromQuery(
-                HOST,
-                "res = df[df.category == data[0]][['image_hash', 'x', 'y', 'w', 'h', 'category']]",
-                params
-              )
-            ),
-        });
+      optionRef.current = makeCategoryDistributionPieOption(HOST, setFiltering);
     } else if (emp === 'BoxSizeDistribution_Scatter') {
-      optionRef.current = Option.makeScatter()
-        .setData({
-          queryApi: {
-            host: HOST,
-            query: 'res = df',
-          },
-        })
-        .updateOption({
-          toolbox: {
-            feature: {
-              brush: {
-                type: ['rect', 'polygon', 'lineX', 'lineY', 'keep', 'clear'],
-              },
-            },
-          },
-          brush: {
-            throttleType: 'debounce',
-            throttleDelay: 500,
-            xAxisIndex: 0,
-            yAxisIndex: 0,
-          },
-          grid: {
-            left: '50%',
-          },
-          legend: {
-            left: 'left',
-            orient: 'vertical',
-            selectedMode: 'multiple',
-          },
-          xAxis: {
-            name: 'BoxWidth',
-            splitLine: {
-              show: false,
-            },
-          },
-          yAxis: {
-            name: 'BoxHeight',
-            nameGap: 50,
-            splitLine: {
-              show: false,
-            },
-          },
-          series: [
-            {
-              name: 'BoxSize',
-              symbolSize: 6,
-              emphasis: {
-                focus: 'series',
-              },
-              selectedMode: 'series',
-              encode: {
-                x: 'w',
-                y: 'h',
-                tooltip: ['w', 'h', 'category'],
-              },
-            },
-          ],
-        })
-        .setColor('category')
-        .setBackgroundAction({
-          name: 'click',
-          action: async (chart: echarts.ECharts) => {
-            Option.unselectAll(chart);
-            setFiltering(
-              await Option.filterOptionFromQuery(
-                HOST,
-                "res = df[['image_hash', 'x', 'y', 'w', 'h', 'category']]"
-              )
-            );
-          },
-        })
-        .addElementAction({
-          name: 'click',
-          query: 'series',
-          action: async (params: MouseEventParams, chart: echarts.ECharts) => {
-            Option.unselectAll(chart);
-            chart.dispatchAction({
-              type: 'select',
-              seriesName: params.seriesName,
-              dataIndex: Array.from({ length: 10000 }, (_, i) => i),
-            });
-
-            setFiltering(
-              await Option.filterOptionFromQuery(
-                HOST,
-                "res = df[df.category == data['category']][['image_hash', 'x', 'y', 'w', 'h', 'category']]",
-                params
-              )
-            );
-          },
-        })
-        .addElementAction({
-          name: 'brushSelected',
-          action: async (
-            params: BrushSelectedEventParams,
-            chart: echarts.ECharts
-          ) => {
-            if (!params.batch[0].areas.length) return;
-            const { selected, dimensions } = Option.getBrushedItems(
-              params,
-              chart
-            );
-            setFiltering(
-              useFilterFromDataframe(
-                { header: dimensions, data: selected },
-                true
-              )
-            );
-          },
-        });
+      optionRef.current = makeBoxSizeDistributionScatterOption(
+        HOST,
+        setFiltering
+      );
     } else if (emp === 'ImageSizeDistribution_Scatter') {
-      optionRef.current = Option.makeScatter()
-        .setData({
-          queryApi: {
-            host: HOST,
-            query:
-              "res = df[['image_hash', 'image_width', 'image_height']].drop_duplicates()",
-          },
-        })
-        .updateOption({
-          toolbox: {
-            feature: {
-              brush: {
-                type: ['rect', 'polygon', 'lineX', 'lineY', 'keep', 'clear'],
-              },
-            },
-          },
-          brush: {
-            throttleType: 'debounce',
-            throttleDelay: 500,
-            xAxisIndex: 0,
-            yAxisIndex: 0,
-          },
-          xAxis: {
-            name: 'ImageWidth',
-            splitLine: {
-              show: false,
-            },
-          },
-          yAxis: {
-            name: 'ImageHeight',
-            nameGap: 50,
-            splitLine: {
-              show: false,
-            },
-          },
-          series: [
-            {
-              name: 'ImageSize',
-              symbolSize: 15,
-              emphasis: {
-                focus: 'self',
-              },
-              selectedMode: 'single',
-              select: {
-                itemStyle: {
-                  color: 'red',
-                  borderWidth: 0,
-                },
-              },
-              encode: {
-                x: 'image_width',
-                y: 'image_height',
-              },
-              tooltip: {
-                formatter: (params: MouseEventParams) =>
-                  params.value[0] +
-                  ': (' +
-                  params.value[1] +
-                  ', ' +
-                  params.value[2] +
-                  ')',
-              },
-            },
-          ],
-        })
-        .setBackgroundAction({
-          name: 'click',
-          action: async (chart: echarts.ECharts) => {
-            Option.unselectAll(chart);
-            setFiltering(
-              await Option.filterOptionFromQuery(
-                HOST,
-                "res = df[['image_hash', 'image_width', 'image_height']].drop_duplicates()"
-              )
-            );
-          },
-        })
-        .addElementAction({
-          name: 'click',
-          query: 'series',
-          action: async (params: MouseEventParams) => {
-            setFiltering(
-              await Option.filterOptionFromQuery(
-                HOST,
-                "res = df[(df.image_width == data['image_width']) & (df.image_height == data['image_height'])][['image_hash']].drop_duplicates()",
-                params
-              )
-            );
-          },
-        })
-        .addElementAction({
-          name: 'brushSelected',
-          action: async (
-            params: BrushSelectedEventParams,
-            chart: echarts.ECharts
-          ) => {
-            if (!params.batch[0].areas.length) return;
-            const { selected, dimensions } = Option.getBrushedItems(
-              params,
-              chart
-            );
-            setFiltering(
-              useFilterFromDataframe(
-                { header: dimensions, data: selected },
-                true
-              )
-            );
-          },
-        });
+      optionRef.current = makeImageSizeDistributionScatterOption(
+        HOST,
+        setFiltering
+      );
+    } else if (emp === 'ImageSizeDistribution_Heatmap') {
+      optionRef.current = makeImageSizeDistributionHeatmapOption(
+        HOST,
+        setFiltering
+      );
     }
 
     if (emp !== example) {

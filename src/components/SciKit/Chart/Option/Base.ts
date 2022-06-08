@@ -158,13 +158,15 @@ type ElementActionProps = {
   name: string;
   query?: string | Object;
   action:
-    | { (params: MouseEventParams, chart?: echarts.ECharts): void }
-    | { (params: BrushSelectedEventParams, chart?: echarts.ECharts): void };
+    | { (params: MouseEventParams): void }
+    | { (params: BrushSelectedEventParams): void }
+    | { (params: MouseEventParams, chart: echarts.ECharts): void }
+    | { (params: BrushSelectedEventParams, chart: echarts.ECharts): void };
 };
 
 type BackgroundActionProps = {
   name: string;
-  action: (chart?: echarts.ECharts) => void;
+  action: { (): void } | { (chart: echarts.ECharts): void };
 };
 
 export class Base {
