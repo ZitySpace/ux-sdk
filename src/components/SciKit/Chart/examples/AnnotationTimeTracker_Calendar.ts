@@ -156,6 +156,65 @@ export const makeOption = (
               },
             ],
           })
+      : timeRangeSerieType === 'timeLine'
+      ? Option.makeLine()
+          .setData({
+            queryApi: {
+              host: HOST,
+              query:
+                "res = df.groupby(df.last_updated.apply(lambda dt: dt[:10])).size().to_frame('count')",
+            },
+          })
+          .updateOption({
+            title: {
+              left: 'center',
+              text: 'Annotation Tracker',
+            },
+            xAxis: {
+              name: 'Time',
+              type: 'time',
+            },
+            yAxis: {
+              name: 'Count',
+            },
+            series: [
+              {
+                name: 'CountOfAnnotations',
+                encode: {
+                  x: 'last_updated',
+                  y: 'count',
+                },
+                smooth: true,
+                symbolSize: 10,
+                areaStyle: {
+                  opacity: 0.3,
+                },
+
+                selectedMode: 'single',
+                select: {
+                  itemStyle: {
+                    color: 'red',
+                    shadowBlur: 10,
+                    shadowColor: 'rgba(0,0,0,0.5)',
+                    borderWidth: 0,
+                  },
+                },
+                emphasis: {
+                  scale: 2,
+                  itemStyle: {
+                    color: 'red',
+                    shadowBlur: 10,
+                    shadowColor: 'rgba(0,0,0,0.5)',
+                    borderWidth: 0,
+                  },
+                },
+                tooltip: {
+                  formatter: (params: MouseEventParams) =>
+                    `${params.value[0]}, ${params.value[1]}`,
+                },
+              },
+            ],
+          })
       : Option.makeBase();
 
   opt

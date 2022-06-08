@@ -3,6 +3,7 @@ import { Bar } from './Bar';
 import { Pie } from './Pie';
 import { Scatter } from './Scatter';
 import { Heatmap } from './Heatmap';
+import { Line } from './Line';
 
 export class Option extends Base {
   public static makeBase = () => new Base();
@@ -10,4 +11,5 @@ export class Option extends Base {
   public static makePie = () => new Pie();
   public static makeScatter = () => new Scatter();
   public static makeHeatmap = () => new Heatmap();
+  public static makeLine = () => new Line();
 }

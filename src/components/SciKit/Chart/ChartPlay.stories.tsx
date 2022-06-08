@@ -18,7 +18,7 @@ import {
   makeBoxSizeDistributionScatterOption,
   makeImageSizeDistributionScatterOption,
   makeImageSizeDistributionHeatmapOption,
-  makeAnnotationTimeTrackerCalendarOption,
+  makeAnnotationTimeTrackerOption,
 } from './examples';
 
 export default {
@@ -108,14 +108,20 @@ const ChartPlay = ({
         setFiltering
       );
     } else if (emp === 'AnnotationYearlyTracker_Calendar') {
-      optionRef.current = makeAnnotationTimeTrackerCalendarOption(
+      optionRef.current = makeAnnotationTimeTrackerOption(
         'yearlyCalendar',
         HOST,
         setFiltering
       );
     } else if (emp === 'AnnotationMonthlyTracker_Calendar') {
-      optionRef.current = makeAnnotationTimeTrackerCalendarOption(
+      optionRef.current = makeAnnotationTimeTrackerOption(
         'monthlyCalendar',
+        HOST,
+        setFiltering
+      );
+    } else if (emp === 'AnnotationTimeTracker_Line') {
+      optionRef.current = makeAnnotationTimeTrackerOption(
+        'timeLine',
         HOST,
         setFiltering
       );
