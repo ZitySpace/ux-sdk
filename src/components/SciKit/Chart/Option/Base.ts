@@ -77,6 +77,7 @@ const ListableOptions = [
   'visualMap',
   'dataset',
   'series',
+  'calendar',
 ];
 
 const splitListableOption = (option: echarts.EChartsOption | object) => {
@@ -262,7 +263,7 @@ export class Base {
     let query_: string = query;
     if (params !== undefined) {
       const data = transformParams(params);
-      query_ = `data = ${JSON.stringify(data)}\n${query}`;
+      query_ = `global data\ndata = ${JSON.stringify(data)}\n${query}`;
     }
     const df = await queryData(host, query_);
     const { header, data } = df ? df : { header: [], data: [] };

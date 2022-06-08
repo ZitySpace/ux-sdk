@@ -1,5 +1,5 @@
 import { ComponentMeta, ComponentStory } from '@storybook/react';
-import React, { useEffect, useState, useReducer, useRef } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import { QueryClient, QueryClientProvider } from 'react-query';
 import Chart from './Chart';
 import { Option } from './Option';
@@ -18,6 +18,7 @@ import {
   makeBoxSizeDistributionScatterOption,
   makeImageSizeDistributionScatterOption,
   makeImageSizeDistributionHeatmapOption,
+  makeAnnotationTimeTrackerCalendarOption,
 } from './examples';
 
 export default {
@@ -56,8 +57,9 @@ const ChartPlay = ({
     'ImageSizeDistribution_Scatter',
     'ImageSizeDistribution_Heatmap',
     'BoxSizeDistribution_Scatter',
-    'AnnotationDateDistribution_Line',
-    'AnnotationDateDistribution_Calendar',
+    'AnnotationTimeTracker_Line',
+    'AnnotationYearlyTracker_Calendar',
+    'AnnotationMonthlyTracker_Calendar',
     'ConfusionMatrix_Matrix',
     'MultiLabelConfusionMatrix_Matrix',
     'Tsne_Scatter',
@@ -102,6 +104,12 @@ const ChartPlay = ({
       );
     } else if (emp === 'ImageSizeDistribution_Heatmap') {
       optionRef.current = makeImageSizeDistributionHeatmapOption(
+        HOST,
+        setFiltering
+      );
+    } else if (emp === 'AnnotationYearlyTracker_Calendar') {
+      optionRef.current = makeAnnotationTimeTrackerCalendarOption(
+        'yearly',
         HOST,
         setFiltering
       );

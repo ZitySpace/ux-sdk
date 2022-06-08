@@ -3,3 +3,4 @@ export { makeOption as makeCategoryDistributionPieOption } from './CategoryDistr
 export { makeOption as makeBoxSizeDistributionScatterOption } from './BoxSizeDistribution_Scatter';
 export { makeOption as makeImageSizeDistributionScatterOption } from './ImageSizeDistribution_Scatter';
 export { makeOption as makeImageSizeDistributionHeatmapOption } from './ImageSizeDistribution_Heatmap';
+export { makeOption as makeAnnotationTimeTrackerCalendarOption } from './AnnotationTimeTracker_Calendar';
