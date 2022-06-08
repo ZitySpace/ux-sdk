@@ -109,7 +109,13 @@ const ChartPlay = ({
       );
     } else if (emp === 'AnnotationYearlyTracker_Calendar') {
       optionRef.current = makeAnnotationTimeTrackerCalendarOption(
-        'yearly',
+        'yearlyCalendar',
+        HOST,
+        setFiltering
+      );
+    } else if (emp === 'AnnotationMonthlyTracker_Calendar') {
+      optionRef.current = makeAnnotationTimeTrackerCalendarOption(
+        'monthlyCalendar',
         HOST,
         setFiltering
       );
