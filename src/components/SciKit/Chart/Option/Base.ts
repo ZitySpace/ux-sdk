@@ -8,12 +8,18 @@ interface ChartDataProps {
   data: any[][] | { [key: string]: any }[] | { [key: string]: any[] };
 }
 
+export interface ChartTreeDataProps {
+  name: string;
+  value?: any;
+  children?: ChartTreeDataProps[];
+}
+
 interface ChartDatasetProps {
   dimensions?: string[];
   source: any[][];
 }
 
-type ChartExternalDatasetProps =
+export type ChartExternalDatasetProps =
   | {
       jsonUri: string;
     }
@@ -24,7 +30,7 @@ type ChartExternalDatasetProps =
       };
     };
 
-const queryData = async (host: string, query: string) => {
+export const queryData = async (host: string, query: string) => {
   const api = requestTemplate(
     (code: string) => {
       return {
@@ -54,7 +60,7 @@ const queryData = async (host: string, query: string) => {
   }
 };
 
-const fetchData = async (jsonUri: string) => {
+export const fetchData = async (jsonUri: string) => {
   const response = await fetch(jsonUri, {
     method: 'GET',
     headers: {
@@ -171,7 +177,7 @@ type BackgroundActionProps = {
 };
 
 export class Base {
-  data: ChartDataProps | ChartExternalDatasetProps | null;
+  data: ChartDataProps | ChartTreeDataProps | ChartExternalDatasetProps | null;
   option: echarts.EChartsOption;
   actions: {
     element: ElementActionProps[] | null;
@@ -201,14 +207,30 @@ export class Base {
     return this;
   };
 
-  setData = (data: ChartDataProps | ChartExternalDatasetProps | null) => {
+  setData:
+    | { (data: ChartDataProps | ChartExternalDatasetProps | null): Base }
+    | {
+        (
+          data: ChartTreeDataProps | ChartExternalDatasetProps | null,
+          seriesIndex?: number
+        ): Base;
+      } = (data: ChartDataProps | ChartExternalDatasetProps | null) => {
     this.callStack = [...this.callStack, { name: 'setData', params: [data] }];
     return this;
   };
 
-  protected setDataRun = async (
-    data: ChartDataProps | ChartExternalDatasetProps | null
-  ) => {
+  protected setDataRun:
+    | {
+        (
+          data: ChartDataProps | ChartExternalDatasetProps | null
+        ): Promise<void>;
+      }
+    | {
+        (
+          data: ChartTreeDataProps | ChartExternalDatasetProps | null,
+          seriesIndex?: number
+        ): Promise<void>;
+      } = async (data: ChartDataProps | ChartExternalDatasetProps | null) => {
     this.data = data;
 
     const dataset: ChartDataProps | null =

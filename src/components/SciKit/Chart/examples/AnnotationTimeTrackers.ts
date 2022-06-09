@@ -80,7 +80,7 @@ export const makeOption = (
           .updateOption({
             title: {
               left: 'center',
-              text: 'Annotation Yearly Tracker',
+              text: 'Annotation Monthly Tracker',
             },
             visualMap: {
               dimension: 'count',

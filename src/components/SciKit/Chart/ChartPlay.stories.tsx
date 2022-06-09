@@ -19,6 +19,7 @@ import {
   makeImageSizeDistributionScatterOption,
   makeImageSizeDistributionHeatmapOption,
   makeAnnotationTimeTrackerOption,
+  makeHierachicalCategoryRelationOption,
 } from './examples';
 
 export default {
@@ -122,6 +123,11 @@ const ChartPlay = ({
     } else if (emp === 'AnnotationTimeTracker_Line') {
       optionRef.current = makeAnnotationTimeTrackerOption(
         'timeLine',
+        HOST,
+        setFiltering
+      );
+    } else if (emp === 'HierachicalCategory_Tree') {
+      optionRef.current = makeHierachicalCategoryRelationOption(
         HOST,
         setFiltering
       );
