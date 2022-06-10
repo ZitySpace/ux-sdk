@@ -10,7 +10,7 @@ interface ChartTreeDataGenFuncProps {
   (): ChartTreeDataProps | Promise<ChartTreeDataProps>;
 }
 
-export class Tree extends Base {
+export class Treemap extends Base {
   treeData:
     | ChartTreeDataProps
     | ChartExternalDatasetProps
@@ -37,18 +37,54 @@ export class Tree extends Base {
       series: [
         {
           name: 'SeriesName',
-          type: 'tree',
+          type: 'treemap',
           data: [],
 
-          symbolSize: 7,
-          labelLayout: {
-            hideOverlap: true,
+          visibleMin: 0,
+          label: {
+            show: true,
+            formatter: '{b}',
           },
-          emphasis: {
-            focus: 'descendant',
+          upperLabel: {
+            show: true,
+            height: 30,
           },
-          expandAndCollapse: true,
+          itemStyle: {
+            borderColor: '#fff',
+          },
           roam: true,
+          levels: [
+            {
+              itemStyle: {
+                borderColor: '#777',
+                borderWidth: 0,
+                gapWidth: 1,
+              },
+              upperLabel: {
+                show: false,
+              },
+            },
+            {
+              itemStyle: {
+                borderColor: '#555',
+                borderWidth: 5,
+                gapWidth: 1,
+              },
+              emphasis: {
+                itemStyle: {
+                  borderColor: '#ddd',
+                },
+              },
+            },
+            {
+              colorSaturation: [0.35, 0.5],
+              itemStyle: {
+                borderWidth: 5,
+                gapWidth: 1,
+                borderColorSaturation: 0.6,
+              },
+            },
+          ],
         },
       ],
     };
@@ -94,7 +130,7 @@ export class Tree extends Base {
         : data;
 
     if (treedata) {
-      (this.option as any).series[seriesIndex].data = [treedata];
+      (this.option as any).series[seriesIndex].data = treedata.children;
       this.option.dataset = [];
     }
   };

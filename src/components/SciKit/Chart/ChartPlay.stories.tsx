@@ -138,6 +138,12 @@ const ChartPlay = ({
         HOST,
         setFiltering
       );
+    } else if (emp === 'HierachicalCategory_TreeMap') {
+      optionRef.current = makeHierachicalCategoryRelationOption(
+        'treemap',
+        HOST,
+        setFiltering
+      );
     }
 
     if (emp !== example) {
@@ -177,7 +183,7 @@ const ChartPlay = ({
         ))}
       </div>
 
-      <div className='h-80'>
+      <div className='h-96'>
         <Chart
           title='Chart'
           option={optionRef.current}

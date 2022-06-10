@@ -5,6 +5,7 @@ import { Scatter } from './Scatter';
 import { Heatmap } from './Heatmap';
 import { Line } from './Line';
 import { Tree } from './Tree';
+import { Treemap } from './Treemap';
 
 export class Option extends Base {
   public static makeBase = () => new Base();
@@ -14,4 +15,5 @@ export class Option extends Base {
   public static makeHeatmap = () => new Heatmap();
   public static makeLine = () => new Line();
   public static makeTree = () => new Tree();
+  public static makeTreemap = () => new Treemap();
 }

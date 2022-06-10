@@ -131,6 +131,16 @@ export const makeOption = (
               },
             ],
           })
+      : treeType === 'treemap'
+      ? Option.makeTreemap()
+          .setTreeData(getRelationData(HOST))
+          .updateOption({
+            series: [
+              {
+                name: 'CategoryTreemap',
+              },
+            ],
+          })
       : Option.makeBase();
 
   opt
@@ -149,7 +159,7 @@ export const makeOption = (
     .addElementAction({
       name: 'click',
       query: 'series',
-      action: async (params: MouseEventParams, chart: echarts.ECharts) => {
+      action: async (params: MouseEventParams) => {
         // find leaf nodes
         let next = [params.data as any];
         let leafs = [];
