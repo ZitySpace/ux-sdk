@@ -49,20 +49,8 @@ export class Tree extends Base {
           data: [],
 
           symbolSize: 7,
-          label: {
-            position: 'left',
-            verticalAlign: 'middle',
-            align: 'right',
-          },
           labelLayout: {
             hideOverlap: true,
-          },
-          leaves: {
-            label: {
-              position: 'right',
-              verticalAlign: 'middle',
-              align: 'left',
-            },
           },
           emphasis: {
             focus: 'descendant',

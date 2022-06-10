@@ -128,6 +128,13 @@ const ChartPlay = ({
       );
     } else if (emp === 'HierachicalCategory_Tree') {
       optionRef.current = makeHierachicalCategoryRelationOption(
+        'tree',
+        HOST,
+        setFiltering
+      );
+    } else if (emp === 'HierachicalCategory_RadialTree') {
+      optionRef.current = makeHierachicalCategoryRelationOption(
+        'radialTree',
         HOST,
         setFiltering
       );

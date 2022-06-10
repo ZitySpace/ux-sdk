@@ -3,96 +3,137 @@ import { Option } from '../Option';
 import { MouseEventParams, queryData, fetchData } from '../Option/Base';
 import { ChartTreeDataProps } from '../Option/Tree';
 
+const getRelationData = (HOST: string) => async () => {
+  const tree = await fetchData(HOST + '/relation?name=category-supercategory');
+  const counts = Object.fromEntries(
+    (
+      await queryData(
+        HOST,
+        "res = df.groupby('category').size().to_frame('count')"
+      )
+    )['data']
+  );
+
+  let stack = [];
+  let next = [tree];
+
+  // width first traverse of the tree
+  while (next.length) {
+    const node = next.pop();
+    stack.push(node);
+    if (node.children) next = [...node.children, ...next];
+  }
+
+  // assign count values from leaf to root
+  while (stack.length) {
+    const node = stack.pop();
+    node.value = node.children
+      ? node.children.reduce(
+          (cnt: number, nd: ChartTreeDataProps) => cnt + nd.value,
+          0
+        )
+      : counts.hasOwnProperty(node.name)
+      ? counts[node.name]
+      : 0;
+  }
+
+  return tree;
+};
+
 export const makeOption = (
+  treeType: string,
   HOST: string,
   setFiltering: { (filteringProps: FilteringProps): void }
-) =>
-  Option.makeTree()
-    .setTreeData(async () => {
-      const tree = await fetchData(
-        HOST + '/relation?name=category-supercategory'
-      );
-      const counts = Object.fromEntries(
-        (
-          await queryData(
-            HOST,
-            "res = df.groupby('category').size().to_frame('count')"
-          )
-        )['data']
-      );
+) => {
+  const opt =
+    treeType === 'tree'
+      ? Option.makeTree()
+          .setTreeData(getRelationData(HOST))
+          .updateOption({
+            series: [
+              {
+                name: 'CategoryTree',
+                orient: 'TB',
 
-      let stack = [];
-      let next = [tree];
+                bottom: '32%',
+                left: '5%',
+                right: '5%',
 
-      // width first traverse of the tree
-      while (next.length) {
-        const node = next.pop();
-        stack.push(node);
-        if (node.children) next = [...node.children, ...next];
-      }
+                label: {
+                  position: 'top',
+                  align: 'center',
+                },
+                leaves: {
+                  label: {
+                    position: 'bottom',
+                    align: 'right',
+                    verticalAlign: 'top',
+                    rotate: 45,
+                  },
+                },
 
-      // assign count values from leaf to root
-      while (stack.length) {
-        const node = stack.pop();
-        node.value = node.children
-          ? node.children.reduce(
-              (cnt: number, nd: ChartTreeDataProps) => cnt + nd.value,
-              0
-            )
-          : counts.hasOwnProperty(node.name)
-          ? counts[node.name]
-          : 0;
-      }
+                expandAndCollapse: false,
+                selectedMode: 'single',
+                select: {
+                  itemStyle: {
+                    color: 'red',
+                    shadowBlur: 10,
+                    shadowColor: 'rgba(0,0,0,0.5)',
+                    borderWidth: 0,
+                  },
+                },
+                emphasis: {
+                  scale: 2,
+                  itemStyle: {
+                    color: 'red',
+                    shadowBlur: 10,
+                    shadowColor: 'rgba(0,0,0,0.5)',
+                    borderWidth: 0,
+                  },
+                },
 
-      return tree;
-    })
-    .updateOption({
-      series: [
-        {
-          name: 'CategoryTree',
-          orient: 'TB',
+                symbolSize: (value: number) =>
+                  (value / 10 > 6 ? 6 : value / 10) + 4,
+              },
+            ],
+          })
+      : treeType === 'radialTree'
+      ? Option.makeTree()
+          .setTreeData(getRelationData(HOST))
+          .updateOption({
+            series: [
+              {
+                name: 'CategoryTree',
+                layout: 'radial',
 
-          bottom: '32%',
-          left: '5%',
-          right: '5%',
+                expandAndCollapse: false,
+                selectedMode: 'single',
+                select: {
+                  itemStyle: {
+                    color: 'red',
+                    shadowBlur: 10,
+                    shadowColor: 'rgba(0,0,0,0.5)',
+                    borderWidth: 0,
+                  },
+                },
+                emphasis: {
+                  scale: 2,
+                  itemStyle: {
+                    color: 'red',
+                    shadowBlur: 10,
+                    shadowColor: 'rgba(0,0,0,0.5)',
+                    borderWidth: 0,
+                  },
+                },
 
-          label: {
-            position: 'top',
-            align: 'center',
-          },
-          leaves: {
-            label: {
-              position: 'bottom',
-              align: 'right',
-              verticalAlign: 'top',
-              rotate: 45,
-            },
-          },
+                symbolSize: (value: number) =>
+                  (value / 10 > 6 ? 6 : value / 10) + 4,
+              },
+            ],
+          })
+      : Option.makeBase();
 
-          expandAndCollapse: false,
-          selectedMode: 'single',
-          select: {
-            itemStyle: {
-              color: 'red',
-              shadowBlur: 10,
-              shadowColor: 'rgba(0,0,0,0.5)',
-              borderWidth: 0,
-            },
-          },
-          emphasis: {
-            scale: 2,
-            itemStyle: {
-              color: 'red',
-              shadowBlur: 10,
-              shadowColor: 'rgba(0,0,0,0.5)',
-              borderWidth: 0,
-            },
-          },
-
-          symbolSize: (value: number) => (value / 10 > 6 ? 6 : value / 10) + 4,
-        },
-      ],
-    })
+  opt
     .setBackgroundAction({
       name: 'click',
       action: async (chart: echarts.ECharts) => {
@@ -129,3 +170,6 @@ export const makeOption = (
         );
       },
     });
+
+  return opt;
+};
