@@ -11,7 +11,7 @@ export const makeOption = (
       queryApi: {
         host: HOST,
         query:
-          "res = df[['image_hash', 'x', 'y', 'w', 'h', 'category']].groupby('category').size().sort_values().to_frame('count')",
+          "res = df.groupby('category').size().sort_values().to_frame('count')",
       },
     })
     .updateOption({

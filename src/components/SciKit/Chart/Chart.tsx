@@ -34,7 +34,7 @@ const Chart = ({
   }, [option]);
 
   const chart = chartRef.current;
-  const ready = chart && (option.data === null || option.option.dataset);
+  const ready = chart && option.option.dataset;
 
   if (ready) {
     chart.setOption(option.option);

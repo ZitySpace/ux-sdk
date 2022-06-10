@@ -1,7 +1,6 @@
 import { FilteringProps } from '../../../../stores/contextStore';
 import { Option } from '../Option';
-import { MouseEventParams, BrushSelectedEventParams } from '../Option/Base';
-import { useFilterFromDataframe } from '../../../../utils';
+import { MouseEventParams } from '../Option/Base';
 
 export const makeOption = (
   timeRangeSerieType: string,

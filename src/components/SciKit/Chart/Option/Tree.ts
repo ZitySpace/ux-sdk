@@ -1,12 +1,22 @@
-import {
-  Base,
-  ChartTreeDataProps,
-  ChartExternalDatasetProps,
-  fetchData,
-  queryData,
-} from './Base';
+import { Base, ChartExternalDatasetProps, fetchData, queryData } from './Base';
+
+export interface ChartTreeDataProps {
+  name: string;
+  value?: any;
+  children?: ChartTreeDataProps[];
+}
+
+interface ChartTreeDataGenFuncProps {
+  (): ChartTreeDataProps | Promise<ChartTreeDataProps>;
+}
 
 export class Tree extends Base {
+  treeData:
+    | ChartTreeDataProps
+    | ChartExternalDatasetProps
+    | ChartTreeDataGenFuncProps
+    | null;
+
   constructor() {
     super();
     this.option = {
@@ -62,30 +72,41 @@ export class Tree extends Base {
         },
       ],
     };
+    this.treeData = null;
 
-    this.methods = { ...this.methods, setData: this.setDataRun };
+    this.methods = { ...this.methods, setTreeData: this.setTreeDataRun };
   }
 
-  setData = (
-    data: ChartTreeDataProps | ChartExternalDatasetProps | null,
+  setTreeData = (
+    data:
+      | ChartTreeDataProps
+      | ChartExternalDatasetProps
+      | ChartTreeDataGenFuncProps
+      | null,
     seriesIndex: number = 0
   ) => {
     this.callStack = [
       ...this.callStack,
-      { name: 'setData', params: [data, seriesIndex] },
+      { name: 'setTreeData', params: [data, seriesIndex] },
     ];
     return this;
   };
 
-  protected setDataRun = async (
-    data: ChartTreeDataProps | ChartExternalDatasetProps | null,
+  protected setTreeDataRun = async (
+    data:
+      | ChartTreeDataProps
+      | ChartExternalDatasetProps
+      | ChartTreeDataGenFuncProps
+      | null,
     seriesIndex: number = 0
   ) => {
-    this.data = data;
+    this.treeData = data;
 
     const treedata: ChartTreeDataProps | null =
       data === null
         ? null
+        : typeof data === 'function'
+        ? await data()
         : 'jsonUri' in data
         ? await fetchData(data['jsonUri'])
         : 'queryApi' in data

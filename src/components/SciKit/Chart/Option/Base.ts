@@ -8,10 +8,8 @@ interface ChartDataProps {
   data: any[][] | { [key: string]: any }[] | { [key: string]: any[] };
 }
 
-export interface ChartTreeDataProps {
-  name: string;
-  value?: any;
-  children?: ChartTreeDataProps[];
+interface ChartDataGenFuncProps {
+  (): ChartDataProps | Promise<ChartDataProps>;
 }
 
 interface ChartDatasetProps {
@@ -177,7 +175,11 @@ type BackgroundActionProps = {
 };
 
 export class Base {
-  data: ChartDataProps | ChartTreeDataProps | ChartExternalDatasetProps | null;
+  data:
+    | ChartDataProps
+    | ChartExternalDatasetProps
+    | ChartDataGenFuncProps
+    | null;
   option: echarts.EChartsOption;
   actions: {
     element: ElementActionProps[] | null;
@@ -207,35 +209,31 @@ export class Base {
     return this;
   };
 
-  setData:
-    | { (data: ChartDataProps | ChartExternalDatasetProps | null): Base }
-    | {
-        (
-          data: ChartTreeDataProps | ChartExternalDatasetProps | null,
-          seriesIndex?: number
-        ): Base;
-      } = (data: ChartDataProps | ChartExternalDatasetProps | null) => {
+  setData = (
+    data:
+      | ChartDataProps
+      | ChartExternalDatasetProps
+      | ChartDataGenFuncProps
+      | null
+  ) => {
     this.callStack = [...this.callStack, { name: 'setData', params: [data] }];
     return this;
   };
 
-  protected setDataRun:
-    | {
-        (
-          data: ChartDataProps | ChartExternalDatasetProps | null
-        ): Promise<void>;
-      }
-    | {
-        (
-          data: ChartTreeDataProps | ChartExternalDatasetProps | null,
-          seriesIndex?: number
-        ): Promise<void>;
-      } = async (data: ChartDataProps | ChartExternalDatasetProps | null) => {
+  protected setDataRun = async (
+    data:
+      | ChartDataProps
+      | ChartExternalDatasetProps
+      | ChartDataGenFuncProps
+      | null
+  ) => {
     this.data = data;
 
     const dataset: ChartDataProps | null =
       data === null
         ? null
+        : typeof data === 'function'
+        ? await data()
         : 'jsonUri' in data
         ? await fetchData(data['jsonUri'])
         : 'queryApi' in data
