@@ -175,6 +175,7 @@ type BackgroundActionProps = {
 };
 
 export class Base {
+  size: { width?: number; height?: number };
   data:
     | ChartDataProps
     | ChartExternalDatasetProps
@@ -189,6 +190,7 @@ export class Base {
   protected callStack: { name: string; params: any[] }[];
 
   constructor() {
+    this.size = {};
     this.data = null;
     this.option = {};
     this.actions = { element: null, background: null };
@@ -200,6 +202,12 @@ export class Base {
     };
     this.callStack = [];
   }
+
+  setSize = ({ width, height }: { width?: number; height?: number }) => {
+    width && (this.size.width = width);
+    height && (this.size.height = height);
+    return this;
+  };
 
   run = async () => {
     for (const { name, params } of this.callStack) {

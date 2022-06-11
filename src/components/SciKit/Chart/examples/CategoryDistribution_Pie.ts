@@ -7,6 +7,7 @@ export const makeOption = (
   setFiltering: { (filteringProps: FilteringProps): void }
 ) =>
   Option.makePie()
+    .setSize({ height: 320 })
     .setData({
       queryApi: {
         host: HOST,

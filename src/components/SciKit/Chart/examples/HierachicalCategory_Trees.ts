@@ -48,6 +48,7 @@ export const makeOption = (
   const opt =
     treeType === 'tree'
       ? Option.makeTree()
+          .setSize({ height: 320 })
           .setTreeData(getRelationData(HOST))
           .updateOption({
             series: [
@@ -99,6 +100,7 @@ export const makeOption = (
           })
       : treeType === 'radialTree'
       ? Option.makeTree()
+          .setSize({ height: 360 })
           .setTreeData(getRelationData(HOST))
           .updateOption({
             series: [
@@ -133,11 +135,48 @@ export const makeOption = (
           })
       : treeType === 'treemap'
       ? Option.makeTreemap()
+          .setSize({ height: 360 })
           .setTreeData(getRelationData(HOST))
           .updateOption({
             series: [
               {
                 name: 'CategoryTreemap',
+              },
+            ],
+          })
+      : treeType === 'sunburst'
+      ? Option.makeSunburst()
+          .setSize({ height: 480 })
+          .setTreeData(getRelationData(HOST))
+          .updateOption({
+            series: [
+              {
+                name: 'CategorySunburst',
+                levels: [
+                  {},
+                  {
+                    r0: '10%',
+                    r: '60%',
+                    itemStyle: {
+                      borderWidth: 2,
+                    },
+                    label: {
+                      align: 'right',
+                    },
+                  },
+                  {
+                    r0: '60%',
+                    r: '65%',
+                    label: {
+                      position: 'outside',
+                      padding: 3,
+                      silent: false,
+                    },
+                    itemStyle: {
+                      borderWidth: 3,
+                    },
+                  },
+                ],
               },
             ],
           })

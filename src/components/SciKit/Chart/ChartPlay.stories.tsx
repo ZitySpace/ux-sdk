@@ -144,6 +144,12 @@ const ChartPlay = ({
         HOST,
         setFiltering
       );
+    } else if (emp === 'HierachicalCategory_Sunburst') {
+      optionRef.current = makeHierachicalCategoryRelationOption(
+        'sunburst',
+        HOST,
+        setFiltering
+      );
     }
 
     if (emp !== example) {
@@ -183,7 +189,7 @@ const ChartPlay = ({
         ))}
       </div>
 
-      <div className='h-96'>
+      <div className='h-full'>
         <Chart
           title='Chart'
           option={optionRef.current}

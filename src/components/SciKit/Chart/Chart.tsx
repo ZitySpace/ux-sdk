@@ -5,9 +5,13 @@ import { Option } from './Option';
 const Chart = ({
   title = 'Chart',
   option,
+  hideTitle = false,
+  flat = false,
 }: {
   title?: string;
   option: Option;
+  hideTitle?: boolean;
+  flat?: boolean;
 }) => {
   const forceUpdate = useReducer(() => ({}), {})[1] as () => void;
   const chartRef = useRef<echarts.EChartsType | null>(null);
@@ -37,6 +41,8 @@ const Chart = ({
   const ready = chart && option.option.dataset;
 
   if (ready) {
+    (option.size.height || option.size.width) && chart.resize(option.size);
+
     chart.setOption(option.option);
 
     window.addEventListener('resize', () => chart.resize());
@@ -63,10 +69,16 @@ const Chart = ({
   }
 
   return (
-    <div className='bg-gray-100 h-full flex flex-col rounded-md shadow-lg'>
-      <div className='bg-indigo-400 py-2 px-2 rounded-t-md flex justify-center space-x-2 text-xs'>
-        <span>{title}</span>
-      </div>
+    <div
+      className={`bg-gray-100 h-full flex flex-col rounded-md ${
+        flat ? '' : 'shadow-lg'
+      }`}
+    >
+      {!hideTitle && (
+        <div className='bg-indigo-400 py-2 px-2 rounded-t-md flex justify-center space-x-2 text-xs'>
+          <span>{title}</span>
+        </div>
+      )}
       <div className='h-full w-full' ref={chartDivRef}></div>
     </div>
   );

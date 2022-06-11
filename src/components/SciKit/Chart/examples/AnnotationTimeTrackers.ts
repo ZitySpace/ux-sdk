@@ -10,6 +10,7 @@ export const makeOption = (
   const opt =
     timeRangeSerieType === 'yearlyCalendar'
       ? Option.makeHeatmap()
+          .setSize({ height: 320 })
           .setData({
             queryApi: {
               host: HOST,
@@ -69,6 +70,7 @@ export const makeOption = (
           })
       : timeRangeSerieType === 'monthlyCalendar'
       ? Option.makeBase()
+          .setSize({ height: 320 })
           .setData({
             queryApi: {
               host: HOST,
@@ -157,6 +159,7 @@ export const makeOption = (
           })
       : timeRangeSerieType === 'timeLine'
       ? Option.makeLine()
+          .setSize({ height: 320 })
           .setData({
             queryApi: {
               host: HOST,

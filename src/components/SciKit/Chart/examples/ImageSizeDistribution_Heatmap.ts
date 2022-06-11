@@ -8,6 +8,7 @@ export const makeOption = (
   setFiltering: { (filteringProps: FilteringProps): void }
 ) =>
   Option.makeHeatmap()
+    .setSize({ height: 320 })
     .setData({
       queryApi: {
         host: HOST,

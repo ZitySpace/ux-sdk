@@ -6,6 +6,7 @@ import { Heatmap } from './Heatmap';
 import { Line } from './Line';
 import { Tree } from './Tree';
 import { Treemap } from './Treemap';
+import { Sunburst } from './Sunburst';
 
 export class Option extends Base {
   public static makeBase = () => new Base();
@@ -16,4 +17,5 @@ export class Option extends Base {
   public static makeLine = () => new Line();
   public static makeTree = () => new Tree();
   public static makeTreemap = () => new Treemap();
+  public static makeSunburst = () => new Sunburst();
 }
