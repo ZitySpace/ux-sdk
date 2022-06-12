@@ -16,7 +16,7 @@ const Chart = ({
   const forceUpdate = useReducer(() => ({}), {})[1] as () => void;
   const chartRef = useRef<echarts.EChartsType | null>(null);
   const chartDivRef = useRef<HTMLDivElement | null>(null);
-  const actionsBinded = useRef<boolean>(false);
+  const firstRender = useRef<boolean>(true);
 
   useEffect(() => {
     const chartInit = () => {
@@ -41,35 +41,36 @@ const Chart = ({
   const ready = chart && option.option.dataset;
 
   if (ready) {
-    chart.setOption(option.option);
-
-    window.addEventListener('resize', () => chart.resize());
-
-    const elementActions = option.actions.element;
-    if (!actionsBinded.current && elementActions)
-      elementActions.map((a) =>
-        a.query
-          ? chart.on(a.name, a.query, (params) =>
-              a.action(params as any, chart)
-            )
-          : chart.on(a.name, (params) => a.action(params as any, chart))
-      );
-
-    const backgroundAction = option.actions.background;
-    if (!actionsBinded.current && backgroundAction)
-      chart.getZr().on(backgroundAction.name, function (event) {
-        if (!event.target) {
-          backgroundAction.action(chart);
-        }
-      });
-
-    actionsBinded.current = true;
-
     if (
       (option.size.height && option.size.height !== chart.getHeight()) ||
       (option.size.width && option.size.width !== chart.getWidth())
     )
       chart.resize(option.size);
+
+    if (firstRender.current) {
+      chart.setOption(option.option);
+      window.addEventListener('resize', () => chart.resize());
+
+      const elementActions = option.actions.element;
+      if (elementActions)
+        elementActions.map((a) =>
+          a.query
+            ? chart.on(a.name, a.query, (params) =>
+                a.action(params as any, chart)
+              )
+            : chart.on(a.name, (params) => a.action(params as any, chart))
+        );
+
+      const backgroundAction = option.actions.background;
+      if (backgroundAction)
+        chart.getZr().on(backgroundAction.name, function (event) {
+          if (!event.target) {
+            backgroundAction.action(chart);
+          }
+        });
+
+      firstRender.current = false;
+    }
   }
 
   return (

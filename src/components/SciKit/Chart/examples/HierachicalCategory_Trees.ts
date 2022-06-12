@@ -186,6 +186,14 @@ export const makeOption = (
     .setBackgroundAction({
       name: 'click',
       action: async (chart: echarts.ECharts) => {
+        const option = chart.getOption();
+        if (
+          (option.series as any).every((s: any) =>
+            ['treemap', 'sunburst'].includes(s.type)
+          )
+        )
+          return;
+
         Option.unselectAll(chart);
         setFiltering(
           await Option.filterOptionFromQuery(
@@ -198,9 +206,32 @@ export const makeOption = (
     .addElementAction({
       name: 'click',
       query: 'series',
-      action: async (params: MouseEventParams) => {
+      action: async (params: MouseEventParams, chart: echarts.ECharts) => {
         // find leaf nodes
         let next = [params.data as any];
+        if (
+          params.seriesType === 'treemap' &&
+          (params as any).selfType === 'breadcrumb'
+        ) {
+          const trees = (chart.getOption() as any).series[params.seriesIndex]
+            .data;
+          const path = (params as any).treePathInfo;
+
+          let i = 1;
+          let node = { children: trees };
+          let children = trees;
+          while (i < path.length) {
+            node = children.find(
+              (n: { name: string; value: any }) =>
+                n.name === path[i].name && n.value === path[i].value
+            );
+            children = node.children;
+            i++;
+          }
+
+          next = [node];
+        }
+
         let leafs = [];
         while (next.length) {
           const node = next.pop();

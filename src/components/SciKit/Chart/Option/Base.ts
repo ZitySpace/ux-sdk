@@ -99,7 +99,7 @@ const transposeMatrix = (matrix: any[][]) =>
   matrix[0].map((_, c) => matrix.map((row, r) => matrix[r][c]));
 
 const transformParams = (params: MouseEventParams) => {
-  if (params.dimensionNames.length)
+  if (params.dimensionNames && params.dimensionNames.length)
     return Object.fromEntries(
       params.dimensionNames.map((_, i) => [
         params.dimensionNames[i],
@@ -107,7 +107,7 @@ const transformParams = (params: MouseEventParams) => {
       ])
     );
 
-  return params.value;
+  return params.value || '';
 };
 
 export type MouseEventParams = {
