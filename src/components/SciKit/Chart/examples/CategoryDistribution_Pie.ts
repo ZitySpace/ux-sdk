@@ -25,6 +25,7 @@ export const makeOption = (
           name: 'CountOfSamples',
           radius: ['30%', '70%'],
           center: ['75%', '50%'],
+          startAngle: 180,
           emphasis: {
             focus: 'self',
           },

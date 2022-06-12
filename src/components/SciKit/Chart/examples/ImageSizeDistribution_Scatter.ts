@@ -31,8 +31,8 @@ export const makeOption = (
         yAxisIndex: 0,
       },
       grid: {
-        left: '40%',
-        right: '40%',
+        left: 75,
+        right: 45,
       },
       xAxis: {
         name: 'ImageWidth',
