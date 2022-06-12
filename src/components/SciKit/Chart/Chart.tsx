@@ -41,8 +41,6 @@ const Chart = ({
   const ready = chart && option.option.dataset;
 
   if (ready) {
-    (option.size.height || option.size.width) && chart.resize(option.size);
-
     chart.setOption(option.option);
 
     window.addEventListener('resize', () => chart.resize());
@@ -66,6 +64,12 @@ const Chart = ({
       });
 
     actionsBinded.current = true;
+
+    if (
+      (option.size.height && option.size.height !== chart.getHeight()) ||
+      (option.size.width && option.size.width !== chart.getWidth())
+    )
+      chart.resize(option.size);
   }
 
   return (
