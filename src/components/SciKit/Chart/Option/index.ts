@@ -7,6 +7,7 @@ import { Line } from './Line';
 import { Tree } from './Tree';
 import { Treemap } from './Treemap';
 import { Sunburst } from './Sunburst';
+import { Sankey } from './Sankey';
 
 export class Option extends Base {
   public static makeBase = () => new Base();
@@ -18,4 +19,5 @@ export class Option extends Base {
   public static makeTree = () => new Tree();
   public static makeTreemap = () => new Treemap();
   public static makeSunburst = () => new Sunburst();
+  public static makeSankey = () => new Sankey();
 }

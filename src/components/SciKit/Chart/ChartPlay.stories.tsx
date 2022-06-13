@@ -21,6 +21,7 @@ import {
   makeAnnotationTimeTrackerOption,
   makeHierachicalCategoryRelationOption,
   makeAttributeForestOption,
+  makeCategoryAttributeSankeyOption,
 } from './examples';
 
 export default {
@@ -153,6 +154,8 @@ const ChartPlay = ({
       );
     } else if (emp === 'MultiLabel_Forest') {
       optionRef.current = makeAttributeForestOption(HOST, setFiltering);
+    } else if (emp === 'CategoryAttribute_Sankey') {
+      optionRef.current = makeCategoryAttributeSankeyOption(HOST, setFiltering);
     }
 
     if (emp !== example) {
