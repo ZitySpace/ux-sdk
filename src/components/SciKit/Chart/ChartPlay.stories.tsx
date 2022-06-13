@@ -20,6 +20,7 @@ import {
   makeImageSizeDistributionHeatmapOption,
   makeAnnotationTimeTrackerOption,
   makeHierachicalCategoryRelationOption,
+  makeAttributeForestOption,
 } from './examples';
 
 export default {
@@ -150,6 +151,8 @@ const ChartPlay = ({
         HOST,
         setFiltering
       );
+    } else if (emp === 'MultiLabel_Forest') {
+      optionRef.current = makeAttributeForestOption(HOST, setFiltering);
     }
 
     if (emp !== example) {

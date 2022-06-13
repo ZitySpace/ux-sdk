@@ -5,3 +5,4 @@ export { makeOption as makeImageSizeDistributionScatterOption } from './ImageSiz
 export { makeOption as makeImageSizeDistributionHeatmapOption } from './ImageSizeDistribution_Heatmap';
 export { makeOption as makeAnnotationTimeTrackerOption } from './AnnotationTimeTrackers';
 export { makeOption as makeHierachicalCategoryRelationOption } from './HierachicalCategory_Trees';
+export { makeOption as makeAttributeForestOption } from './Attribute_Forest';
