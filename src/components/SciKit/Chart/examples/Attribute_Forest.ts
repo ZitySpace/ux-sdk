@@ -79,6 +79,8 @@ export const makeOption = (
             borderWidth: 0,
           },
         },
+
+        symbolSize: (value: number) => (value / 10 > 6 ? 6 : value / 10) + 4,
       };
     }),
   });
@@ -88,6 +90,13 @@ export const makeOption = (
       name: 'click',
       action: async (chart: echarts.ECharts) => {
         Option.unselectAll(chart);
+
+        setFiltering(
+          await Option.filterOptionFromQuery(
+            HOST,
+            "res = df[['image_hash', 'x', 'y', 'w', 'h', 'category']]"
+          )
+        );
       },
     })
     .addElementAction({
@@ -101,6 +110,40 @@ export const makeOption = (
           seriesIndex: params.seriesIndex,
           dataIndex: params.dataIndex,
         });
+
+        const path = (params as any).treeAncestors
+          .slice(1)
+          .map((n: any) => n.name)
+          .join(',');
+
+        const queryStr = `
+global check
+def check(path, anno):
+    names = path.split(',')
+
+    cur = anno
+    while names:
+        name = names.pop(0)
+        if isinstance(cur, str):
+            if not names and (name == cur or name in cur.split(';')):
+                return True
+            return False
+
+        if name not in cur:
+            return False
+
+        cur = anno[name]
+
+    return True
+
+slice = df[df.attributes.apply(lambda x: check('${path}', ast.literal_eval(x)))]
+
+res = slice[['image_hash', 'x', 'y', 'w', 'h']]
+        `;
+
+        setFiltering(
+          await Option.filterOptionFromQuery(HOST, queryStr, params)
+        );
       },
     });
 

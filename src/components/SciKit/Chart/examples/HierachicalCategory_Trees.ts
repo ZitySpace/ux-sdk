@@ -3,42 +3,8 @@ import { Option } from '../Option';
 import { MouseEventParams, queryData, fetchData } from '../Option/Base';
 import { ChartTreeDataProps } from '../Option/Tree';
 
-const getRelationData = (HOST: string) => async () => {
-  const tree = await fetchData(HOST + '/relation?name=category-supercategory');
-  const counts = Object.fromEntries(
-    (
-      await queryData(
-        HOST,
-        "res = df.groupby('category').size().to_frame('count')"
-      )
-    )['data']
-  );
-
-  let stack = [];
-  let next = [tree];
-
-  // width first traverse of the tree
-  while (next.length) {
-    const node = next.pop();
-    stack.push(node);
-    if (node.children) next = [...node.children, ...next];
-  }
-
-  // assign count values from leaf to root
-  while (stack.length) {
-    const node = stack.pop();
-    node.value = node.children
-      ? node.children.reduce(
-          (cnt: number, nd: ChartTreeDataProps) => cnt + nd.value,
-          0
-        )
-      : counts.hasOwnProperty(node.name)
-      ? counts[node.name]
-      : 0;
-  }
-
-  return tree;
-};
+const getRelationData = (HOST: string) => async () =>
+  await fetchData(HOST + '/relation?name=categories');
 
 export const makeOption = (
   treeType: string,
