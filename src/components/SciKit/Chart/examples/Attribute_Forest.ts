@@ -114,12 +114,12 @@ export const makeOption = (
         const path = (params as any).treeAncestors
           .slice(1)
           .map((n: any) => n.name)
-          .join(',');
+          .join('.');
 
         const queryStr = `
 global check
 def check(path, anno):
-    names = path.split(',')
+    names = path.split('.')
 
     cur = anno
     while names:
@@ -141,9 +141,7 @@ slice = df[df.attributes.apply(lambda x: check('${path}', ast.literal_eval(x)))]
 res = slice[['image_hash', 'x', 'y', 'w', 'h']]
         `;
 
-        setFiltering(
-          await Option.filterOptionFromQuery(HOST, queryStr, params)
-        );
+        setFiltering(await Option.filterOptionFromQuery(HOST, queryStr));
       },
     });
 

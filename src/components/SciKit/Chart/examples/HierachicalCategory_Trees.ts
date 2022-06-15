@@ -212,7 +212,7 @@ export const makeOption = (
         )}\n${queryStr}`;
 
         setFiltering(
-          await Option.filterOptionFromQuery(HOST, queryStrWithData, params)
+          await Option.filterOptionFromQuery(HOST, queryStrWithData)
         );
       },
     });

@@ -9,7 +9,7 @@ export const makeOption = (
   Option.makeSankey()
     .setSize({ height: 640 })
     .setSankeyData(
-      async () => await fetchData(HOST + '/relation?name=category-attributes')
+      async () => await fetchData(HOST + '/relation?name=categories-attributes')
     )
     .updateOption({
       series: [
@@ -20,6 +20,7 @@ export const makeOption = (
           bottom: '15%',
           left: '2%',
           right: '2%',
+          nodeGap: 16,
           lineStyle: {
             color: 'source',
             opacity: 0.6,
@@ -72,4 +73,133 @@ export const makeOption = (
           ],
         },
       ],
+    })
+    .setBackgroundAction({
+      name: 'click',
+      action: async () => {
+        setFiltering(
+          await Option.filterOptionFromQuery(
+            HOST,
+            "res = df[['image_hash', 'x', 'y', 'w', 'h', 'category']]"
+          )
+        );
+      },
+    })
+    .addElementAction({
+      name: 'click',
+      query: 'series',
+      action: async (params: MouseEventParams, chart: echarts.ECharts) => {
+        const data: any = params.data;
+        const nodes = (chart.getOption() as any).series[params.seriesIndex]
+          .nodes;
+        const links = (chart.getOption() as any).series[params.seriesIndex]
+          .links;
+
+        let queryStr = '';
+
+        if (params.dataType === 'edge') {
+          // clicked link
+
+          if (data.type === 'cate') {
+            const cate = nodes
+              .find((n: any) => n.name === data.target)
+              .orig_path.split('.')
+              .pop();
+            queryStr = `
+res = df[df.category == '${cate}'][['image_hash', 'x', 'y', 'w', 'h', 'category']]
+            `;
+          } else if (data.type === 'attr') {
+            const attrNode = nodes.find((n: any) => n.name === data.target);
+            queryStr = `
+global check
+def check(path, anno):
+    names = path.split('.')
+
+    cur = anno
+    while names:
+        name = names.pop(0)
+        if isinstance(cur, str):
+            if not names and (name == cur or name in cur.split(';')):
+                return True
+            return False
+
+        if name not in cur:
+            return False
+
+        cur = anno[name]
+
+    return True
+
+slice = df[df.attributes.apply(lambda x: check('${attrNode.orig_path}', ast.literal_eval(x)))]
+
+res = slice[['image_hash', 'x', 'y', 'w', 'h']]
+            `;
+          } else if (data.type === 'cate_attr') {
+            const cate = nodes
+              .find((n: any) => n.name === data.source)
+              .orig_path.split('.')
+              .pop();
+            const attr = nodes
+              .find((n: any) => n.name === data.target)
+              .orig_path.split('.')
+              .pop();
+            queryStr = `
+slice = df[df[['category', 'attributes']].apply(
+    lambda r: r['category'] == '${cate}' and '${attr}' in ast.literal_eval(r['attributes']),
+    axis=1
+)]
+
+res = slice[['image_hash', 'x', 'y', 'w', 'h']]
+            `;
+          }
+        } else if (params.dataType === 'node') {
+          // clicked node
+
+          if (data.type === 'cate') {
+            const cates = data.orig_path.includes('.')
+              ? [data.orig_path.split('.').pop()]
+              : links
+                  .filter((l: any) => l.source === data.name)
+                  .map((l: any) =>
+                    nodes
+                      .find((n: any) => n.name === l.target)
+                      .orig_path.split('.')
+                      .pop()
+                  );
+
+            queryStr = `
+global cates
+cates = ${JSON.stringify(cates)}
+res = df[df.category.isin(cates)][['image_hash', 'x', 'y', 'w', 'h', 'category']]
+            `;
+          } else if (data.type === 'attr') {
+            queryStr = `
+global check
+def check(path, anno):
+    names = path.split('.')
+
+    cur = anno
+    while names:
+        name = names.pop(0)
+        if isinstance(cur, str):
+            if not names and (name == cur or name in cur.split(';')):
+                return True
+            return False
+
+        if name not in cur:
+            return False
+
+        cur = anno[name]
+
+    return True
+
+slice = df[df.attributes.apply(lambda x: check('${data.orig_path}', ast.literal_eval(x)))]
+
+res = slice[['image_hash', 'x', 'y', 'w', 'h']]
+            `;
+          }
+        }
+
+        setFiltering(await Option.filterOptionFromQuery(HOST, queryStr));
+      },
     });
