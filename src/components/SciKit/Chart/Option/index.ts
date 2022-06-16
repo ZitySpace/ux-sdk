@@ -8,6 +8,7 @@ import { Tree } from './Tree';
 import { Treemap } from './Treemap';
 import { Sunburst } from './Sunburst';
 import { Sankey } from './Sankey';
+import { Scatter3D } from './Scatter3D';
 
 export class Option extends Base {
   public static makeBase = () => new Base();
@@ -20,4 +21,5 @@ export class Option extends Base {
   public static makeTreemap = () => new Treemap();
   public static makeSunburst = () => new Sunburst();
   public static makeSankey = () => new Sankey();
+  public static makeScatter3D = () => new Scatter3D();
 }

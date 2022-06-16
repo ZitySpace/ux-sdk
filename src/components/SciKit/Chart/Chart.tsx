@@ -23,7 +23,7 @@ const Chart = ({
       chartRef.current =
         chartRef.current ||
         echarts.init(chartDivRef.current as HTMLElement, undefined, {
-          renderer: 'svg',
+          renderer: 'canvas',
         });
       forceUpdate();
     };

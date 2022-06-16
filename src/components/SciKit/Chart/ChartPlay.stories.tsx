@@ -23,6 +23,7 @@ import {
   makeAttributeForestOption,
   makeCategoryAttributeSankeyOption,
   makeTsneOption,
+  makeTsne3DOption,
 } from './examples';
 
 export default {
@@ -131,6 +132,8 @@ const ChartPlay = ({
       );
     } else if (emp === 'Tsne_Scatter') {
       optionRef.current = makeTsneOption(HOST, setFiltering);
+    } else if (emp === 'Tsne_Scatter3D') {
+      optionRef.current = makeTsne3DOption(HOST, setFiltering);
     } else if (emp === 'HierachicalCategory_Tree') {
       optionRef.current = makeHierachicalCategoryRelationOption(
         'tree',

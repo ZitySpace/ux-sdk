@@ -8,3 +8,4 @@ export { makeOption as makeHierachicalCategoryRelationOption } from './Hierachic
 export { makeOption as makeAttributeForestOption } from './Attribute_Forest';
 export { makeOption as makeCategoryAttributeSankeyOption } from './CategoryAttribute_Sankey';
 export { makeOption as makeTsneOption } from './Tsne_Scatter';
+export { makeOption as makeTsne3DOption } from './Tsne_Scatter3D';

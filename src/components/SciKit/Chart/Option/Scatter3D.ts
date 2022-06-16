@@ -1,44 +1,16 @@
 import { Base } from './Base';
+import { paletteDefault } from './Scatter';
+import * as echarts from 'echarts/core';
 
-export const paletteDefault = [
-  // vega category10 color scheme
-  '#1f77b4',
-  '#ff7f0e',
-  '#2ca02c',
-  '#d62728',
-  '#9467bd',
-  '#8c564b',
-  '#e377c2',
-  '#7f7f7f',
-  '#bcbd22',
-  '#17becf',
+import { Scatter3DChart } from 'echarts-gl/charts';
+import { Grid3DComponent } from 'echarts-gl/components';
 
-  // vega category20 color scheme
-  // '#1f77b4',
-  // '#aec7e8',
-  // '#ff7f0e',
-  // '#ffbb78',
-  // '#2ca02c',
-  // '#98df8a',
-  // '#d62728',
-  // '#ff9896',
-  // '#9467bd',
-  // '#c5b0d5',
-  // '#8c564b',
-  // '#c49c94',
-  // '#e377c2',
-  // '#f7b6d2',
-  // '#7f7f7f',
-  // '#c7c7c7',
-  // '#bcbd22',
-  // '#dbdb8d',
-  // '#17becf',
-  // '#9edae5',
-];
+echarts.use([Scatter3DChart, Grid3DComponent]);
 
-export class Scatter extends Base {
+export class Scatter3D extends Base {
   constructor() {
     super();
+
     this.option = {
       toolbox: {
         feature: {
@@ -49,54 +21,54 @@ export class Scatter extends Base {
         },
         show: true,
       },
-      grid: {
-        left: '8%',
-        right: '5%',
-        top: '18%',
-        bottom: '20%',
-        containLabel: false,
-        show: false,
-      },
-      animation: false,
-      dataZoom: [
-        {
-          type: 'inside',
-          filterMode: 'empty',
-        },
-        { type: 'inside', orient: 'vertical', filterMode: 'empty' },
-      ],
+
       tooltip: {
         trigger: 'item',
         axisPointer: {
           type: 'cross',
         },
       },
-      xAxis: {
-        name: '',
-        nameLocation: 'middle',
-        nameGap: 30,
-        nameTextStyle: {
-          fontWeight: 'bold',
+
+      grid3D: {
+        axisLine: {
+          lineStyle: {
+            color: '#fff',
+          },
         },
+        axisPointer: {
+          lineStyle: {
+            color: '#ffbd67',
+          },
+        },
+        viewControl: {
+          autoRotate: true,
+          projection: 'perspective',
+        },
+      },
+
+      xAxis3D: {
+        name: '',
         type: 'value',
       },
-      yAxis: {
+
+      yAxis3D: {
         name: '',
-        nameLocation: 'middle',
-        nameGap: 30,
-        nameTextStyle: {
-          fontWeight: 'bold',
-        },
         type: 'value',
       },
+
+      zAxis3D: {
+        name: '',
+        type: 'value',
+      },
+
       series: [
         {
           name: 'SeriesName',
-          type: 'scatter',
-          symbolSize: 15,
+          type: 'scatter3D',
           encode: {
             x: '',
             y: '',
+            z: '',
           },
         },
       ],
@@ -104,35 +76,9 @@ export class Scatter extends Base {
 
     this.methods = {
       ...this.methods,
-      setX: this.setXRun,
-      setY: this.setYRun,
       setColor: this.setColorRun,
     };
   }
-
-  setX = (dimName: string, seriesIndex: number = 0) => {
-    this.callStack = [
-      ...this.callStack,
-      { name: 'setX', params: [dimName, seriesIndex] },
-    ];
-
-    return this;
-  };
-
-  protected setXRun = (dimName: string, seriesIndex: number = 0) =>
-    ((this.option as any).series[seriesIndex].encode.x = dimName);
-
-  setY = (dimName: string, seriesIndex: number = 0) => {
-    this.callStack = [
-      ...this.callStack,
-      { name: 'setY', params: [dimName, seriesIndex] },
-    ];
-
-    return this;
-  };
-
-  protected setYRun = (dimName: string, seriesIndex: number = 0) =>
-    ((this.option as any).series[seriesIndex].encode.y = dimName);
 
   setColor = (
     dimName: string,

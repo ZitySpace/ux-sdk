@@ -58,7 +58,7 @@ export const makeOption = (
       },
       series: [
         {
-          name: 'BoxSize',
+          name: 'TSNE',
           symbolSize: 6,
           emphasis: {
             focus: 'series',

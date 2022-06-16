@@ -71,6 +71,7 @@
   "dependencies": {
     "@types/fabric": "^4.5.6",
     "echarts": "^5.3.2",
+    "echarts-gl": "^2.0.9",
     "fabric": "^4.6.0",
     "rc-slider": "^10.0.0",
     "react-ace": "^10.0.0",
