@@ -1,7 +1,6 @@
 import { FilteringProps } from '../../../../stores/contextStore';
 import { Option } from '../Option';
-import { MouseEventParams, queryData, fetchData } from '../Option/Base';
-import { ChartTreeDataProps } from '../Option/Tree';
+import { MouseEventParams, fetchData } from '../Option/Base';
 
 const getRelationData = (HOST: string) => async () =>
   await fetchData(HOST + '/relation?name=categories');

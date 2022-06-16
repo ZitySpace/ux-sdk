@@ -22,6 +22,7 @@ import {
   makeHierachicalCategoryRelationOption,
   makeAttributeForestOption,
   makeCategoryAttributeSankeyOption,
+  makeTsneOption,
 } from './examples';
 
 export default {
@@ -128,6 +129,8 @@ const ChartPlay = ({
         HOST,
         setFiltering
       );
+    } else if (emp === 'Tsne_Scatter') {
+      optionRef.current = makeTsneOption(HOST, setFiltering);
     } else if (emp === 'HierachicalCategory_Tree') {
       optionRef.current = makeHierachicalCategoryRelationOption(
         'tree',
