@@ -6,10 +6,15 @@ import merge from 'ts-deepmerge';
 interface ChartDataProps {
   header?: string[];
   data: any[][] | { [key: string]: any }[] | { [key: string]: any[] };
+  name?: string;
 }
 
 interface ChartDataGenFuncProps {
-  (): ChartDataProps | Promise<ChartDataProps>;
+  ():
+    | ChartDataProps
+    | Promise<ChartDataProps>
+    | ChartDataProps[]
+    | Promise<ChartDataProps[]>;
 }
 
 interface ChartDatasetProps {
@@ -178,6 +183,7 @@ export class Base {
   size: { width?: number; height?: number };
   data:
     | ChartDataProps
+    | ChartDataProps[]
     | ChartExternalDatasetProps
     | ChartDataGenFuncProps
     | null;
@@ -220,24 +226,31 @@ export class Base {
   setData = (
     data:
       | ChartDataProps
+      | ChartDataProps[]
       | ChartExternalDatasetProps
       | ChartDataGenFuncProps
-      | null
+      | null,
+    dataNameCol: string | null = null
   ) => {
-    this.callStack = [...this.callStack, { name: 'setData', params: [data] }];
+    this.callStack = [
+      ...this.callStack,
+      { name: 'setData', params: [data, dataNameCol] },
+    ];
     return this;
   };
 
   protected setDataRun = async (
     data:
       | ChartDataProps
+      | ChartDataProps[]
       | ChartExternalDatasetProps
       | ChartDataGenFuncProps
-      | null
+      | null,
+    dataNameCol: string | null
   ) => {
     this.data = data;
 
-    const dataset: ChartDataProps | null =
+    const dataset: ChartDataProps | ChartDataProps[] | null =
       data === null
         ? null
         : typeof data === 'function'
@@ -252,34 +265,51 @@ export class Base {
       // convert dataset into standard format
       let dimensions: string[];
       let source: any[][];
-      const dataContent = dataset['data'];
 
-      if ('header' in dataset) {
-        dimensions = dataset['header']!;
-        source = dataContent as any[][];
-      } else {
-        if (Array.isArray(dataContent)) {
-          if (Array.isArray(dataContent[0])) {
-            dimensions = (dataContent as any[][])[0];
-            source = (dataContent as any[][]).slice(1);
+      (Array.isArray(dataset) ? dataset : [dataset]).map(
+        (slice: ChartDataProps, i: number) => {
+          const dataContent = slice['data'];
+
+          if ('header' in slice) {
+            dimensions = slice['header']!;
+            source = dataContent as any[][];
           } else {
-            dimensions = Object.keys(
-              (dataContent as { [key: string]: any }[])[0]
-            );
-            source = (dataContent as { [key: string]: any }[]).map((r) =>
-              Object.values(r)
+            if (Array.isArray(dataContent)) {
+              if (Array.isArray(dataContent[0])) {
+                dimensions = (dataContent as any[][])[0];
+                source = (dataContent as any[][]).slice(1);
+              } else {
+                dimensions = Object.keys(
+                  (dataContent as { [key: string]: any }[])[0]
+                );
+                source = (dataContent as { [key: string]: any }[]).map((r) =>
+                  Object.values(r)
+                );
+              }
+            } else {
+              dimensions = Object.keys(dataContent);
+              source = transposeMatrix(Object.values(dataContent));
+            }
+          }
+
+          if (dataNameCol && !dimensions.includes(dataNameCol)) {
+            dimensions.push(dataNameCol);
+            source.map((item: any[], i: number) => item.push(i));
+          }
+
+          const datasetSlice =
+            'name' in slice
+              ? { dimensions, source, name: slice.name }
+              : { dimensions, source };
+          if (!this.option.dataset) {
+            this.option.dataset = [datasetSlice];
+          } else {
+            (this.option.dataset as echarts.DatasetComponentOption[]).push(
+              datasetSlice
             );
           }
-        } else {
-          dimensions = Object.keys(dataContent);
-          source = transposeMatrix(Object.values(dataContent));
         }
-      }
-
-      this.option = {
-        dataset: [{ dimensions, source }],
-        ...this.option,
-      };
+      );
     }
   };
 
@@ -513,5 +543,6 @@ export class Base {
     );
 
     this.option = { ...nonListableMergedOpts, ...listableMergedOpts };
+    console.log(this.option);
   };
 }

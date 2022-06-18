@@ -24,6 +24,7 @@ import {
   makeCategoryAttributeSankeyOption,
   makeTsneOption,
   makeTsne3DOption,
+  makeConfusionMatrixOption,
 } from './examples';
 
 export default {
@@ -65,8 +66,8 @@ const ChartPlay = ({
     'AnnotationTimeTracker_Line',
     'AnnotationYearlyTracker_Calendar',
     'AnnotationMonthlyTracker_Calendar',
-    'ConfusionMatrix_Matrix',
-    'MultiLabelConfusionMatrix_Matrix',
+    'ConfusionMatrix_Heatmap',
+    'MultiLabelConfusionMatrix_Heatmap',
     'Tsne_Scatter',
     'Tsne_Scatter3D',
     'HierachicalCategory_Tree',
@@ -134,6 +135,8 @@ const ChartPlay = ({
       optionRef.current = makeTsneOption(HOST, setFiltering);
     } else if (emp === 'Tsne_Scatter3D') {
       optionRef.current = makeTsne3DOption(HOST, setFiltering);
+    } else if (emp === 'ConfusionMatrix_Heatmap') {
+      optionRef.current = makeConfusionMatrixOption(HOST, setFiltering, false);
     } else if (emp === 'HierachicalCategory_Tree') {
       optionRef.current = makeHierachicalCategoryRelationOption(
         'tree',

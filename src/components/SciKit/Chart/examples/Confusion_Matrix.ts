@@ -1,0 +1,151 @@
+import { FilteringProps } from '../../../../stores/contextStore';
+import { Option } from '../Option';
+import { MouseEventParams, BrushSelectedEventParams } from '../Option/Base';
+import { useFilterFromDataframe } from '../../../../utils';
+
+export const makeOption = (
+  HOST: string,
+  setFiltering: { (filteringProps: FilteringProps): void },
+  multi: boolean
+) => {
+  const opt = multi
+    ? Option.makeBase()
+    : Option.makeHeatmap()
+        .setSize({ height: 640, width: 640 })
+        .setData(
+          {
+            queryApi: {
+              host: HOST + '/confusion_matrix?taxonomy=category',
+              query: '',
+            },
+          },
+          'cellId'
+        )
+        .updateOption({
+          title: {
+            text: 'category',
+            left: '53%',
+            textStyle: {
+              color: '#888',
+              fontSize: 10,
+              fontWeight: 'bold',
+            },
+            top: 20,
+          },
+
+          grid: {
+            top: 40,
+            left: 120,
+            right: 0,
+            bottom: 120,
+          },
+
+          animation: false,
+          dataZoom: [
+            {
+              type: 'inside',
+            },
+            { type: 'inside', orient: 'vertical' },
+          ],
+
+          visualMap: {
+            type: 'continuous',
+            dimension: 'count',
+            min: 0,
+            max: 180,
+            inRange: {
+              color: ['#e0f3f8', '#abd9e9', '#74add1', '#4575b4', '#313695'],
+            },
+
+            show: false,
+          },
+
+          xAxis: {
+            type: 'category',
+            axisLine: {
+              show: false,
+            },
+            axisTick: {
+              show: false,
+            },
+            axisLabel: {
+              rotate: 90,
+              fontSize: 10,
+              fontWeight: 'normal',
+              interval: 0,
+            },
+            splitLine: {
+              show: false,
+              interval: 0,
+            },
+          },
+          yAxis: {
+            type: 'category',
+            inverse: true,
+            axisLine: {
+              show: false,
+            },
+            axisTick: {
+              show: false,
+            },
+            axisLabel: {
+              fontSize: 10,
+              fontWeight: 'normal',
+              interval: 0,
+            },
+            splitLine: {
+              show: false,
+              interval: 0,
+            },
+          },
+
+          series: [
+            {
+              name: 'category',
+              encode: {
+                x: 'pred',
+                y: 'gt',
+                itemName: 'cellId',
+              },
+              label: {
+                show: true,
+                fontSize: 8,
+              },
+              tooltip: {
+                formatter: (params: MouseEventParams) =>
+                  `&nbsp;&thinsp;&thinsp;gt: ${params.value[0]} <br/>
+                   &thinsp;&thinsp;pred: ${params.value[1]} <br/>
+                   count: ${params.value[2]}`,
+                textStyle: {
+                  fontSize: 10,
+                  fontFamily: 'monospace',
+                },
+              },
+              selectedMode: 'single',
+              select: {
+                itemStyle: {
+                  shadowBlur: 10,
+                  shadowColor: 'rgba(0,0,0,0.5)',
+                  borderWidth: 0,
+                  color: 'green',
+                },
+              },
+              emphasis: {
+                itemStyle: {
+                  shadowBlur: 10,
+                  shadowColor: 'rgba(0,0,0,0.5)',
+                },
+              },
+            },
+          ],
+        });
+
+  opt.setBackgroundAction({
+    name: 'click',
+    action: async (chart: echarts.ECharts) => {
+      Option.unselectAll(chart);
+    },
+  });
+
+  return opt;
+};

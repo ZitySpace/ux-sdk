@@ -23,7 +23,7 @@ const Chart = ({
       chartRef.current =
         chartRef.current ||
         echarts.init(chartDivRef.current as HTMLElement, undefined, {
-          renderer: 'canvas',
+          renderer: 'svg',
         });
       forceUpdate();
     };
@@ -84,7 +84,10 @@ const Chart = ({
           <span>{title}</span>
         </div>
       )}
-      <div className='h-full w-full' ref={chartDivRef}></div>
+      <div
+        className='h-full w-full flex justify-center'
+        ref={chartDivRef}
+      ></div>
     </div>
   );
 };
