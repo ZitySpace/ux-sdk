@@ -698,6 +698,5 @@ export class Base {
     );
 
     this.option = { ...nonListableMergedOpts, ...listableMergedOpts };
-    console.log(this.option);
   };
 }

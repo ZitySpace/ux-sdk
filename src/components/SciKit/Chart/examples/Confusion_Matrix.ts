@@ -67,7 +67,6 @@ export const makeOption = (
           }),
           xAxis: dataset.map((d: any, i: number) => ({
             gridIndex: i,
-            // name: d.name,
             type: 'category',
             axisLine: {
               show: false,
@@ -90,7 +89,6 @@ export const makeOption = (
           })),
           yAxis: dataset.map((d: any, i: number) => ({
             gridIndex: i,
-            // name: d.name,
             type: 'category',
             inverse: true,
             axisLine: {
@@ -283,12 +281,40 @@ export const makeOption = (
           ],
         });
 
-  opt.setBackgroundAction({
-    name: 'click',
-    action: async (chart: echarts.ECharts) => {
-      Option.unselectAll(chart);
-    },
-  });
+  opt
+    .setBackgroundAction({
+      name: 'click',
+      action: async (chart: echarts.ECharts) => {
+        Option.unselectAll(chart);
+        setFiltering(
+          await Option.filterOptionFromQuery(
+            HOST,
+            "res = df[['image_hash', 'x', 'y', 'w', 'h', 'category']]"
+          )
+        );
+      },
+    })
+    .addElementAction({
+      name: 'click',
+      query: 'series',
+      action: async (params: MouseEventParams, chart: echarts.ECharts) => {
+        Option.unselectAll(chart);
+
+        chart.dispatchAction({
+          type: 'select',
+          seriesIndex: params.seriesIndex,
+          dataIndex: params.dataIndex,
+        });
+
+        setFiltering(
+          await Option.filterOptionFromQuery(
+            HOST,
+            "res = df.iloc[data['idx']][['image_hash', 'x', 'y', 'w', 'h', 'category']]",
+            params
+          )
+        );
+      },
+    });
 
   return opt;
 };
