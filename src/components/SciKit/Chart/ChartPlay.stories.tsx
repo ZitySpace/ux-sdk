@@ -137,6 +137,8 @@ const ChartPlay = ({
       optionRef.current = makeTsne3DOption(HOST, setFiltering);
     } else if (emp === 'ConfusionMatrix_Heatmap') {
       optionRef.current = makeConfusionMatrixOption(HOST, setFiltering, false);
+    } else if (emp === 'MultiLabelConfusionMatrix_Heatmap') {
+      optionRef.current = makeConfusionMatrixOption(HOST, setFiltering, true);
     } else if (emp === 'HierachicalCategory_Tree') {
       optionRef.current = makeHierachicalCategoryRelationOption(
         'tree',

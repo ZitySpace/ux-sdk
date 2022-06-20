@@ -17,10 +17,10 @@ interface ChartDataGenFuncProps {
     | Promise<ChartDataProps[]>;
 }
 
-interface ChartDatasetProps {
+export type ChartDatasetProps = {
   dimensions?: string[];
   source: any[][];
-}
+}[];
 
 export type ChartExternalDatasetProps =
   | {
@@ -32,6 +32,25 @@ export type ChartExternalDatasetProps =
         query: string;
       };
     };
+
+interface GridParams {
+  shape: number | number[];
+  margin: number | number[];
+  innerGaps: number | number[];
+  sizes?: number | (number | number[])[];
+}
+
+interface GridParamsGenFuncProps {
+  (dataset: ChartDatasetProps): GridParams;
+}
+
+interface ChartOptionProps {
+  [key: string]: any | any[];
+}
+
+interface ChartOptionGenFuncProps {
+  (dataset: ChartDatasetProps): ChartOptionProps;
+}
 
 export const queryData = async (host: string, query: string) => {
   const api = requestTemplate(
@@ -75,6 +94,7 @@ export const fetchData = async (jsonUri: string) => {
 };
 
 const ListableOptions = [
+  'title',
   'grid',
   'xAxis',
   'yAxis',
@@ -205,6 +225,7 @@ export class Base {
       setBackgroundAction: this.setBackgroundActionRun,
       addElementAction: this.addElementActionRun,
       updateOption: this.updateOptionRun,
+      makeGrid: this.makeGridRun,
     };
     this.callStack = [];
   }
@@ -313,6 +334,136 @@ export class Base {
     }
   };
 
+  makeGrid = (gridParams: GridParams | GridParamsGenFuncProps) => {
+    this.callStack = [
+      ...this.callStack,
+      { name: 'makeGrid', params: [gridParams] },
+    ];
+    return this;
+  };
+
+  protected makeGridRun = (gridParams: GridParams | GridParamsGenFuncProps) => {
+    const { shape, margin, innerGaps, sizes } = {
+      sizes: 1,
+      ...(typeof gridParams === 'function'
+        ? gridParams(this.option.dataset as ChartDatasetProps)
+        : gridParams),
+    };
+
+    const [nRows, nCols] = Array.isArray(shape) ? shape : [shape, shape];
+    const [marginL, marginT, marginR, marginB] = Array.isArray(margin)
+      ? margin.length === 2
+        ? [...margin, ...margin]
+        : margin
+      : [margin, margin, margin, margin];
+
+    const getPos = (
+      iStart: number,
+      iEnd: number,
+      n: number,
+      mStart: number = 0,
+      mEnd: number = 0,
+      gap: number = 0 // this is outer gap
+    ) => {
+      const delta = (100 - mStart - mEnd + gap) / n;
+      return [mStart + iStart * delta, 100 - mStart - iEnd * delta + gap];
+    };
+
+    const spots: (number | string)[][] = Array.from({ length: nRows }, (_, i) =>
+      Array.from({ length: nCols }, (_, j) => '-')
+    );
+
+    const availableSpots = Array.from({ length: nRows }, (_, i) =>
+      Array.from({ length: nCols }, (_, j) => [i, j])
+    ).flat();
+
+    const isAvailable = (i: number, j: number, size: number | number[]) => {
+      const [h, w] = Array.isArray(size) ? size : [size, size];
+      if (i + h > nRows || j + w > nCols) return false;
+
+      return spots
+        .slice(i, i + h)
+        .every((row) => row.slice(j, j + w).every((s) => s === '-'));
+    };
+
+    const firstAvailableSpotIdx = (size: number | number[]) =>
+      availableSpots.findIndex((spot) => isAvailable(spot[0], spot[1], size));
+
+    const occupySpot = (
+      i: number,
+      j: number,
+      h: number,
+      w: number,
+      gridIdx: number
+    ) => {
+      Array.from({ length: h }, (_, i_) =>
+        Array.from({ length: w }, (_, j_) => [i + i_, j + j_])
+      )
+        .flat()
+        .map(([x, y]) => (spots[x][y] = gridIdx));
+    };
+
+    const grids: any[] = [];
+    const titles: any[] = [];
+    const assignments = (
+      Array.isArray(sizes)
+        ? sizes
+        : Array.from(
+            { length: Math.floor(nRows / sizes) * Math.floor(nCols / sizes) },
+            (_, i) => sizes
+          )
+    ).map((size, i) => {
+      const spotIdx = firstAvailableSpotIdx(size);
+      let spot = null;
+      if (spotIdx !== -1) {
+        spot = availableSpots.splice(spotIdx, 1)[0];
+        const [h, w] = Array.isArray(size) ? size : [size, size];
+
+        occupySpot(spot[0], spot[1], h, w, i);
+
+        const [left, right] = getPos(
+          spot[1],
+          spot[1] + w,
+          nCols,
+          marginL,
+          marginR
+        );
+        const [top, bottom] = getPos(
+          spot[0],
+          spot[0] + h,
+          nRows,
+          marginT,
+          marginB
+        );
+
+        const innerGap = Array.isArray(innerGaps) ? innerGaps[i] : innerGaps;
+        grids.push({
+          left: left + innerGap + '%',
+          top: top + '%',
+          right: right + '%',
+          bottom:
+            bottom +
+            (innerGap * ((this.size.width ? this.size.width : 1) * h)) /
+              (w * (this.size.height ? this.size.height : 1)) +
+            '%',
+        });
+        titles.push({
+          textAlign: 'center',
+          left: (left + innerGap + 100 - right) / 2 + '%',
+          top: top - 2.5 + '%',
+        });
+      } else {
+        grids.push({});
+        titles.push({});
+      }
+
+      return spot;
+    });
+
+    this.option.grid = grids;
+    this.option.title = titles;
+  };
+
   public static filterOptionFromQuery = async (
     host: string,
     query: string,
@@ -363,7 +514,7 @@ export class Base {
   ) => {
     if (!this.option.dataset) return false;
 
-    const dataset = (this.option.dataset as ChartDatasetProps[])[datasetIndex];
+    const dataset = (this.option.dataset as ChartDatasetProps)[datasetIndex];
     if (!dataset) return false;
 
     const ndim = dataset.dimensions!.length;
@@ -384,7 +535,7 @@ export class Base {
   ) => {
     if (!this.columnExist(nameOrIdx, datasetIndex)) return [];
 
-    const dataset = (this.option.dataset as ChartDatasetProps[])[datasetIndex];
+    const dataset = (this.option.dataset as ChartDatasetProps)[datasetIndex];
     const index =
       typeof nameOrIdx === 'number'
         ? nameOrIdx
@@ -418,7 +569,7 @@ export class Base {
   protected groupByColumn = (by: string | number, datasetIndex: number = 0) => {
     if (!this.columnExist(by, datasetIndex)) return {};
 
-    const dataset = (this.option.dataset as ChartDatasetProps[])[datasetIndex];
+    const dataset = (this.option.dataset as ChartDatasetProps)[datasetIndex];
     const source = dataset.source;
 
     const index =
@@ -428,7 +579,7 @@ export class Base {
     const calcKey = (row: any[]) => row[index];
 
     return source.reduce(
-      (res: { [key: string]: ChartDatasetProps }, row: any[]) => {
+      (res: { [key: string]: ChartDatasetProps[0] }, row: any[]) => {
         const key = calcKey(row);
 
         res[key] = res[key] || { dimensions: dataset.dimensions, source: [] };
@@ -482,18 +633,22 @@ export class Base {
     else this.actions.element = [...this.actions.element, action];
   };
 
-  updateOption = (option: object) => {
+  updateOption = (optionProps: ChartOptionProps | ChartOptionGenFuncProps) => {
     this.callStack = [
       ...this.callStack,
-      { name: 'updateOption', params: [option] },
+      { name: 'updateOption', params: [optionProps] },
     ];
 
     return this;
   };
 
-  protected updateOptionRun = (option: {
-    [key: string]: object | object[];
-  }) => {
+  protected updateOptionRun = (
+    optionProps: ChartOptionProps | ChartOptionGenFuncProps
+  ) => {
+    const option =
+      typeof optionProps === 'function'
+        ? optionProps(this.option.dataset as ChartDatasetProps)
+        : optionProps;
     const thisOption = this.option;
 
     const mergeListableOpts = (

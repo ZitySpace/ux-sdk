@@ -1,6 +1,10 @@
 import { FilteringProps } from '../../../../stores/contextStore';
 import { Option } from '../Option';
-import { MouseEventParams, BrushSelectedEventParams } from '../Option/Base';
+import {
+  MouseEventParams,
+  BrushSelectedEventParams,
+  ChartDatasetProps,
+} from '../Option/Base';
 import { useFilterFromDataframe } from '../../../../utils';
 
 export const makeOption = (
@@ -9,7 +13,146 @@ export const makeOption = (
   multi: boolean
 ) => {
   const opt = multi
-    ? Option.makeBase()
+    ? Option.makeHeatmap()
+        .setSize({ height: 960, width: 960 })
+        .setData(
+          {
+            queryApi: {
+              host: HOST + '/confusion_matrix?taxonomy=attribute',
+              query: '',
+            },
+          },
+          'cellId'
+        )
+        .makeGrid((dataset: ChartDatasetProps) => {
+          const toSize = (s: number) => Math.ceil(s / 6);
+          const sizes = dataset.map((d) => toSize(Math.sqrt(d.source.length)));
+          return {
+            shape: [6, 6],
+            margin: [0, 5, 5, 0],
+            innerGaps: 9,
+            sizes,
+          };
+        })
+        .updateOption((dataset: ChartDatasetProps) => ({
+          animation: false,
+          title: dataset.map((d: any, i: number) => ({
+            text: d.name,
+            textStyle: {
+              color: '#888',
+              fontSize: 10,
+              fontWeight: 'bold',
+            },
+          })),
+          visualMap: dataset.map((d: any, i: number) => {
+            const idxOfCount = d.dimensions.findIndex(
+              (col: string) => col === 'count'
+            );
+            const max = Math.max(
+              ...d.source.map((row: any[]) => row[idxOfCount])
+            );
+
+            return {
+              type: 'continuous',
+              seriesIndex: i,
+              dimension: 'count',
+              min: 0,
+              max,
+              inRange: {
+                color: ['#e0f3f8', '#abd9e9', '#74add1', '#4575b4', '#313695'],
+              },
+
+              show: false,
+            };
+          }),
+          xAxis: dataset.map((d: any, i: number) => ({
+            gridIndex: i,
+            // name: d.name,
+            type: 'category',
+            axisLine: {
+              show: false,
+            },
+            axisTick: {
+              show: false,
+            },
+            axisLabel: {
+              rotate: 90,
+              fontSize: 10,
+              fontWeight: 'normal',
+              interval: 0,
+              width: 60,
+              overflow: 'truncate',
+            },
+            splitLine: {
+              show: false,
+              interval: 0,
+            },
+          })),
+          yAxis: dataset.map((d: any, i: number) => ({
+            gridIndex: i,
+            // name: d.name,
+            type: 'category',
+            inverse: true,
+            axisLine: {
+              show: false,
+            },
+            axisTick: {
+              show: false,
+            },
+            axisLabel: {
+              fontSize: 10,
+              fontWeight: 'normal',
+              interval: 0,
+              width: 60,
+              overflow: 'truncate',
+            },
+            splitLine: {
+              show: false,
+              interval: 0,
+            },
+          })),
+          series: dataset.map((d: any, i: number) => ({
+            datasetIndex: i,
+            xAxisIndex: i,
+            yAxisIndex: i,
+            name: d.name,
+            type: 'heatmap',
+            encode: {
+              x: 'pred',
+              y: 'gt',
+              itemName: 'cellId',
+            },
+            label: {
+              show: true,
+              fontSize: 8,
+            },
+            tooltip: {
+              formatter: (params: MouseEventParams) =>
+                `&nbsp;&thinsp;&thinsp;gt: ${params.value[0]} <br/>
+                   &thinsp;&thinsp;pred: ${params.value[1]} <br/>
+                   count: ${params.value[2]}`,
+              textStyle: {
+                fontSize: 10,
+                fontFamily: 'monospace',
+              },
+            },
+            selectedMode: 'single',
+            select: {
+              itemStyle: {
+                shadowBlur: 10,
+                shadowColor: 'rgba(0,0,0,0.5)',
+                borderWidth: 0,
+                color: 'green',
+              },
+            },
+            emphasis: {
+              itemStyle: {
+                shadowBlur: 10,
+                shadowColor: 'rgba(0,0,0,0.5)',
+              },
+            },
+          })),
+        }))
     : Option.makeHeatmap()
         .setSize({ height: 640, width: 640 })
         .setData(
