@@ -2,7 +2,6 @@ export { makeOption as makeCategoryDistributionBarOption } from './CategoryDistr
 export { makeOption as makeCategoryDistributionPieOption } from './CategoryDistribution_Pie';
 export { makeOption as makeBoxSizeDistributionScatterOption } from './BoxSizeDistribution_Scatter';
 export { makeOption as makeImageSizeDistributionScatterOption } from './ImageSizeDistribution_Scatter';
-export { makeOption as makeImageSizeDistributionHeatmapOption } from './ImageSizeDistribution_Heatmap';
 export { makeOption as makeAnnotationTimeTrackerOption } from './AnnotationTimeTrackers';
 export { makeOption as makeHierachicalCategoryRelationOption } from './HierachicalCategory_Trees';
 export { makeOption as makeAttributeForestOption } from './Attribute_Forest';

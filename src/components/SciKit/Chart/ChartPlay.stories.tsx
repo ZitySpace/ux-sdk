@@ -17,7 +17,6 @@ import {
   makeCategoryDistributionPieOption,
   makeBoxSizeDistributionScatterOption,
   makeImageSizeDistributionScatterOption,
-  makeImageSizeDistributionHeatmapOption,
   makeAnnotationTimeTrackerOption,
   makeHierachicalCategoryRelationOption,
   makeAttributeForestOption,
@@ -61,7 +60,6 @@ const ChartPlay = ({
     'CategoryDistribution_Bar',
     'CategoryDistribution_Pie',
     'ImageSizeDistribution_Scatter',
-    'ImageSizeDistribution_Heatmap',
     'BoxSizeDistribution_Scatter',
     'AnnotationTimeTracker_Line',
     'AnnotationYearlyTracker_Calendar',
@@ -105,11 +103,6 @@ const ChartPlay = ({
       );
     } else if (emp === 'ImageSizeDistribution_Scatter') {
       optionRef.current = makeImageSizeDistributionScatterOption(
-        HOST,
-        setFiltering
-      );
-    } else if (emp === 'ImageSizeDistribution_Heatmap') {
-      optionRef.current = makeImageSizeDistributionHeatmapOption(
         HOST,
         setFiltering
       );
