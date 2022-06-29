@@ -4,6 +4,7 @@ import * as echarts from 'echarts/core';
 
 import { Scatter3DChart } from 'echarts-gl/charts';
 import { Grid3DComponent } from 'echarts-gl/components';
+import { EChartsOption } from 'echarts';
 
 echarts.use([Scatter3DChart, Grid3DComponent]);
 
@@ -72,7 +73,7 @@ export class Scatter3D extends Base {
           },
         },
       ],
-    };
+    } as EChartsOption;
 
     this.methods = {
       ...this.methods,
