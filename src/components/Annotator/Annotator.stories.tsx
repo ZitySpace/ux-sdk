@@ -1,8 +1,7 @@
 import { ComponentMeta, ComponentStory } from '@storybook/react';
 import React, { useRef, useEffect } from 'react';
-import ImageCarousel from './ImageCarousel';
-import PaginationBar from '../PaginationBar';
 import Annotator from '../Annotator';
+
 import { QueryClient, QueryClientProvider } from 'react-query';
 import { useContextStore } from '../../stores/contextStore';
 import { usePagingStore } from '../../stores/pagingStore';
@@ -10,9 +9,9 @@ import { useCarouselStore } from '../../stores/carouselStore';
 import { useCarouselQueries } from '../../utils/hooks/useCarouselQueries';
 
 export default {
-  title: 'UX-SDK/ImageCarousel',
-  component: ImageCarousel,
-} as ComponentMeta<typeof ImageCarousel>;
+  title: 'UX-SDK/Annotator',
+  component: Annotator,
+} as ComponentMeta<typeof Annotator>;
 
 const queryClient = new QueryClient();
 
@@ -43,15 +42,9 @@ const Template: ComponentStory<any> = (args) => {
     if (sizeQuery.isLoading || pageQuery.isLoading) return <></>;
 
     return (
-      <div className='flex flex-col space-y-4'>
-        <div className='shadow-lg'>
-          <ImageCarousel carouselStoreName={args.imageCarousel.storeName} />
-          <PaginationBar pagingStoreName={args.paginationBar.storeName} />
-        </div>
-        <div style={{ height: 540 }}>
-          <Annotator carouselStoreName={args.imageCarousel.storeName} />
-        </div>
-      </div>
+      <>
+        <Annotator carouselStoreName={args.imageCarousel.storeName} />
+      </>
     );
   };
 
@@ -65,12 +58,12 @@ const Template: ComponentStory<any> = (args) => {
 export const Story = Template.bind({});
 Story.args = {
   imageCarousel: {
-    storeName: 'ImageCarousel.stories.carouselStore',
+    storeName: 'Annotator.stories.carouselStore',
   },
   paginationBar: {
-    storeName: 'ImageCarousel.stories.pagingStore',
+    storeName: 'Annotator.stories.pagingStore',
   },
   context: {
-    storeName: 'ImageCarousel.stories.contextStore',
+    storeName: 'Annotator.stories.contextStore',
   },
 };

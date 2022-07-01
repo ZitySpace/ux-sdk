@@ -33,6 +33,7 @@ export default [
         'dist/**',
         'src/**/*.stories.tsx',
         'src/**/*.test.tsx',
+        'src/**/examples/**',
       ],
     },
     plugins: [
