@@ -48,6 +48,7 @@ interface Store extends State {
   };
   setCarouselData: (data: StoreData) => void;
   getNames: () => string[];
+  setImageData: (name: string, data: ImageProps) => void;
 }
 
 const createStoreFromData = (data: Partial<StoreData> = storeDataDefault) =>
@@ -91,6 +92,12 @@ const createStoreFromData = (data: Partial<StoreData> = storeDataDefault) =>
         })
       ),
     getNames: () => Object.keys(get().carouselData),
+    setImageData: (name: string, data: ImageProps) =>
+      set(
+        produce((s) => {
+          s.carouselData[name] = data;
+        })
+      ),
   }));
 
 const storeDefault = createStoreFromData(storeDataDefault);
