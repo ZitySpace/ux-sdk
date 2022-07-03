@@ -4,6 +4,7 @@ import React, { useEffect, useRef, useState } from 'react';
 import { useCarouselStore } from '../../stores/carouselStore';
 import { useAPIs } from '../../utils/apis';
 import { useResizeDetector } from 'react-resize-detector';
+import { ColorStore } from '@ZitySpace/react-annotate';
 import { useStore } from 'zustand';
 
 const ImageTag = ({
@@ -30,6 +31,8 @@ const ImageTag = ({
   ]);
 
   const { getImage } = useAPIs();
+
+  const getColor = useStore(ColorStore, (s) => s.getColor);
 
   const [src, setSrc] = useState<string>(
     'data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs%3D'
@@ -70,7 +73,7 @@ const ImageTag = ({
     canvas.setHeight(ch);
 
     annotations &&
-      annotations.map(({ x, y, w, h, category }: any) => {
+      annotations.map(({ x, y, w, h, category, color }: any) => {
         canvas.add(
           new fabric.Rect({
             left: (x * cw) / iw,
@@ -80,7 +83,7 @@ const ImageTag = ({
             width: (w * cw) / iw,
             height: (h * ch) / ih,
             fill: 'rgba(255,0,0,0)',
-            stroke: 'red',
+            stroke: color || getColor(category) || 'red',
             strokeWidth: 1.5,
           })
         );

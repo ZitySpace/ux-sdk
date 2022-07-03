@@ -35,7 +35,9 @@ const Annotator = ({
 
   return (
     <div className='bg-gray-100 h-96 min-h-full flex flex-col text-xs shadow-lg rounded-md relative select-none'>
-      <AnnotatorCore imagesList={imagesList} getImage={getImage} />
+      {imagesList.length > 0 && (
+        <AnnotatorCore imagesList={imagesList} getImage={getImage} />
+      )}
     </div>
   );
 };
