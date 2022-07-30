@@ -1,7 +1,7 @@
 import React from 'react';
 import {
   Annotator as AnnotatorCore,
-  RectLabel,
+  BoxLabel,
   ImageData,
 } from '@ZitySpace/react-annotate';
 import { useCarouselStore } from '../../stores/carouselStore';
@@ -23,13 +23,13 @@ const Annotator = ({
     annotations: props.annotations
       ? props.annotations.map(
           (anno, id) =>
-            new RectLabel({
+            new BoxLabel({
               id: id,
               x: anno.x,
               y: anno.y,
               w: anno.w,
               h: anno.h,
-              category: anno.category,
+              category: anno.category!,
               timestamp: anno.timestamp_z,
               hash: anno.unique_hash_z,
             })
@@ -44,15 +44,18 @@ const Annotator = ({
   ) => {
     setImageData(curImageData.name, {
       ...carouselData[curImageData.name],
-      annotations: (curImageData.annotations as RectLabel[]).map((anno) => ({
-        category: anno.category,
-        timestamp_z: anno.timestamp,
-        unique_hash_z: anno.hash,
-        x: Math.round((anno.rect.x - anno.offset.x) / anno.scale),
-        y: Math.round((anno.rect.y - anno.offset.y) / anno.scale),
-        w: Math.round(anno.rect.w / anno.scale),
-        h: Math.round(anno.rect.h / anno.scale),
-      })),
+      annotations: (curImageData.annotations as BoxLabel[]).map((anno) => {
+        const {
+          category,
+          timestamp: timestamp_z,
+          hash: unique_hash_z,
+          x,
+          y,
+          w,
+          h,
+        } = anno.toImageCoordSystem(false);
+        return { category, timestamp_z, unique_hash_z, x, y, w, h };
+      }),
     });
   };
 

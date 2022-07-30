@@ -539,7 +539,7 @@ export class Base {
     const index =
       typeof nameOrIdx === 'number'
         ? nameOrIdx
-        : dataset.dimensions?.findIndex((name) => name === nameOrIdx)!;
+        : dataset.dimensions!.findIndex((name) => name === nameOrIdx);
 
     return dataset.source.map((d) => d[index]);
   };
@@ -575,7 +575,7 @@ export class Base {
     const index =
       typeof by === 'number'
         ? by
-        : dataset.dimensions?.findIndex((name) => name === by)!;
+        : dataset.dimensions!.findIndex((name) => name === by);
     const calcKey = (row: any[]) => row[index];
 
     return source.reduce(

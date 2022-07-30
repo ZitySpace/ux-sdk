@@ -197,7 +197,7 @@ export const makeOption = (
           next = [node];
         }
 
-        let leafs = [];
+        const leafs: string[] = [];
         while (next.length) {
           const node = next.pop();
           if (node.children) next = [...node.children, ...next];
