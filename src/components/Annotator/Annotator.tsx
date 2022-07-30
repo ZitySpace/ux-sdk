@@ -4,7 +4,7 @@ import {
   BoxLabel,
   ImageData,
 } from '@ZitySpace/react-annotate';
-import { ImageProps, useCarouselStore } from '../../stores/carouselStore';
+import { useCarouselStore } from '../../stores/carouselStore';
 import { useAPIs } from '../../utils/apis';
 import { useStore } from 'zustand';
 
@@ -18,7 +18,7 @@ const Annotator = ({
     (s) => [s.carouselData, s.setImageData]
   );
 
-  const imagesList = Object.values(carouselData).map((props: ImageProps) => ({
+  const imagesList = Object.values(carouselData).map((props) => ({
     ...props,
     annotations: props.annotations
       ? props.annotations.map(
