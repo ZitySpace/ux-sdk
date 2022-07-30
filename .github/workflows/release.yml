@@ -26,7 +26,11 @@ jobs:
         run: sudo apt install libpixman-1-dev libcairo2-dev libpango1.0-dev libjpeg-dev libgif-dev librsvg2-dev
 
       - name: Install dependencies
-        run: yarn install --frozen-lockfile
+        run: |
+          echo "@ZitySpace:registry=https://npm.pkg.github.com/" >> .npmrc
+          echo "//npm.pkg.github.com/:_authToken=${{ secrets.GH_REGISTRY_TOKEN }}" >> .npmrc
+          cat .npmrc
+          yarn install --frozen-lockfile
 
       - name: Lint
         run: yarn lint
