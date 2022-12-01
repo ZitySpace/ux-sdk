@@ -1,9 +1,9 @@
 import React from 'react';
 import {
   Annotator as AnnotatorCore,
-  BoxLabel,
   ImageData,
-} from '@ZitySpace/react-annotate';
+  LabelType,
+} from '@zityspace/react-annotate';
 import { useCarouselStore } from '../../stores/carouselStore';
 import { useAPIs } from '../../utils/apis';
 import { useStore } from 'zustand';
@@ -21,42 +21,41 @@ const Annotator = ({
   const imagesList = Object.values(carouselData).map((props) => ({
     ...props,
     annotations: props.annotations
-      ? props.annotations.map(
-          (anno, id) =>
-            new BoxLabel({
-              id: id,
-              x: anno.x,
-              y: anno.y,
-              w: anno.w,
-              h: anno.h,
-              category: anno.category!,
-              timestamp: anno.timestamp_z,
-              hash: anno.unique_hash_z,
-            })
-        )
+      ? props.annotations.map((anno) => ({
+          ...anno,
+          type: LabelType.Box as const,
+          category: anno.category!,
+          timestamp: anno.timestamp_z,
+          hash: anno.unique_hash_z,
+        }))
       : [],
   }));
 
-  const onSave = (
-    curImageData: ImageData,
-    curIndex: number,
-    imagesList: ImageData[]
-  ) => {
-    setImageData(curImageData.name, {
-      ...carouselData[curImageData.name],
-      annotations: (curImageData.annotations as BoxLabel[]).map((anno) => {
-        const {
-          category,
-          timestamp: timestamp_z,
-          hash: unique_hash_z,
-          x,
-          y,
-          w,
-          h,
-        } = anno.toImageCoordSystem(false);
-        return { category, timestamp_z, unique_hash_z, x, y, w, h };
-      }),
-    });
+  const onSave = (curImageData: ImageData) => {
+    // setImageData(curImageData.name, {
+    //   ...carouselData[curImageData.name],
+    //   annotations: curImageData.annotations.map((anno) => {
+    //     const {
+    //       x,
+    //       y,
+    //       w,
+    //       h,
+    //       category,
+    //       timestamp: timestamp_z,
+    //       hash: unique_hash_z,
+    //     } = anno as {
+    //       x: number;
+    //       y: number;
+    //       w: number;
+    //       h: number;
+    //       category: string;
+    //       timestamp: string;
+    //       hash: string;
+    //     };
+    //     return { x, y, w, h, category, timestamp_z, unique_hash_z };
+    //   }),
+    // });
+    return true;
   };
 
   const { getImage } = useAPIs();
@@ -72,7 +71,17 @@ const Annotator = ({
           imagesList={imagesList}
           getImage={getImage}
           onSave={onSave}
-          onSwitch={onSave}
+          onError={(m: string, c: any) => {
+            console.log(m, c);
+          }}
+          onAddCategory={async (c: string) => {
+            console.log('add new category ', c);
+            return true;
+          }}
+          onRenameCategory={async (o: string, n: string, t?: string) => {
+            console.log(o, ' -> ', n, ' @ ', t);
+            return true;
+          }}
         />
       )}
     </div>

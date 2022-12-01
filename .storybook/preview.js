@@ -1,4 +1,3 @@
-import '@ZitySpace/react-annotate/dist/index.css';
 import '../src/styles/tailwind.css';
 
 export const parameters = {

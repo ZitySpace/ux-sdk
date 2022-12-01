@@ -1,7 +1,7 @@
 {
-  "name": "@ZitySpace/ux-sdk",
+  "name": "@zityspace/ux-sdk",
   "version": "0.1.0",
-  "description": "ZitySpace Formula UX SDK",
+  "description": "ZitySpace UX SDK",
   "author": "ZitySpace",
   "license": "Apache-2.0",
   "scripts": {
@@ -25,7 +25,6 @@
   "types": "dist/index.d.ts",
   "devDependencies": {
     "@ZitySpace/iframe-auth": "^0.0.1-alpha1",
-    "@ZitySpace/react-annotate": "link:../react-annotate",
     "@babel/core": "^7.16.7",
     "@babel/preset-env": "^7.16.7",
     "@babel/preset-react": "^7.16.7",
@@ -52,6 +51,7 @@
     "@types/react": "^17.0.38",
     "@typescript-eslint/eslint-plugin": "^5.31.0",
     "@typescript-eslint/parser": "^5.31.0",
+    "@zityspace/react-annotate": "^0.11.1-beta.2",
     "autoprefixer": "^10.4.1",
     "babel-jest": "^27.4.5",
     "babel-loader": "^8.2.3",

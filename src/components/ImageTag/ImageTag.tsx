@@ -4,7 +4,7 @@ import React, { useEffect, useRef, useState } from 'react';
 import { useCarouselStore } from '../../stores/carouselStore';
 import { useAPIs } from '../../utils/apis';
 import { useResizeDetector } from 'react-resize-detector';
-import { ColorStore } from '@ZitySpace/react-annotate';
+import { ColorStore } from '@zityspace/react-annotate';
 import { useStore } from 'zustand';
 
 const ImageTag = ({
