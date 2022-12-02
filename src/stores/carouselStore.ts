@@ -30,15 +30,18 @@ interface StoreData extends State {
     selectable: boolean;
     selected: { [key: string]: boolean };
   };
+  switchOfFreshData?: boolean;
 }
 
 const storeDataDefault = {
   carouselData: {},
   selection: { selectable: false, selected: {} },
+  switchOfFreshData: false,
 };
 
 interface Store extends State {
   carouselData: { [key: string]: ImageProps };
+  switchOfFreshData: boolean;
   selection: {
     selectable: boolean;
     selected: { [key: string]: boolean };
@@ -54,6 +57,8 @@ interface Store extends State {
 const createStoreFromData = (data: Partial<StoreData> = storeDataDefault) =>
   createStore<Store>((set, get) => ({
     carouselData: { ...storeDataDefault.carouselData, ...data.carouselData },
+    switchOfFreshData:
+      data.switchOfFreshData || storeDataDefault.switchOfFreshData,
     selection: {
       selectable:
         data.selection?.selectable || storeDataDefault.selection.selectable,
@@ -89,6 +94,7 @@ const createStoreFromData = (data: Partial<StoreData> = storeDataDefault) =>
         produce((s) => {
           s.carouselData = data.carouselData;
           s.selection.selected = data.selection.selected;
+          s.switchOfFreshData = !s.switchOfFreshData;
         })
       ),
     getNames: () => Object.keys(get().carouselData),
