@@ -48,7 +48,7 @@ const MultiSelect = forwardRef(
     }));
 
     return (
-      <Listbox value={selected} onChange={setSelected}>
+      <Listbox value={selected} onChange={setSelected} multiple>
         {({ open }) => (
           <div className='flex items-center justify-start'>
             <div className='w-28 mr-3 relative h-7'>
