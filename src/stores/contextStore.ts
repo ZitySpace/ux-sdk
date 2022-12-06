@@ -2,7 +2,7 @@ import { useAPIs } from '../utils/apis';
 import { CarouselStoreData } from './carouselStore';
 
 import { createContext } from 'react';
-import { createStore, State, StoreApi } from 'zustand';
+import { createStore, StoreApi } from 'zustand';
 import { newUseStore } from './factory';
 
 const {
@@ -44,7 +44,7 @@ export type FilteringProps = {
   pageFilter?: PageFilterType;
 };
 
-interface StoreData extends State {
+interface StoreData {
   filtering: FilteringProps;
 }
 

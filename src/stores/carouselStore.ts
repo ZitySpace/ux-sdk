@@ -1,6 +1,6 @@
 import produce from 'immer';
 import { createContext } from 'react';
-import { createStore, State, StoreApi } from 'zustand';
+import { createStore, StoreApi } from 'zustand';
 import { newUseStore } from './factory';
 
 interface DetectionProps {
@@ -24,7 +24,7 @@ export interface ImageProps {
   annotations?: DetectionProps[] | null;
 }
 
-interface StoreData extends State {
+interface StoreData {
   carouselData: { [key: string]: ImageProps };
   selection: {
     selectable: boolean;
@@ -39,7 +39,7 @@ const storeDataDefault = {
   switchOfFreshData: false,
 };
 
-interface Store extends State {
+interface Store {
   carouselData: { [key: string]: ImageProps };
   switchOfFreshData: boolean;
   selection: {

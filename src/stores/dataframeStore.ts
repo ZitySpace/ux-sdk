@@ -1,9 +1,9 @@
 import produce from 'immer';
 import { createContext } from 'react';
-import { createStore, State, StoreApi } from 'zustand';
+import { createStore, StoreApi } from 'zustand';
 import { newUseStore } from './factory';
 
-interface StoreData extends State {
+interface StoreData {
   header: string[];
   data: any[][];
 }

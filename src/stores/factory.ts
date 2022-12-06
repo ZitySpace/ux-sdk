@@ -1,6 +1,6 @@
-import { createStore, State, StoreApi } from 'zustand';
+import { createStore, StoreApi } from 'zustand';
 
-interface RootStoreState extends State {
+interface RootStoreState {
   stores: { [key: string]: StoreApi<object> };
   registerStore: (name: string, store: StoreApi<object>) => void;
   getStore: (name: string) => StoreApi<object>;

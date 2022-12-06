@@ -14,7 +14,7 @@ export default {
 const queryClient = new QueryClient();
 
 const Template: ComponentStory<typeof ImageTag> = (args) => {
-  const carouselStore = useCarouselStore(args.carouselStoreName, {
+  const carouselStore = useCarouselStore(args.carouselStoreName!, {
     carouselData: {
       duck: {
         name: 'duck',
