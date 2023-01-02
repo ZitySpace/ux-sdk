@@ -17,7 +17,7 @@ const Template: ComponentStory<typeof ScikitGroup> = (args) => {
   const [value, setValue] = useState<any | null>(null);
 
   useEffect(() => {
-    setValue(sgRef.current.getValue());
+    setValue(sgRef.current?.getValue());
   }, []);
 
   return (
@@ -58,7 +58,7 @@ const Template: ComponentStory<typeof ScikitGroup> = (args) => {
 
       <div className='flex items-center space-x-6'>
         <button
-          onClick={() => setValue(sgRef.current.getValue())}
+          onClick={() => setValue(sgRef.current?.getValue())}
           className='bg-indigo-400 rounded-md p-2'
         >
           Read Value
@@ -106,7 +106,7 @@ const TemplateReactive: ComponentStory<typeof ScikitGroup> = (args) => {
   const [value, setValue] = useState<any | null>(null);
 
   useEffect(() => {
-    setValue(sgRef.current.getValue());
+    setValue(sgRef.current?.getValue());
   }, []);
 
   return (

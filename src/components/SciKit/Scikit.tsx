@@ -99,11 +99,11 @@ const ScikitGroup = forwardRef(
 
               if (!pass) return c;
 
-              const name = c.props.name;
+              const name = (c.props as { name: string }).name;
               if (!(name in childRefs)) childRefs[name] = useRef();
 
               return React.cloneElement(c, {
-                ...c.props,
+                ...(c.props as any),
                 reactiveCallback,
                 ref: childRefs[name],
               });

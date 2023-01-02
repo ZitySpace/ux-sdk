@@ -1,7 +1,7 @@
 import resolve from '@rollup/plugin-node-resolve';
 import commonjs from '@rollup/plugin-commonjs';
 import typescript from '@rollup/plugin-typescript';
-import { terser } from 'rollup-plugin-terser';
+import { terser } from '@rollup/plugin-terser';
 import peerDepsExternal from 'rollup-plugin-peer-deps-external';
 
 import postcss from 'rollup-plugin-postcss';
@@ -21,7 +21,7 @@ export default [
       },
       {
         file: packageJson.module,
-        format: 'es',
+        format: 'esm',
         sourcemap: !isProduction,
       },
     ],
@@ -31,9 +31,8 @@ export default [
       exclude: [
         'node_modules/**',
         'dist/**',
+        'examples/**',
         'src/**/*.stories.tsx',
-        'src/**/*.test.tsx',
-        'src/**/examples/**',
       ],
     },
     plugins: [
@@ -60,8 +59,8 @@ export default [
         },
         extensions: ['.css'],
         minimize: isProduction,
-        extract: 'index.css',
-        inject: false,
+        extract: false,
+        inject: true,
       }),
     ],
     external: [

@@ -551,7 +551,7 @@ export class Base {
     const columns = nameOrIdxArr.reduce(
       (res: any[][], nameOrIdx: string | number) => {
         const values = this.getColumn(nameOrIdx, datasetIndex);
-        return values === []
+        return values.length === 0
           ? res
           : [
               [...res[0], values],
