@@ -12,4 +12,5 @@ export {
   AugmenterTypes,
 } from './AugmentedImageTag';
 
-export * as Scikit from './SciKit';
+export * from './SciKit';
+export * from './Chart';

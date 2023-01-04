@@ -43,9 +43,9 @@ const Template: ComponentStory<any> = (args) => {
     if (sizeQuery.isLoading || pageQuery.isLoading) return <></>;
 
     return (
-      <>
+      <div style={{ height: 540 }}>
         <Annotator carouselStoreName={args.imageCarousel.storeName} />
-      </>
+      </div>
     );
   };
 

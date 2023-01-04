@@ -1,11 +1,13 @@
 import { ComponentMeta, ComponentStory } from '@storybook/react';
 import React, { useState } from 'react';
 import * as echarts from 'echarts';
-import Chart from './Chart';
-import { Option } from './Option';
-import { MouseEventParams } from './Option/Base';
-import { useDataframeStore } from '../../../stores/dataframeStore';
 import { useStore } from 'zustand';
+import {
+  Chart,
+  Option,
+  MouseEventParams,
+  useDataframeStore,
+} from '@zityspace/ux-sdk';
 
 export default {
   title: 'UX-SDK/Chart',

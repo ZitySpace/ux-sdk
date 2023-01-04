@@ -1,7 +1,11 @@
-import { FilteringProps } from '../../../../stores/contextStore';
-import { Option } from '../Option';
-import { MouseEventParams, BrushSelectedEventParams } from '../Option/Base';
-import { useFilterFromDataframe } from '../../../../utils';
+import {
+  FilteringProps,
+  Option,
+  MouseEventParams,
+  BrushSelectedEventParams,
+  ChartDatasetProps,
+  useFilterFromDataframe,
+} from '@zityspace/ux-sdk';
 
 export const makeOption = (
   HOST: string,
@@ -12,7 +16,8 @@ export const makeOption = (
     .setData({
       queryApi: {
         host: HOST,
-        query: 'res = df',
+        query:
+          "res = df[['image_hash', 'image_width', 'image_height']].drop_duplicates()",
       },
     })
     .updateOption({
@@ -30,43 +35,52 @@ export const makeOption = (
         yAxisIndex: 0,
       },
       grid: {
-        left: '50%',
-      },
-      legend: {
-        left: 'left',
-        orient: 'vertical',
-        selectedMode: 'multiple',
+        left: 75,
+        right: 45,
       },
       xAxis: {
-        name: 'BoxWidth',
+        name: 'ImageWidth',
         splitLine: {
-          show: false,
+          show: true,
         },
       },
       yAxis: {
-        name: 'BoxHeight',
+        name: 'ImageHeight',
         nameGap: 50,
         splitLine: {
-          show: false,
+          show: true,
         },
       },
       series: [
         {
-          name: 'BoxSize',
-          symbolSize: 6,
+          name: 'ImageSize',
+          symbolSize: 8,
           emphasis: {
-            focus: 'series',
+            focus: 'self',
           },
-          selectedMode: 'series',
+          selectedMode: 'single',
+          select: {
+            itemStyle: {
+              color: 'red',
+              borderWidth: 0,
+            },
+          },
           encode: {
-            x: 'w',
-            y: 'h',
-            tooltip: ['w', 'h', 'category'],
+            x: 'image_width',
+            y: 'image_height',
+          },
+          tooltip: {
+            formatter: (params: MouseEventParams) =>
+              params.value[0] +
+              ': (' +
+              params.value[1] +
+              ', ' +
+              params.value[2] +
+              ')',
           },
         },
       ],
     })
-    .setColor('category')
     .setBackgroundAction({
       name: 'click',
       action: async (chart: echarts.ECharts) => {
@@ -74,7 +88,7 @@ export const makeOption = (
         setFiltering(
           await Option.filterOptionFromQuery(
             HOST,
-            "res = df[['image_hash', 'x', 'y', 'w', 'h', 'category']]"
+            "res = df[['image_hash', 'image_width', 'image_height']].drop_duplicates()"
           )
         );
       },
@@ -82,18 +96,11 @@ export const makeOption = (
     .addElementAction({
       name: 'click',
       query: 'series',
-      action: async (params: MouseEventParams, chart: echarts.ECharts) => {
-        Option.unselectAll(chart);
-        chart.dispatchAction({
-          type: 'select',
-          seriesName: params.seriesName,
-          dataIndex: Array.from({ length: 10000 }, (_, i) => i),
-        });
-
+      action: async (params: MouseEventParams) => {
         setFiltering(
           await Option.filterOptionFromQuery(
             HOST,
-            "res = df[df.category == data['category']][['image_hash', 'x', 'y', 'w', 'h', 'category']]",
+            "res = df[(df.image_width == data['image_width']) & (df.image_height == data['image_height'])][['image_hash']].drop_duplicates()",
             params
           )
         );

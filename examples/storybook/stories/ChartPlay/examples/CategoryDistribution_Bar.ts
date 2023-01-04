@@ -1,39 +1,55 @@
-import { FilteringProps } from '../../../../stores/contextStore';
-import { Option } from '../Option';
-import { MouseEventParams } from '../Option/Base';
+import { FilteringProps, Option, MouseEventParams } from '@zityspace/ux-sdk';
 
 export const makeOption = (
   HOST: string,
   setFiltering: { (filteringProps: FilteringProps): void }
 ) =>
-  Option.makePie()
+  Option.makeBar()
     .setSize({ height: 320 })
     .setData({
       queryApi: {
         host: HOST,
         query:
-          "res = df[['image_hash', 'x', 'y', 'w', 'h', 'category']].groupby('category').size().sort_values(ascending=False).to_frame('count')",
+          "res = df.groupby('category').size().sort_values().to_frame('count')",
       },
     })
     .updateOption({
-      legend: {
-        left: 'left',
-        orient: 'vertical',
+      grid: {
+        left: '6%',
+        right: '4%',
+        top: '10%',
+        bottom: '36%',
+      },
+      xAxis: {
+        axisTick: {
+          alignWithLabel: true,
+        },
+        axisLabel: {
+          rotate: 45,
+        },
+      },
+      yAxis: {
+        name: 'num of samples',
+        nameGap: 40,
       },
       series: [
         {
           name: 'CountOfSamples',
-          radius: ['30%', '70%'],
-          center: ['75%', '50%'],
-          startAngle: 180,
+          colorBy: 'data',
           emphasis: {
             focus: 'self',
           },
           selectedMode: 'single',
-          selectedOffset: 15,
+          select: {
+            itemStyle: {
+              borderColor: 'rgba(0,0,0,0)',
+              borderWidth: 0,
+              shadowBlur: 10,
+            },
+          },
           encode: {
-            itemName: 'category',
-            value: 'count',
+            x: 'category',
+            y: 'count',
           },
         },
       ],
@@ -57,7 +73,7 @@ export const makeOption = (
         setFiltering(
           await Option.filterOptionFromQuery(
             HOST,
-            "res = df[df.category == data[0]][['image_hash', 'x', 'y', 'w', 'h', 'category']]",
+            "res = df[df.category == data['category']][['image_hash', 'x', 'y', 'w', 'h', 'category']]",
             params
           )
         ),

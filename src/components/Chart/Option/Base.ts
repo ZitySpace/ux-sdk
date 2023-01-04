@@ -1,5 +1,5 @@
-import { requestTemplate } from '../../../../utils/apis';
-import { useFilterFromDataframe } from '../../../../utils';
+import { requestTemplate } from '../../../utils/apis';
+import { useFilterFromDataframe } from '../../../utils';
 import * as echarts from 'echarts';
 import merge from 'ts-deepmerge';
 

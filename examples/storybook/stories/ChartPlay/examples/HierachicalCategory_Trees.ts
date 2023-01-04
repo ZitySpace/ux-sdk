@@ -1,6 +1,9 @@
-import { FilteringProps } from '../../../../stores/contextStore';
-import { Option } from '../Option';
-import { MouseEventParams, fetchData } from '../Option/Base';
+import {
+  FilteringProps,
+  Option,
+  MouseEventParams,
+  fetchData,
+} from '@zityspace/ux-sdk';
 
 const getRelationData = (HOST: string) => async () =>
   await fetchData(HOST + '/relation?name=categories');

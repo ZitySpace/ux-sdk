@@ -1,18 +1,21 @@
-import { FilteringProps } from '../../../../stores/contextStore';
-import { Option } from '../Option';
-import { MouseEventParams, BrushSelectedEventParams } from '../Option/Base';
-import { useFilterFromDataframe } from '../../../../utils';
+import {
+  FilteringProps,
+  Option,
+  MouseEventParams,
+  BrushSelectedEventParams,
+  useFilterFromDataframe,
+} from '@zityspace/ux-sdk';
 
 export const makeOption = (
   HOST: string,
   setFiltering: { (filteringProps: FilteringProps): void }
 ) =>
   Option.makeScatter()
-    .setSize({ height: 540 })
+    .setSize({ height: 320 })
     .setData({
       queryApi: {
-        host: HOST + '/dimensionality_reduction?gridify=false&method=tsne',
-        query: '',
+        host: HOST,
+        query: 'res = df',
       },
     })
     .updateOption({
@@ -30,50 +33,38 @@ export const makeOption = (
         yAxisIndex: 0,
       },
       grid: {
-        top: '22%',
-        bottom: '5%',
-        left: '18%',
-        right: '15%',
+        left: '50%',
       },
       legend: {
         left: 'left',
-        top: '5%',
-        orient: 'horizontal',
+        orient: 'vertical',
         selectedMode: 'multiple',
       },
       xAxis: {
-        name: 'EmbedX',
+        name: 'BoxWidth',
         splitLine: {
           show: false,
         },
-        show: false,
       },
       yAxis: {
-        name: 'EmbedY',
+        name: 'BoxHeight',
         nameGap: 50,
         splitLine: {
           show: false,
         },
-        show: false,
       },
       series: [
         {
-          name: 'TSNE',
+          name: 'BoxSize',
           symbolSize: 6,
           emphasis: {
             focus: 'series',
           },
-          selectedMode: 'single',
-          select: {
-            itemStyle: {
-              shadowColor: 'rgba(0, 0, 0, 0.5)',
-              shadowBlur: 10,
-            },
-          },
+          selectedMode: 'series',
           encode: {
-            x: 'ex',
-            y: 'ey',
-            tooltip: 'category',
+            x: 'w',
+            y: 'h',
+            tooltip: ['w', 'h', 'category'],
           },
         },
       ],
@@ -99,22 +90,13 @@ export const makeOption = (
         chart.dispatchAction({
           type: 'select',
           seriesName: params.seriesName,
-          dataIndex: params.dataIndex,
+          dataIndex: Array.from({ length: 10000 }, (_, i) => i),
         });
 
         setFiltering(
           await Option.filterOptionFromQuery(
             HOST,
-            `
-res = df[
-    (df.image_hash == data['image_hash'])
-    & (df.category == data['category'])
-    & (df.x == data['x'])
-    & (df.y == data['y'])
-    & (df.w == data['w'])
-    & (df.h == data['h'])
-][['image_hash', 'x', 'y', 'w', 'h', 'category']]
-            `,
+            "res = df[df.category == data['category']][['image_hash', 'x', 'y', 'w', 'h', 'category']]",
             params
           )
         );

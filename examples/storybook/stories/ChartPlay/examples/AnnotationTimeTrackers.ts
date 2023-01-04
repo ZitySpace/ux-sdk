@@ -1,6 +1,4 @@
-import { FilteringProps } from '../../../../stores/contextStore';
-import { Option } from '../Option';
-import { MouseEventParams } from '../Option/Base';
+import { FilteringProps, Option, MouseEventParams } from '@zityspace/ux-sdk';
 
 export const makeOption = (
   timeRangeSerieType: string,

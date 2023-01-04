@@ -1,7 +1,4 @@
-import { FilteringProps } from '../../../../stores/contextStore';
-import { Option } from '../Option';
-import { MouseEventParams, BrushSelectedEventParams } from '../Option/Base';
-import { useFilterFromDataframe } from '../../../../utils';
+import { FilteringProps, Option, MouseEventParams } from '@zityspace/ux-sdk';
 
 export const makeOption = (
   HOST: string,

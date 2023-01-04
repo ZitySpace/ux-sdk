@@ -1,16 +1,18 @@
 import { ComponentMeta, ComponentStory } from '@storybook/react';
 import React, { useEffect, useState, useRef } from 'react';
 import { QueryClient, QueryClientProvider } from 'react-query';
-import Chart from './Chart';
-import { Option } from './Option';
-import PaginationBar from '../../PaginationBar';
-import ImageCarousel from '../../ImageCarousel';
-import { useContextStore } from '../../../stores/contextStore';
-import { useCarouselStore } from '../../../stores/carouselStore';
-import { usePagingStore } from '../../../stores/pagingStore';
-import { useCarouselQueries } from '../../../utils/hooks/useCarouselQueries';
-import { useFilterFromDataframe, useSetFiltering } from '../../../utils';
-import { Base } from './Option/Base';
+import {
+  Chart,
+  Option,
+  PaginationBar,
+  ImageCarousel,
+  useContextStore,
+  useCarouselStore,
+  usePagingStore,
+  useCarouselQueries,
+  useFilterFromDataframe,
+  useSetFiltering,
+} from '@zityspace/ux-sdk';
 
 import {
   makeCategoryDistributionBarOption,
@@ -87,11 +89,11 @@ const ChartPlay = ({
     setFiltering(filterOpt);
   }, []);
 
-  const optionRef = useRef<Option>(new Base());
+  const optionRef = useRef<Option>(new Option());
   const chartKeyRef = useRef<boolean>(false);
 
   const prepareExample = (emp: string) => {
-    if (emp === 'Custom') optionRef.current = new Base();
+    if (emp === 'Custom') optionRef.current = new Option();
     else if (emp === 'CategoryDistribution_Bar') {
       optionRef.current = makeCategoryDistributionBarOption(HOST, setFiltering);
     } else if (emp === 'CategoryDistribution_Pie') {

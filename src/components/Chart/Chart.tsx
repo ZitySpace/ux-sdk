@@ -25,7 +25,6 @@ const Chart = ({
         echarts.init(chartDivRef.current as HTMLElement, undefined, {
           renderer: 'svg',
         });
-      forceUpdate();
     };
 
     const optionInit = async () => {
