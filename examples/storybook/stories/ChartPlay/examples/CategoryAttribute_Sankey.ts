@@ -1,13 +1,13 @@
+import { FilterProps } from '@zityspace/ux-sdk/stores';
 import {
-  FilteringProps,
   Option,
   MouseEventParams,
   fetchData,
-} from '@zityspace/ux-sdk';
+} from '@zityspace/ux-sdk/components';
 
 export const makeOption = (
   HOST: string,
-  setFiltering: { (filteringProps: FilteringProps): void }
+  setFilter: { (filter: FilterProps): void }
 ) =>
   Option.makeSankey()
     .setSize({ height: 640 })
@@ -80,8 +80,8 @@ export const makeOption = (
     .setBackgroundAction({
       name: 'click',
       action: async () => {
-        setFiltering(
-          await Option.filterOptionFromQuery(
+        setFilter(
+          await Option.filterFromQuery(
             HOST,
             "res = df[['image_hash', 'x', 'y', 'w', 'h', 'category']]"
           )
@@ -203,6 +203,6 @@ res = slice[['image_hash', 'x', 'y', 'w', 'h']]
           }
         }
 
-        setFiltering(await Option.filterOptionFromQuery(HOST, queryStr));
+        setFilter(await Option.filterFromQuery(HOST, queryStr));
       },
     });

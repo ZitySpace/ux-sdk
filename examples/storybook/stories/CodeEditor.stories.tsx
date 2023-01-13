@@ -3,20 +3,24 @@ import React, { useEffect } from 'react';
 import { useStore } from 'zustand';
 import { QueryClient, QueryClientProvider } from 'react-query';
 import {
-  CodeEditor,
-  DataFrame,
-  PaginationBar,
-  ImageCarousel,
   useContextStore,
   usePagingStore,
   useDataframeStore,
   useCarouselStore,
-  useCarouselQueries,
-  requestTemplate,
-  useSetFiltering,
-  useSetDataframe,
+} from '@zityspace/ux-sdk/stores';
+import {
+  useCarouselSetSize,
+  useCarouselSetPage,
+  useContextSetFilter,
   useFilterFromDataframe,
-} from '@zityspace/ux-sdk';
+  requestTemplate,
+} from '@zityspace/ux-sdk/hooks';
+import {
+  CodeEditor,
+  DataFrame,
+  PaginationBar,
+  ImageCarousel,
+} from '@zityspace/ux-sdk/components';
 
 export default {
   title: 'UX-SDK/CodeEditor',
@@ -53,25 +57,29 @@ const Template: ComponentStory<any> = (args) => {
     const contextStore = useContextStore(args.Carousel.contextStoreName);
     const carouselStore = useCarouselStore(args.Carousel.carouselStoreName);
 
-    const { setDataframe } = useSetDataframe({
-      dataframeStore: dataframeStore,
+    const setCarouselSize = useCarouselSetSize({
+      contextStore,
+      pagingStore,
+    });
+    const setCarouselPage = useCarouselSetPage({
+      contextStore,
+      pagingStore,
+      carouselStore,
     });
 
-    const { useCarouselSizeQuery, useCarouselPageQuery } = useCarouselQueries({
-      contextStore: contextStore,
+    const sizeQuery = setCarouselSize();
+    const pageQuery = setCarouselPage();
+
+    const setContextFilter = useContextSetFilter({
       pagingStore: pagingStore,
-      carouselStore: carouselStore,
-    });
-
-    const sizeQuery = useCarouselSizeQuery();
-    const pageQuery = useCarouselPageQuery();
-
-    const { setFiltering } = useSetFiltering({
-      pagingStore: pagingStore,
       contextStore: contextStore,
     });
 
-    const [header, data] = useStore(dataframeStore, (s) => [s.header, s.data]);
+    const [header, data, setDataframe] = useStore(dataframeStore, (s) => [
+      s.header,
+      s.data,
+      s.setDataframe,
+    ]);
 
     // Optimization Note
     // https://react-query.tanstack.com/guides/query-keys
@@ -84,8 +92,8 @@ const Template: ComponentStory<any> = (args) => {
     // of pos and step.
 
     useEffect(() => {
-      const filterOpt = useFilterFromDataframe({ header, data });
-      setFiltering(filterOpt);
+      const filter = useFilterFromDataframe({ header, data });
+      setContextFilter(filter);
     }, [header, data]);
 
     if (sizeQuery.isLoading || pageQuery.isLoading) return <></>;

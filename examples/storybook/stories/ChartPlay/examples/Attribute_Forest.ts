@@ -1,13 +1,13 @@
+import { FilterProps } from '@zityspace/ux-sdk/stores';
 import {
-  FilteringProps,
   Option,
   MouseEventParams,
   fetchData,
-} from '@zityspace/ux-sdk';
+} from '@zityspace/ux-sdk/components';
 
 export const makeOption = (
   HOST: string,
-  setFiltering: { (filteringProps: FilteringProps): void }
+  setFilter: { (filter: FilterProps): void }
 ) => {
   const opt = Option.makeTree()
     .setSize({ height: 640 })
@@ -94,8 +94,8 @@ export const makeOption = (
       action: async (chart: echarts.ECharts) => {
         Option.unselectAll(chart);
 
-        setFiltering(
-          await Option.filterOptionFromQuery(
+        setFilter(
+          await Option.filterFromQuery(
             HOST,
             "res = df[['image_hash', 'x', 'y', 'w', 'h', 'category']]"
           )
@@ -144,7 +144,7 @@ slice = df[df.attributes.apply(lambda x: check('${path}', ast.literal_eval(x)))]
 res = slice[['image_hash', 'x', 'y', 'w', 'h']]
         `;
 
-        setFiltering(await Option.filterOptionFromQuery(HOST, queryStr));
+        setFilter(await Option.filterFromQuery(HOST, queryStr));
       },
     });
 

@@ -1,8 +1,9 @@
-import { FilteringProps, Option, MouseEventParams } from '@zityspace/ux-sdk';
+import { FilterProps } from '@zityspace/ux-sdk/stores';
+import { Option, MouseEventParams } from '@zityspace/ux-sdk';
 
 export const makeOption = (
   HOST: string,
-  setFiltering: { (filteringProps: FilteringProps): void }
+  setFilter: { (filter: FilterProps): void }
 ) =>
   Option.makeScatter3D()
     .setSize({ height: 640 })
@@ -56,8 +57,8 @@ export const makeOption = (
       name: 'click',
       query: 'series',
       action: async (params: MouseEventParams) => {
-        setFiltering(
-          await Option.filterOptionFromQuery(
+        setFilter(
+          await Option.filterFromQuery(
             HOST,
             `
 res = df[

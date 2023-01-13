@@ -1,7 +1,8 @@
 import { ComponentMeta, ComponentStory } from '@storybook/react';
 import React from 'react';
 import { QueryClient, QueryClientProvider } from 'react-query';
-import { ImageTag, useCarouselStore } from '@zityspace/ux-sdk';
+import { useCarouselStore } from '@zityspace/ux-sdk/stores';
+import { ImageTag } from '@zityspace/ux-sdk/components';
 
 export default {
   title: 'UX-SDK/ImageTag',

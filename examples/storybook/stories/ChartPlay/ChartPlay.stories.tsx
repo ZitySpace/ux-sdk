@@ -1,18 +1,24 @@
 import { ComponentMeta, ComponentStory } from '@storybook/react';
 import React, { useEffect, useState, useRef } from 'react';
 import { QueryClient, QueryClientProvider } from 'react-query';
+
+import {
+  useContextStore,
+  useCarouselStore,
+  usePagingStore,
+} from '@zityspace/ux-sdk/stores';
+import {
+  useFilterFromDataframe,
+  useContextSetFilter,
+  useCarouselSetSize,
+  useCarouselSetPage,
+} from '@zityspace/ux-sdk/hooks';
 import {
   Chart,
   Option,
   PaginationBar,
   ImageCarousel,
-  useContextStore,
-  useCarouselStore,
-  usePagingStore,
-  useCarouselQueries,
-  useFilterFromDataframe,
-  useSetFiltering,
-} from '@zityspace/ux-sdk';
+} from '@zityspace/ux-sdk/components';
 
 import {
   makeCategoryDistributionBarOption,
@@ -48,14 +54,18 @@ const ChartPlay = ({
   const pagingStore = usePagingStore(pagingStoreName);
   const carouselStore = useCarouselStore(carouselStoreName);
 
-  const { useCarouselSizeQuery, useCarouselPageQuery } = useCarouselQueries({
-    contextStore: contextStore,
-    pagingStore: pagingStore,
-    carouselStore: carouselStore,
+  const setCarouselSize = useCarouselSetSize({
+    contextStore,
+    pagingStore,
+  });
+  const setCarouselPage = useCarouselSetPage({
+    contextStore,
+    pagingStore,
+    carouselStore,
   });
 
-  const sizeQuery = useCarouselSizeQuery();
-  const pageQuery = useCarouselPageQuery();
+  const sizeQuery = setCarouselSize();
+  const pageQuery = setCarouselPage();
 
   const examples = [
     'Custom',
@@ -79,14 +89,14 @@ const ChartPlay = ({
   ];
   const [example, setExample] = useState<string>('Custom');
 
-  const { setFiltering } = useSetFiltering({
+  const setFilter = useContextSetFilter({
     pagingStore: pagingStore,
     contextStore: contextStore,
   });
 
   useEffect(() => {
-    const filterOpt = useFilterFromDataframe({ header: [], data: [] });
-    setFiltering(filterOpt);
+    const filter = useFilterFromDataframe({ header: [], data: [] });
+    setFilter(filter);
   }, []);
 
   const optionRef = useRef<Option>(new Option());
@@ -95,73 +105,70 @@ const ChartPlay = ({
   const prepareExample = (emp: string) => {
     if (emp === 'Custom') optionRef.current = new Option();
     else if (emp === 'CategoryDistribution_Bar') {
-      optionRef.current = makeCategoryDistributionBarOption(HOST, setFiltering);
+      optionRef.current = makeCategoryDistributionBarOption(HOST, setFilter);
     } else if (emp === 'CategoryDistribution_Pie') {
-      optionRef.current = makeCategoryDistributionPieOption(HOST, setFiltering);
+      optionRef.current = makeCategoryDistributionPieOption(HOST, setFilter);
     } else if (emp === 'BoxSizeDistribution_Scatter') {
-      optionRef.current = makeBoxSizeDistributionScatterOption(
-        HOST,
-        setFiltering
-      );
+      optionRef.current = makeBoxSizeDistributionScatterOption(HOST, setFilter);
     } else if (emp === 'ImageSizeDistribution_Scatter') {
       optionRef.current = makeImageSizeDistributionScatterOption(
         HOST,
-        setFiltering
+        setFilter
       );
     } else if (emp === 'AnnotationYearlyTracker_Calendar') {
       optionRef.current = makeAnnotationTimeTrackerOption(
         'yearlyCalendar',
         HOST,
-        setFiltering
+        setFilter
       );
     } else if (emp === 'AnnotationMonthlyTracker_Calendar') {
       optionRef.current = makeAnnotationTimeTrackerOption(
         'monthlyCalendar',
         HOST,
-        setFiltering
+        setFilter
       );
     } else if (emp === 'AnnotationTimeTracker_Line') {
       optionRef.current = makeAnnotationTimeTrackerOption(
         'timeLine',
         HOST,
-        setFiltering
+        setFilter
       );
     } else if (emp === 'Tsne_Scatter') {
-      optionRef.current = makeTsneOption(HOST, setFiltering);
+      optionRef.current = makeTsneOption(HOST, setFilter);
     } else if (emp === 'Tsne_Scatter3D') {
-      optionRef.current = makeTsne3DOption(HOST, setFiltering);
+      optionRef.current = makeTsne3DOption(HOST, setFilter);
     } else if (emp === 'ConfusionMatrix_Heatmap') {
-      optionRef.current = makeConfusionMatrixOption(HOST, setFiltering, false);
+      optionRef.current = makeConfusionMatrixOption(HOST, setFilter, false);
     } else if (emp === 'MultiLabelConfusionMatrix_Heatmap') {
-      optionRef.current = makeConfusionMatrixOption(HOST, setFiltering, true);
+      optionRef.current = makeConfusionMatrixOption(HOST, setFilter, true);
     } else if (emp === 'HierachicalCategory_Tree') {
       optionRef.current = makeHierachicalCategoryRelationOption(
         'tree',
         HOST,
-        setFiltering
+        setFilter
       );
     } else if (emp === 'HierachicalCategory_RadialTree') {
       optionRef.current = makeHierachicalCategoryRelationOption(
         'radialTree',
         HOST,
-        setFiltering
+        setFilter
       );
     } else if (emp === 'HierachicalCategory_TreeMap') {
       optionRef.current = makeHierachicalCategoryRelationOption(
         'treemap',
         HOST,
-        setFiltering
+        setFilter
       );
     } else if (emp === 'HierachicalCategory_Sunburst') {
       optionRef.current = makeHierachicalCategoryRelationOption(
         'sunburst',
         HOST,
-        setFiltering
+        setFilter
       );
     } else if (emp === 'MultiLabel_Forest') {
-      optionRef.current = makeAttributeForestOption(HOST, setFiltering);
+      optionRef.current = makeAttributeForestOption(HOST, setFilter);
     } else if (emp === 'CategoryAttribute_Sankey') {
-      optionRef.current = makeCategoryAttributeSankeyOption(HOST, setFiltering);
+      optionRef.current = makeCategoryAttributeSankeyOption(HOST, setFilter);
     }
 
     if (emp !== example) {

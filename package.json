@@ -16,10 +16,45 @@
   },
   "main": "dist/index.js",
   "module": "dist/index.esm.js",
+  "types": "dist/index.d.ts",
   "files": [
     "dist"
   ],
-  "types": "dist/index.d.ts",
+  "exports": {
+    ".": {
+      "require": "dist/index.js",
+      "import": "dist/index.esm.js",
+      "types": "dist/index.d.ts"
+    },
+    "./components": {
+      "require": "dist/index.js",
+      "import": "dist/index.esm.js",
+      "types": "dist/components/index.d.ts"
+    },
+    "./stores": {
+      "require": "dist/index.js",
+      "import": "dist/index.esm.js",
+      "types": "dist/stores/index.d.ts"
+    },
+    "./hooks": {
+      "require": "dist/index.js",
+      "import": "dist/index.esm.js",
+      "types": "dist/hooks/index.d.ts"
+    }
+  },
+  "typesVersions": {
+    "*": {
+      "components": [
+        "dist/components"
+      ],
+      "stores": [
+        "dist/stores"
+      ],
+      "hooks": [
+        "dist/hooks"
+      ]
+    }
+  },
   "devDependencies": {
     "@ZitySpace/iframe-auth": "^0.0.1-alpha1",
     "@babel/core": "^7.16.7",

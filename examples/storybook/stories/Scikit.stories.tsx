@@ -8,7 +8,7 @@ import {
   Slider,
   Input,
   ScikitGroup,
-} from '@zityspace/ux-sdk';
+} from '@zityspace/ux-sdk/components';
 
 export default {
   title: 'UX-SDK/SciKit',

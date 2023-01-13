@@ -2,15 +2,20 @@ import { ComponentMeta, ComponentStory } from '@storybook/react';
 import React from 'react';
 import { QueryClient, QueryClientProvider } from 'react-query';
 import {
-  ImageCarousel,
-  ImageList,
-  PaginationBar,
   useContextStore,
   usePagingStore,
   useCarouselStore,
-  useCarouselQueries,
-  useSetFiltering,
-} from '@zityspace/ux-sdk';
+} from '@zityspace/ux-sdk/stores';
+import {
+  useContextSetFilter,
+  useCarouselSetSize,
+  useCarouselSetPage,
+} from '@zityspace/ux-sdk/hooks';
+import {
+  ImageCarousel,
+  ImageList,
+  PaginationBar,
+} from '@zityspace/ux-sdk/components';
 
 const StoreGroup = () => <></>;
 
@@ -31,14 +36,18 @@ const TemplateSimple: ComponentStory<any> = (args) => {
     const pagingStore = usePagingStore(args.paginationBar.storeName);
     const carouselStore = useCarouselStore(args.imageCarousel.storeName);
 
-    const { useCarouselSizeQuery, useCarouselPageQuery } = useCarouselQueries({
-      contextStore: contextStore,
-      pagingStore: pagingStore,
-      carouselStore: carouselStore,
+    const setCarouselSize = useCarouselSetSize({
+      contextStore,
+      pagingStore,
+    });
+    const setCarouselPage = useCarouselSetPage({
+      contextStore,
+      pagingStore,
+      carouselStore,
     });
 
-    const sizeQuery = useCarouselSizeQuery();
-    const pageQuery = useCarouselPageQuery();
+    const sizeQuery = setCarouselSize();
+    const pageQuery = setCarouselPage();
 
     if (sizeQuery.isLoading || pageQuery.isLoading) return <></>;
     return (
@@ -77,16 +86,20 @@ const TemplateDynamic: ComponentStory<any> = (args) => {
     const pagingStore = usePagingStore(args.paginationBar.storeName);
     const carouselStore = useCarouselStore(args.imageCarousel.storeName);
 
-    const { useCarouselSizeQuery, useCarouselPageQuery } = useCarouselQueries({
-      contextStore: contextStore,
-      pagingStore: pagingStore,
-      carouselStore: carouselStore,
+    const setCarouselSize = useCarouselSetSize({
+      contextStore,
+      pagingStore,
+    });
+    const setCarouselPage = useCarouselSetPage({
+      contextStore,
+      pagingStore,
+      carouselStore,
     });
 
-    const sizeQuery = useCarouselSizeQuery();
-    const pageQuery = useCarouselPageQuery();
+    const sizeQuery = setCarouselSize();
+    const pageQuery = setCarouselPage();
 
-    const { setFiltering } = useSetFiltering({
+    const setContextFilter = useContextSetFilter({
       pagingStore: pagingStore,
       contextStore: contextStore,
     });
@@ -100,7 +113,7 @@ const TemplateDynamic: ComponentStory<any> = (args) => {
       <div>
         <button
           onClick={() => {
-            setFiltering(cateToCond(null));
+            setContextFilter(cateToCond(null));
           }}
           className='mr-2 px-2 py-1 bg-indigo-400 rounded-xl'
         >
@@ -108,7 +121,7 @@ const TemplateDynamic: ComponentStory<any> = (args) => {
         </button>
         <button
           onClick={() => {
-            setFiltering(cateToCond('shoes'));
+            setContextFilter(cateToCond('shoes'));
           }}
           className='mr-2 px-2 py-1 bg-indigo-400 rounded-xl'
         >
@@ -116,7 +129,7 @@ const TemplateDynamic: ComponentStory<any> = (args) => {
         </button>
         <button
           onClick={() => {
-            setFiltering(cateToCond('dresses'));
+            setContextFilter(cateToCond('dresses'));
           }}
           className='mr-2 px-2 py-1 bg-indigo-400 rounded-xl'
         >
@@ -124,7 +137,7 @@ const TemplateDynamic: ComponentStory<any> = (args) => {
         </button>
         <button
           onClick={() => {
-            setFiltering(cateToCond('pants'));
+            setContextFilter(cateToCond('pants'));
           }}
           className='mr-2 px-2 py-1 bg-indigo-400 rounded-xl'
         >

@@ -2,14 +2,19 @@ import { ComponentMeta, ComponentStory } from '@storybook/react';
 import React, { useRef, useEffect } from 'react';
 import { QueryClient, QueryClientProvider } from 'react-query';
 import {
-  ImageCarousel,
-  PaginationBar,
-  Annotator,
   useContextStore,
   usePagingStore,
   useCarouselStore,
-  useCarouselQueries,
-} from '@zityspace/ux-sdk';
+} from '@zityspace/ux-sdk/stores';
+import {
+  useCarouselSetSize,
+  useCarouselSetPage,
+} from '@zityspace/ux-sdk/hooks';
+import {
+  ImageCarousel,
+  PaginationBar,
+  Annotator,
+} from '@zityspace/ux-sdk/components';
 
 export default {
   title: 'UX-SDK/ImageCarousel',
@@ -33,14 +38,18 @@ const Template: ComponentStory<any> = (args) => {
     );
     const carouselStore = useCarouselStore(args.imageCarousel.storeName);
 
-    const { useCarouselSizeQuery, useCarouselPageQuery } = useCarouselQueries({
-      contextStore: contextStore,
-      pagingStore: pagingStore,
-      carouselStore: carouselStore,
+    const setCarouselSize = useCarouselSetSize({
+      contextStore,
+      pagingStore,
+    });
+    const setCarouselPage = useCarouselSetPage({
+      contextStore,
+      pagingStore,
+      carouselStore,
     });
 
-    const sizeQuery = useCarouselSizeQuery();
-    const pageQuery = useCarouselPageQuery();
+    const sizeQuery = setCarouselSize();
+    const pageQuery = setCarouselPage();
 
     if (sizeQuery.isLoading || pageQuery.isLoading) return <></>;
 

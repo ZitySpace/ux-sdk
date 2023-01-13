@@ -1,5 +1,4 @@
-import { requestTemplate } from '../../../utils/apis';
-import { useFilterFromDataframe } from '../../../utils';
+import { requestTemplate, useFilterFromDataframe } from '../../../hooks';
 import * as echarts from 'echarts';
 import merge from 'ts-deepmerge';
 
@@ -464,7 +463,7 @@ export class Base {
     this.option.title = titles;
   };
 
-  public static filterOptionFromQuery = async (
+  public static filterFromQuery = async (
     host: string,
     query: string,
     params?: MouseEventParams
@@ -476,8 +475,8 @@ export class Base {
     }
     const df = await queryData(host, query_);
     const { header, data } = df ? df : { header: [], data: [] };
-    const filterOption = useFilterFromDataframe({ header, data }, true);
-    return filterOption;
+    const filter = useFilterFromDataframe({ header, data }, true);
+    return filter;
   };
 
   public static unselectAll = (chart: echarts.ECharts) => {

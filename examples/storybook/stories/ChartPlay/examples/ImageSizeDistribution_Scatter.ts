@@ -1,15 +1,15 @@
+import { FilterProps } from '@zityspace/ux-sdk/stores';
+import { useFilterFromDataframe } from '@zityspace/ux-sdk/hooks';
 import {
-  FilteringProps,
   Option,
   MouseEventParams,
   BrushSelectedEventParams,
   ChartDatasetProps,
-  useFilterFromDataframe,
-} from '@zityspace/ux-sdk';
+} from '@zityspace/ux-sdk/components';
 
 export const makeOption = (
   HOST: string,
-  setFiltering: { (filteringProps: FilteringProps): void }
+  setFilter: { (filter: FilterProps): void }
 ) =>
   Option.makeScatter()
     .setSize({ height: 320 })
@@ -85,8 +85,8 @@ export const makeOption = (
       name: 'click',
       action: async (chart: echarts.ECharts) => {
         Option.unselectAll(chart);
-        setFiltering(
-          await Option.filterOptionFromQuery(
+        setFilter(
+          await Option.filterFromQuery(
             HOST,
             "res = df[['image_hash', 'image_width', 'image_height']].drop_duplicates()"
           )
@@ -97,8 +97,8 @@ export const makeOption = (
       name: 'click',
       query: 'series',
       action: async (params: MouseEventParams) => {
-        setFiltering(
-          await Option.filterOptionFromQuery(
+        setFilter(
+          await Option.filterFromQuery(
             HOST,
             "res = df[(df.image_width == data['image_width']) & (df.image_height == data['image_height'])][['image_hash']].drop_duplicates()",
             params
@@ -114,7 +114,7 @@ export const makeOption = (
       ) => {
         if (!params.batch[0].areas.length) return;
         const { selected, dimensions } = Option.getBrushedItems(params, chart);
-        setFiltering(
+        setFilter(
           useFilterFromDataframe({ header: dimensions, data: selected }, true)
         );
       },

@@ -1,11 +1,7 @@
 import { ComponentMeta, ComponentStory } from '@storybook/react';
 import React from 'react';
-import {
-  DataFrame,
-  PaginationBar,
-  usePagingStore,
-  useDataframeStore,
-} from '@zityspace/ux-sdk';
+import { usePagingStore, useDataframeStore } from '@zityspace/ux-sdk/stores';
+import { DataFrame, PaginationBar } from '@zityspace/ux-sdk/components';
 
 export default {
   title: 'UX-SDK/DataFrame',

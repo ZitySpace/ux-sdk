@@ -1,46 +1,9 @@
-import { FilteringProps, ContextStore } from '../../stores/contextStore';
-import { PagingStore } from '../../stores/pagingStore';
-import {
-  DataframeStore,
-  DataframeStoreData,
-} from '../../stores/dataframeStore';
+import { FilterProps } from '../stores/contextStore';
+import { DataframeStoreData } from '../stores/dataframeStore';
 import {
   CarouselStore,
   CarouselStoreDataDefault,
-} from '../../stores/carouselStore';
-import { useStore, StoreApi } from 'zustand';
-
-export const useSetFiltering = ({
-  pagingStore,
-  contextStore,
-}: {
-  pagingStore: StoreApi<PagingStore>;
-  contextStore: StoreApi<ContextStore>;
-}) => {
-  const { setFiltering: setFilteringCore } = useStore(contextStore, (s) => ({
-    setFiltering: s.setFiltering,
-  }));
-  const setPos = useStore(pagingStore, (s) => s.setPos);
-
-  const setFiltering = (filteringProps: FilteringProps) => {
-    setFilteringCore(filteringProps);
-    setPos(0);
-  };
-
-  return { setFiltering };
-};
-
-export const useSetDataframe = ({
-  dataframeStore,
-}: {
-  dataframeStore: StoreApi<DataframeStore>;
-}) => {
-  const setDataframe = useStore(dataframeStore, (s) => s.setDataframe);
-
-  return {
-    setDataframe,
-  };
-};
+} from '../stores/carouselStore';
 
 export const useFilterFromDataframe = (
   { header, data }: DataframeStoreData,
@@ -105,13 +68,13 @@ export const useFilterFromDataframe = (
     ),
   });
 
-  let filterOpt: FilteringProps;
+  let filter: FilterProps;
 
   if (groupByImage) {
     const dataGroupByImage = groupByImageFunc(data);
     const images = Object.keys(dataGroupByImage);
 
-    filterOpt = {
+    filter = {
       by: 'DataframeGroupByImage',
       value: dataGroupByImage,
       dependsOnValue: false,
@@ -129,7 +92,7 @@ export const useFilterFromDataframe = (
       },
     };
   } else {
-    filterOpt = {
+    filter = {
       by: 'Dataframe',
       value: data,
       dependsOnValue: false,
@@ -143,5 +106,5 @@ export const useFilterFromDataframe = (
     };
   }
 
-  return filterOpt;
+  return filter;
 };

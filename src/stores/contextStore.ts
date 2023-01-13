@@ -1,4 +1,4 @@
-import { useAPIs } from '../utils/apis';
+import { useAPIs } from '../hooks';
 import { CarouselStoreData } from './carouselStore';
 
 import { createContext } from 'react';
@@ -36,7 +36,7 @@ type SizeFilterType = SizeFilterBaseType | SizeFilterOnValueType;
 
 type PageFilterType = PageFilterBaseType | PageFilterOnValueType;
 
-export type FilteringProps = {
+export type FilterProps = {
   by: string | null;
   value?: any | any[] | null;
   dependsOnValue?: boolean;
@@ -45,11 +45,11 @@ export type FilteringProps = {
 };
 
 interface StoreData {
-  filtering: FilteringProps;
+  filter: FilterProps;
 }
 
 const storeDataDefault = {
-  filtering: {
+  filter: {
     by: null,
     value: null,
     dependsOnValue: false,
@@ -59,19 +59,19 @@ const storeDataDefault = {
 };
 
 interface Store extends StoreData {
-  filtering: FilteringProps;
-  setFiltering: (p: FilteringProps) => void;
+  filter: FilterProps;
+  setFilter: (p: FilterProps) => void;
 }
 
-const defaultFilterProps = (filtering: FilteringProps) =>
-  filtering.by === null
+const defaultFilterProps = (filter: FilterProps) =>
+  filter.by === null
     ? {
         value: null,
         dependsOnValue: false,
         sizeFilter: getImagesCount,
         pageFilter: getImagesMeta,
       }
-    : filtering.by === 'Category'
+    : filter.by === 'Category'
     ? {
         dependsOnValue: true,
         sizeFilter: getImagesCountByCategory,
@@ -83,14 +83,14 @@ const createStoreFromData = (pdata: Partial<StoreData> = storeDataDefault) => {
   const data = { ...storeDataDefault, ...pdata };
 
   return createStore<Store>((set) => ({
-    filtering: {
-      ...data.filtering,
-      ...defaultFilterProps(data.filtering),
+    filter: {
+      ...data.filter,
+      ...defaultFilterProps(data.filter),
     },
 
-    setFiltering: (filteringProps: FilteringProps) => {
+    setFilter: (filter: FilterProps) => {
       set({
-        filtering: { ...filteringProps, ...defaultFilterProps(filteringProps) },
+        filter: { ...filter, ...defaultFilterProps(filter) },
       });
     },
   }));

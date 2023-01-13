@@ -2,7 +2,7 @@ import { CheckCircleIcon } from '@heroicons/react/solid';
 import { fabric } from 'fabric';
 import React, { useEffect, useRef, useState } from 'react';
 import { useCarouselStore } from '../stores/carouselStore';
-import { useAPIs } from '../utils/apis';
+import { useAPIs } from '../hooks';
 import { useResizeDetector } from 'react-resize-detector';
 import { ColorStore } from '@zityspace/react-annotate';
 import { useStore } from 'zustand';

@@ -1,9 +1,9 @@
+import { FilterProps } from '@zityspace/ux-sdk/stores';
 import {
-  FilteringProps,
   Option,
   MouseEventParams,
   fetchData,
-} from '@zityspace/ux-sdk';
+} from '@zityspace/ux-sdk/components';
 
 const getRelationData = (HOST: string) => async () =>
   await fetchData(HOST + '/relation?name=categories');
@@ -11,7 +11,7 @@ const getRelationData = (HOST: string) => async () =>
 export const makeOption = (
   treeType: string,
   HOST: string,
-  setFiltering: { (filteringProps: FilteringProps): void }
+  setFilter: { (filter: FilterProps): void }
 ) => {
   const opt =
     treeType === 'tree'
@@ -163,8 +163,8 @@ export const makeOption = (
           return;
 
         Option.unselectAll(chart);
-        setFiltering(
-          await Option.filterOptionFromQuery(
+        setFilter(
+          await Option.filterFromQuery(
             HOST,
             "res = df[['image_hash', 'x', 'y', 'w', 'h', 'category']]"
           )
@@ -213,9 +213,7 @@ export const makeOption = (
           leafs
         )}\n${queryStr}`;
 
-        setFiltering(
-          await Option.filterOptionFromQuery(HOST, queryStrWithData)
-        );
+        setFilter(await Option.filterFromQuery(HOST, queryStrWithData));
       },
     });
 

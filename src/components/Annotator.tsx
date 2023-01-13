@@ -5,7 +5,7 @@ import {
   LabelType,
 } from '@zityspace/react-annotate';
 import { useCarouselStore } from '../stores/carouselStore';
-import { useAPIs } from '../utils/apis';
+import { useAPIs } from '../hooks';
 import { useStore } from 'zustand';
 
 const Annotator = ({

@@ -1,8 +1,9 @@
-import { FilteringProps, Option, MouseEventParams } from '@zityspace/ux-sdk';
+import { FilterProps } from '@zityspace/ux-sdk/stores';
+import { Option, MouseEventParams } from '@zityspace/ux-sdk/components';
 
 export const makeOption = (
   HOST: string,
-  setFiltering: { (filteringProps: FilteringProps): void }
+  setFilter: { (filter: FilterProps): void }
 ) =>
   Option.makePie()
     .setSize({ height: 320 })
@@ -40,8 +41,8 @@ export const makeOption = (
       name: 'click',
       action: async (chart: echarts.ECharts) => {
         Option.unselectAll(chart);
-        setFiltering(
-          await Option.filterOptionFromQuery(
+        setFilter(
+          await Option.filterFromQuery(
             HOST,
             "res = df[['image_hash', 'x', 'y', 'w', 'h', 'category']]"
           )
@@ -52,8 +53,8 @@ export const makeOption = (
       name: 'click',
       query: 'series',
       action: async (params: MouseEventParams) =>
-        setFiltering(
-          await Option.filterOptionFromQuery(
+        setFilter(
+          await Option.filterFromQuery(
             HOST,
             "res = df[df.category == data[0]][['image_hash', 'x', 'y', 'w', 'h', 'category']]",
             params

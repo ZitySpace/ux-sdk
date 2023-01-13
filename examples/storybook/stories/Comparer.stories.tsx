@@ -2,13 +2,15 @@ import { ComponentMeta, ComponentStory } from '@storybook/react';
 import React from 'react';
 import { QueryClient, QueryClientProvider } from 'react-query';
 import {
-  Comparer,
-  ImageTag,
   useCarouselStore,
   usePagingStore,
   useContextStore,
-  useCarouselQueries,
-} from '@zityspace/ux-sdk';
+} from '@zityspace/ux-sdk/stores';
+import {
+  useCarouselSetSize,
+  useCarouselSetPage,
+} from '@zityspace/ux-sdk/hooks';
+import { Comparer, ImageTag } from '@zityspace/ux-sdk/components';
 
 export default {
   title: 'UX-SDK/Comparer',
@@ -29,14 +31,18 @@ const Template: ComponentStory<any> = (args) => {
     const pagingStore = usePagingStore(args.paginationBar.storeName);
     const carouselStore = useCarouselStore(args.imageCarousel.storeName);
 
-    const { useCarouselSizeQuery, useCarouselPageQuery } = useCarouselQueries({
-      contextStore: contextStore,
-      pagingStore: pagingStore,
-      carouselStore: carouselStore,
+    const setCarouselSize = useCarouselSetSize({
+      contextStore,
+      pagingStore,
+    });
+    const setCarouselPage = useCarouselSetPage({
+      contextStore,
+      pagingStore,
+      carouselStore,
     });
 
-    const sizeQuery = useCarouselSizeQuery();
-    const pageQuery = useCarouselPageQuery();
+    const sizeQuery = setCarouselSize();
+    const pageQuery = setCarouselPage();
 
     if (sizeQuery.isLoading || pageQuery.isLoading) return <></>;
 

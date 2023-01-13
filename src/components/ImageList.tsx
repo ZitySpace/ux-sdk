@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { TrashIcon } from '@heroicons/react/solid';
-import { useDelImages } from '../utils/hooks/useDelImages';
+import { useCarouselDelSelectedImages } from '../hooks';
 import { useCarouselStore } from '../stores/carouselStore';
 import Modal from './Generic/modal';
 import { ToastContainer } from 'react-toastify';
@@ -13,7 +13,9 @@ const ImageList = ({
 }) => {
   const store = useCarouselStore(carouselStoreName);
 
-  const deleteSelectedImages = useDelImages({ carouselStore: store });
+  const deleteSelectedImages = useCarouselDelSelectedImages({
+    carouselStore: store,
+  });
 
   const [
     selectable,

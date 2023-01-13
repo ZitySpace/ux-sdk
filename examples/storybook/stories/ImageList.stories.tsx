@@ -2,12 +2,15 @@ import { ComponentMeta, ComponentStory } from '@storybook/react';
 import React from 'react';
 import { QueryClient, QueryClientProvider } from 'react-query';
 import {
-  ImageList,
   useContextStore,
   usePagingStore,
   useCarouselStore,
-  useCarouselQueries,
-} from '@zityspace/ux-sdk';
+} from '@zityspace/ux-sdk/stores';
+import {
+  useCarouselSetSize,
+  useCarouselSetPage,
+} from '@zityspace/ux-sdk/hooks';
+import { ImageList } from '@zityspace/ux-sdk/components';
 
 export default {
   title: 'UX-SDK/ImageList',
@@ -22,13 +25,14 @@ const Template: ComponentStory<any> = (args) => {
     const pagingStore = usePagingStore(args.paginationBar.storeName);
     const carouselStore = useCarouselStore(args.imageCarousel.storeName);
 
-    const { useCarouselPageQuery } = useCarouselQueries({
-      contextStore: contextStore,
-      pagingStore: pagingStore,
-      carouselStore: carouselStore,
+    const setCarouselPage = useCarouselSetPage({
+      contextStore,
+      pagingStore,
+      carouselStore,
     });
 
-    const pageQuery = useCarouselPageQuery();
+    const pageQuery = setCarouselPage();
+
     if (pageQuery.isLoading) return <></>;
 
     return <ImageList carouselStoreName={args.imageCarousel.storeName} />;

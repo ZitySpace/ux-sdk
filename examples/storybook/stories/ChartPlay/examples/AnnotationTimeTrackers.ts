@@ -1,9 +1,10 @@
-import { FilteringProps, Option, MouseEventParams } from '@zityspace/ux-sdk';
+import { FilterProps } from '@zityspace/ux-sdk/stores';
+import { Option, MouseEventParams } from '@zityspace/ux-sdk/components';
 
 export const makeOption = (
   timeRangeSerieType: string,
   HOST: string,
-  setFiltering: { (filteringProps: FilteringProps): void }
+  setFilter: { (filter: FilterProps): void }
 ) => {
   const opt =
     timeRangeSerieType === 'yearlyCalendar'
@@ -222,15 +223,15 @@ export const makeOption = (
       name: 'click',
       action: async (chart: echarts.ECharts) => {
         Option.unselectAll(chart);
-        setFiltering(await Option.filterOptionFromQuery(HOST, 'res = df'));
+        setFilter(await Option.filterFromQuery(HOST, 'res = df'));
       },
     })
     .addElementAction({
       name: 'click',
       query: 'series',
       action: async (params: MouseEventParams) => {
-        setFiltering(
-          await Option.filterOptionFromQuery(
+        setFilter(
+          await Option.filterFromQuery(
             HOST,
             "res = df[df.last_updated.apply(lambda dt: dt.startswith(data['last_updated']))]",
             params

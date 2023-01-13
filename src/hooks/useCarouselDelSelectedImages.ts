@@ -1,11 +1,11 @@
 import { useMutation, useQueryClient } from 'react-query';
 import { useStore, StoreApi } from 'zustand';
-import { CarouselStore } from '../../stores/carouselStore';
-import { useAPIs } from '../apis';
+import { CarouselStore } from '../stores/carouselStore';
+import { useAPIs } from './useAPIs';
 import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
-export const useDelImages = ({
+export const useCarouselDelSelectedImages = ({
   carouselStore,
 }: {
   carouselStore: StoreApi<CarouselStore>;
@@ -33,7 +33,7 @@ export const useDelImages = ({
     }
   );
 
-  const deleteSelectedImages = () => {
+  const delSelectedImages = () => {
     if (!selectedImageNames.length) {
       toast.warning('No images selected');
       return;
@@ -42,5 +42,5 @@ export const useDelImages = ({
     deleteImagesMutation.mutate(selectedImageNames);
   };
 
-  return deleteSelectedImages;
+  return delSelectedImages;
 };

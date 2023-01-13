@@ -1,6 +1,7 @@
 import { ComponentMeta, ComponentStory } from '@storybook/react';
 import React, { useEffect, useRef } from 'react';
-import { PaginationBar, usePagingStore } from '@zityspace/ux-sdk';
+import { usePagingStore } from '@zityspace/ux-sdk/stores';
+import { PaginationBar } from '@zityspace/ux-sdk/components';
 
 export default {
   title: 'UX-SDK/PaginationBar',

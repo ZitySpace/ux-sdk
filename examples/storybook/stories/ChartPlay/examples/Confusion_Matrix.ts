@@ -1,13 +1,13 @@
+import { FilterProps } from '@zityspace/ux-sdk/stores';
 import {
-  FilteringProps,
   Option,
   MouseEventParams,
   ChartDatasetProps,
-} from '@zityspace/ux-sdk';
+} from '@zityspace/ux-sdk/components';
 
 export const makeOption = (
   HOST: string,
-  setFiltering: { (filteringProps: FilteringProps): void },
+  setFilter: { (filter: FilterProps): void },
   multi: boolean
 ) => {
   const opt = multi
@@ -284,8 +284,8 @@ export const makeOption = (
       name: 'click',
       action: async (chart: echarts.ECharts) => {
         Option.unselectAll(chart);
-        setFiltering(
-          await Option.filterOptionFromQuery(
+        setFilter(
+          await Option.filterFromQuery(
             HOST,
             "res = df[['image_hash', 'x', 'y', 'w', 'h', 'category']]"
           )
@@ -304,8 +304,8 @@ export const makeOption = (
           dataIndex: params.dataIndex,
         });
 
-        setFiltering(
-          await Option.filterOptionFromQuery(
+        setFilter(
+          await Option.filterFromQuery(
             HOST,
             "res = df.iloc[data['idx']][['image_hash', 'x', 'y', 'w', 'h', 'category']]",
             params
