@@ -22,24 +22,24 @@
   ],
   "exports": {
     ".": {
-      "require": "dist/index.js",
-      "import": "dist/index.esm.js",
-      "types": "dist/index.d.ts"
+      "require": "./dist/index.js",
+      "import": "./dist/index.esm.js",
+      "types": "./dist/index.d.ts"
     },
     "./components": {
-      "require": "dist/index.js",
-      "import": "dist/index.esm.js",
-      "types": "dist/components/index.d.ts"
+      "require": "./dist/index.js",
+      "import": "./dist/index.esm.js",
+      "types": "./dist/components/index.d.ts"
     },
     "./stores": {
-      "require": "dist/index.js",
-      "import": "dist/index.esm.js",
-      "types": "dist/stores/index.d.ts"
+      "require": "./dist/index.js",
+      "import": "./dist/index.esm.js",
+      "types": "./dist/stores/index.d.ts"
     },
     "./hooks": {
-      "require": "dist/index.js",
-      "import": "dist/index.esm.js",
-      "types": "dist/hooks/index.d.ts"
+      "require": "./dist/index.js",
+      "import": "./dist/index.esm.js",
+      "types": "./dist/hooks/index.d.ts"
     }
   },
   "typesVersions": {
