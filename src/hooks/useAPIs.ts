@@ -127,7 +127,7 @@ export const useAPIs = () => {
 
   const getImagesCount: { (): Promise<number> } = requestTemplate(() => {
     return {
-      url: apiEndpoint + '/project/data/images/count?slug=' + projectSlug,
+      url: apiEndpoint + '/project/images/count?slug=' + projectSlug,
       method: 'GET',
     };
   });
@@ -143,7 +143,7 @@ export const useAPIs = () => {
       return {
         url:
           apiEndpoint +
-          '/project/data/images/meta?slug=' +
+          '/project/images/meta?slug=' +
           projectSlug +
           '&offset=' +
           offset +
@@ -163,7 +163,7 @@ export const useAPIs = () => {
       return {
         url:
           apiEndpoint +
-          '/project/data/image?slug=' +
+          '/project/image?slug=' +
           projectSlug +
           '&file_name=' +
           file_name,
@@ -179,7 +179,7 @@ export const useAPIs = () => {
       return {
         url:
           apiEndpoint +
-          '/project/data/images/category/count?slug=' +
+          '/project/images/category/count?slug=' +
           projectSlug +
           '&category=' +
           category,
@@ -199,7 +199,7 @@ export const useAPIs = () => {
       return {
         url:
           apiEndpoint +
-          '/project/data/images/category/meta?slug=' +
+          '/project/images/category/meta?slug=' +
           projectSlug +
           '&category=' +
           category +
@@ -224,7 +224,7 @@ export const useAPIs = () => {
       formData.set('keep_annotations', JSON.stringify(keepAnnotations));
 
       return {
-        url: apiEndpoint + '/project/data/images',
+        url: apiEndpoint + '/project/images',
         method: 'DELETE',
         body: formData,
       };
