@@ -63,15 +63,6 @@ export default [
         inject: true,
       }),
     ],
-    external: [
-      'react',
-      'react-dom',
-      'echarts',
-      'echarts-gl',
-      'fabric',
-      'rc-slider',
-      'react-ace',
-      'react-query',
-    ],
+    external: [...Object.keys(packageJson.dependencies || {})],
   },
 ];
