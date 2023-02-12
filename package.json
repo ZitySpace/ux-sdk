@@ -117,7 +117,7 @@
     "rc-slider": "^10.1.0",
     "rc-tooltip": "^5.2.2",
     "react-ace": "^10.0.0",
-    "react-query": "^3.34.12",
+    "react-query": "^3.39.3",
     "zustand": "^4.1.1"
   }
 }
