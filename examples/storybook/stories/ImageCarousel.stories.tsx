@@ -1,6 +1,5 @@
 import { ComponentMeta, ComponentStory } from '@storybook/react';
 import React, { useRef, useEffect } from 'react';
-import { QueryClient, QueryClientProvider } from 'react-query';
 import {
   useContextStore,
   usePagingStore,
@@ -9,6 +8,7 @@ import {
 import {
   useCarouselSetSize,
   useCarouselSetPage,
+  QueryProvider,
 } from '@zityspace/ux-sdk/hooks';
 import {
   ImageCarousel,
@@ -20,8 +20,6 @@ export default {
   title: 'UX-SDK/ImageCarousel',
   component: ImageCarousel,
 } as ComponentMeta<typeof ImageCarousel>;
-
-const queryClient = new QueryClient();
 
 const Template: ComponentStory<any> = (args) => {
   const Story = () => {
@@ -67,9 +65,9 @@ const Template: ComponentStory<any> = (args) => {
   };
 
   return (
-    <QueryClientProvider client={queryClient}>
+    <QueryProvider>
       <Story />
-    </QueryClientProvider>
+    </QueryProvider>
   );
 };
 

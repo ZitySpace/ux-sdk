@@ -1,6 +1,5 @@
 import { ComponentMeta, ComponentStory } from '@storybook/react';
 import React, { useEffect, useState, useRef } from 'react';
-import { QueryClient, QueryClientProvider } from 'react-query';
 
 import {
   useContextStore,
@@ -12,6 +11,7 @@ import {
   useContextSetFilter,
   useCarouselSetSize,
   useCarouselSetPage,
+  QueryProvider,
 } from '@zityspace/ux-sdk/hooks';
 import {
   Chart,
@@ -223,13 +223,11 @@ const ChartPlay = ({
   );
 };
 
-const queryClient = new QueryClient();
-
 const Template: ComponentStory<any> = (args) => {
   return (
-    <QueryClientProvider client={queryClient}>
+    <QueryProvider>
       <ChartPlay {...args} />
-    </QueryClientProvider>
+    </QueryProvider>
   );
 };
 

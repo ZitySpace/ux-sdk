@@ -145,7 +145,7 @@ const ImageList = ({
                       {`${imgObj.height} x ${imgObj.width}`}
                     </td>
                     <td className='px-3 py-2 whitespace-nowrap text-center text-xs font-light text-gray-500 overflow-x-auto'>
-                      {imgObj.annotations.length}
+                      {(imgObj.annotations || []).length}
                     </td>
                     <td className='px-3 py-2 whitespace-nowrap text-center text-xs font-light text-gray-500 overflow-x-auto'>
                       {new Date(imgObj.upload_time).toLocaleString()}

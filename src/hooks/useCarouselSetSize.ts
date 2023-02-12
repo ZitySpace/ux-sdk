@@ -1,4 +1,5 @@
-import { useQuery } from 'react-query';
+import { useQuery } from '@tanstack/react-query';
+import { queryContext } from './queryProvider';
 import {
   SizeFilterBaseType,
   SizeFilterOnValueType,
@@ -29,6 +30,7 @@ export const useCarouselSetSize = ({
         onSuccess: (total) => setTotal(total),
         keepPreviousData: true,
         refetchOnWindowFocus: false, // this option is very important
+        context: queryContext,
       }
     );
 

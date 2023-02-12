@@ -1,16 +1,13 @@
 import { ComponentMeta, ComponentStory } from '@storybook/react';
 import React from 'react';
-import { QueryClient, QueryClientProvider } from 'react-query';
 import { useCarouselStore } from '@zityspace/ux-sdk/stores';
-import { useAPIs } from '@zityspace/ux-sdk/hooks';
+import { useAPIs, QueryProvider } from '@zityspace/ux-sdk/hooks';
 import { AugmentedImageTag } from '@zityspace/ux-sdk/components';
 
 export default {
   title: 'UX-SDK/AugmentedImageTag',
   component: AugmentedImageTag,
 } as ComponentMeta<typeof AugmentedImageTag>;
-
-const queryClient = new QueryClient();
 
 const Template: ComponentStory<typeof AugmentedImageTag> = (args) => {
   const carouselStore = useCarouselStore(args.carouselStoreName!, {
@@ -40,11 +37,11 @@ const Template: ComponentStory<typeof AugmentedImageTag> = (args) => {
   });
 
   return (
-    <QueryClientProvider client={queryClient}>
+    <QueryProvider>
       <div className='h-64 w-64'>
         <AugmentedImageTag {...args} />
       </div>
-    </QueryClientProvider>
+    </QueryProvider>
   );
 };
 

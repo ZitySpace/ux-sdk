@@ -1,6 +1,5 @@
 import { ComponentMeta, ComponentStory } from '@storybook/react';
 import React, { useRef, useEffect } from 'react';
-import { QueryClient, QueryClientProvider } from 'react-query';
 import {
   useContextStore,
   usePagingStore,
@@ -9,6 +8,7 @@ import {
 import {
   useCarouselSetSize,
   useCarouselSetPage,
+  QueryProvider,
 } from '@zityspace/ux-sdk/hooks';
 import { Annotator } from '@zityspace/ux-sdk/components';
 
@@ -16,8 +16,6 @@ export default {
   title: 'UX-SDK/Annotator',
   component: Annotator,
 } as ComponentMeta<typeof Annotator>;
-
-const queryClient = new QueryClient();
 
 const Template: ComponentStory<any> = (args) => {
   const Story = () => {
@@ -57,9 +55,9 @@ const Template: ComponentStory<any> = (args) => {
   };
 
   return (
-    <QueryClientProvider client={queryClient}>
+    <QueryProvider>
       <Story />
-    </QueryClientProvider>
+    </QueryProvider>
   );
 };
 

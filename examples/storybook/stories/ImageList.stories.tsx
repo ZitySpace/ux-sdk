@@ -1,23 +1,17 @@
 import { ComponentMeta, ComponentStory } from '@storybook/react';
 import React from 'react';
-import { QueryClient, QueryClientProvider } from 'react-query';
 import {
   useContextStore,
   usePagingStore,
   useCarouselStore,
 } from '@zityspace/ux-sdk/stores';
-import {
-  useCarouselSetSize,
-  useCarouselSetPage,
-} from '@zityspace/ux-sdk/hooks';
+import { useCarouselSetPage, QueryProvider } from '@zityspace/ux-sdk/hooks';
 import { ImageList } from '@zityspace/ux-sdk/components';
 
 export default {
   title: 'UX-SDK/ImageList',
   component: ImageList,
 } as ComponentMeta<typeof ImageList>;
-
-const queryClient = new QueryClient();
 
 const Template: ComponentStory<any> = (args) => {
   const Story = () => {
@@ -39,9 +33,9 @@ const Template: ComponentStory<any> = (args) => {
   };
 
   return (
-    <QueryClientProvider client={queryClient}>
+    <QueryProvider>
       <Story />
-    </QueryClientProvider>
+    </QueryProvider>
   );
 };
 

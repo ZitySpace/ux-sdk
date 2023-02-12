@@ -4,3 +4,4 @@ export * from './useCarouselSetSize';
 export * from './useCarouselSetPage';
 export * from './useContextSetFilter';
 export * from './useFilterFromDataframe';
+export * from './queryProvider';

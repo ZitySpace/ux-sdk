@@ -1,6 +1,5 @@
 import { ComponentMeta, ComponentStory } from '@storybook/react';
 import React from 'react';
-import { QueryClient, QueryClientProvider } from 'react-query';
 import {
   useContextStore,
   usePagingStore,
@@ -10,6 +9,7 @@ import {
   useContextSetFilter,
   useCarouselSetSize,
   useCarouselSetPage,
+  QueryProvider,
 } from '@zityspace/ux-sdk/hooks';
 import {
   ImageCarousel,
@@ -23,8 +23,6 @@ export default {
   title: 'UX-SDK/StoreGroup',
   component: StoreGroup,
 } as ComponentMeta<typeof StoreGroup>;
-
-const queryClient = new QueryClient();
 
 const TemplateSimple: ComponentStory<any> = (args) => {
   const Story = () => {
@@ -60,9 +58,9 @@ const TemplateSimple: ComponentStory<any> = (args) => {
   };
 
   return (
-    <QueryClientProvider client={queryClient}>
+    <QueryProvider>
       <Story />
-    </QueryClientProvider>
+    </QueryProvider>
   );
 };
 
@@ -155,9 +153,9 @@ const TemplateDynamic: ComponentStory<any> = (args) => {
   };
 
   return (
-    <QueryClientProvider client={queryClient}>
+    <QueryProvider>
       <Story />
-    </QueryClientProvider>
+    </QueryProvider>
   );
 };
 

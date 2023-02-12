@@ -1,7 +1,6 @@
 import { ComponentMeta, ComponentStory } from '@storybook/react';
 import React, { useEffect } from 'react';
 import { useStore } from 'zustand';
-import { QueryClient, QueryClientProvider } from 'react-query';
 import {
   useContextStore,
   usePagingStore,
@@ -14,6 +13,7 @@ import {
   useContextSetFilter,
   useFilterFromDataframe,
   requestTemplate,
+  QueryProvider,
 } from '@zityspace/ux-sdk/hooks';
 import {
   CodeEditor,
@@ -47,8 +47,6 @@ const runCode = requestTemplate(
   ...[,],
   false
 );
-
-const queryClient = new QueryClient();
 
 const Template: ComponentStory<any> = (args) => {
   const Story = () => {
@@ -113,9 +111,9 @@ const Template: ComponentStory<any> = (args) => {
   };
 
   return (
-    <QueryClientProvider client={queryClient}>
+    <QueryProvider>
       <Story />
-    </QueryClientProvider>
+    </QueryProvider>
   );
 };
 

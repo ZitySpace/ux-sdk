@@ -1,4 +1,5 @@
-import { useQuery } from 'react-query';
+import { useQuery } from '@tanstack/react-query';
+import { queryContext } from './queryProvider';
 import {
   PageFilterBaseType,
   PageFilterOnValueType,
@@ -39,6 +40,7 @@ export const useCarouselSetPage = ({
         onSuccess: (carouselStateData) => setCarouselData(carouselStateData),
         keepPreviousData: true,
         refetchOnWindowFocus: false,
+        context: queryContext,
       }
     );
 

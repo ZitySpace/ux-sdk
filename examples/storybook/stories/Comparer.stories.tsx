@@ -1,6 +1,5 @@
 import { ComponentMeta, ComponentStory } from '@storybook/react';
 import React from 'react';
-import { QueryClient, QueryClientProvider } from 'react-query';
 import {
   useCarouselStore,
   usePagingStore,
@@ -9,6 +8,7 @@ import {
 import {
   useCarouselSetSize,
   useCarouselSetPage,
+  QueryProvider,
 } from '@zityspace/ux-sdk/hooks';
 import { Comparer, ImageTag } from '@zityspace/ux-sdk/components';
 
@@ -16,8 +16,6 @@ export default {
   title: 'UX-SDK/Comparer',
   component: Comparer,
 } as ComponentMeta<typeof Comparer>;
-
-const queryClient = new QueryClient();
 
 const factory =
   (Component: React.FC<any>, params: any) =>
@@ -56,9 +54,9 @@ const Template: ComponentStory<any> = (args) => {
   };
 
   return (
-    <QueryClientProvider client={queryClient}>
+    <QueryProvider>
       <Story />
-    </QueryClientProvider>
+    </QueryProvider>
   );
 };
 
