@@ -27,12 +27,12 @@ const Modal = ({
       <Dialog
         as='div'
         static
-        className='fixed z-40 inset-0 overflow-y-auto'
+        className='us-fixed us-z-40 us-inset-0 us-overflow-y-auto'
         initialFocus={cancelButtonRef}
         open={open}
         onClose={onClose}
       >
-        <div className='flex items-center justify-center h-screen py-4 px-4 text-center sm:block sm:p-0'>
+        <div className='us-flex us-items-center us-justify-center us-h-screen us-py-4 us-px-4 us-text-center sm:us-block sm:us-p-0'>
           <Transition.Child
             as={Fragment}
             enter='ease-out duration-300'
@@ -42,12 +42,12 @@ const Modal = ({
             leaveFrom='opacity-100'
             leaveTo='opacity-0'
           >
-            <Dialog.Overlay className='fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity' />
+            <Dialog.Overlay className='us-fixed us-inset-0 us-bg-gray-500 us-bg-opacity-75 us-transition-opacity' />
           </Transition.Child>
 
           {/* This element is to trick the browser into centering the modal contents. */}
           <span
-            className='hidden sm:inline-block sm:align-middle sm:h-screen'
+            className='us-hidden sm:us-inline-block sm:us-align-middle sm:us-h-screen'
             aria-hidden='true'
           >
             &#8203;
@@ -61,32 +61,32 @@ const Modal = ({
             leaveFrom='opacity-100 translate-y-0 sm:scale-100'
             leaveTo='opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95'
           >
-            <div className='inline-block align-bottom bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg'>
-              <div className='bg-white px-4 pt-5 pb-4 sm:p-6 sm:pb-4'>
-                <div className='sm:flex sm:items-start'>
-                  <div className='mx-auto flex-shrink-0 flex items-center justify-center h-12 w-12 rounded-full bg-red-100 sm:mx-0 sm:h-10 sm:w-10'>
+            <div className='us-inline-block us-align-bottom us-bg-white us-rounded-lg us-text-left us-overflow-hidden us-shadow-xl us-transform us-transition-all sm:us-my-8 sm:us-align-middle sm:us-max-w-lg'>
+              <div className='us-bg-white us-px-4 us-pt-5 us-pb-4 sm:us-p-6 sm:us-pb-4'>
+                <div className='sm:us-flex sm:us-items-start'>
+                  <div className='us-mx-auto us-flex-shrink-0 us-flex us-items-center us-justify-center us-h-12 us-w-12 us-rounded-full us-bg-red-100 sm:us-mx-0 sm:us-h-10 sm:us-w-10'>
                     <ExclamationIcon
-                      className={`h-6 w-6 text-red-600`}
+                      className={`us-h-6 us-w-6 us-text-red-600`}
                       aria-hidden='true'
                     />
                   </div>
-                  <div className='mt-3 text-center sm:mt-0 sm:ml-4 sm:text-left'>
+                  <div className='us-mt-3 us-text-center sm:us-mt-0 sm:us-ml-4 sm:us-text-left'>
                     <Dialog.Title
                       as='h3'
-                      className='text-lg leading-6 font-medium text-gray-900'
+                      className='us-text-lg us-leading-6 us-font-medium us-text-gray-900'
                     >
                       {title}
                     </Dialog.Title>
-                    <div className='mt-2'>
-                      <p className='text-sm text-gray-500'>{body}</p>
+                    <div className='us-mt-2'>
+                      <p className='us-text-sm us-text-gray-500'>{body}</p>
                     </div>
                   </div>
                 </div>
               </div>
-              <div className='bg-gray-50 px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse'>
+              <div className='us-bg-gray-50 us-px-4 us-py-3 sm:us-px-6 sm:us-flex sm:us-flex-row-reverse'>
                 <button
                   type='button'
-                  className='w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-red-600 text-base font-medium text-white hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 sm:ml-3 sm:w-auto sm:text-sm'
+                  className='us-w-full us-inline-flex us-justify-center us-rounded-md us-border us-border-transparent us-shadow-sm us-px-4 us-py-2 us-bg-red-600 us-text-base us-font-medium us-text-white hover:us-bg-red-700 focus:us-outline-none focus:us-ring-2 focus:us-ring-offset-2 focus:us-ring-red-500 sm:us-ml-3 sm:us-w-auto sm:us-text-sm'
                   onClick={() => {
                     yesCallback();
                     setOpen(false);
@@ -96,7 +96,7 @@ const Modal = ({
                 </button>
                 <button
                   type='button'
-                  className='mt-3 w-full inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm'
+                  className='us-mt-3 us-w-full us-inline-flex us-justify-center us-rounded-md us-border us-border-gray-300 us-shadow-sm us-px-4 us-py-2 us-bg-white us-text-base us-font-medium us-text-gray-700 hover:us-bg-gray-50 focus:us-outline-none focus:us-ring-2 focus:us-ring-offset-2 focus:us-ring-indigo-500 sm:us-mt-0 sm:us-ml-3 sm:us-w-auto sm:us-text-sm'
                   onClick={onClose}
                   ref={cancelButtonRef}
                 >

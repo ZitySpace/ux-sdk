@@ -13,12 +13,12 @@ const ImageCarousel = ({
   );
 
   return (
-    <div className='bg-gray-100 h-full flex flex-col text-xs shadow-lg rounded-md select-none'>
-      <div className='bg-indigo-400 py-2 px-2 rounded-t-md flex justify-center space-x-2'>
+    <div className='us-bg-gray-100 us-h-full us-flex us-flex-col us-text-xs us-shadow-lg us-rounded-md us-select-none'>
+      <div className='us-bg-indigo-400 us-py-2 us-px-2 us-rounded-t-md us-flex us-justify-center us-space-x-2'>
         <span>Image Carousel</span>
       </div>
-      <div className='overflow-y-scroll h-full w-full @container'>
-        <div className='grid grid-cols-5 @3xl:grid-cols-10 gap-1 @7xl:gap-2 px-1 pt-1 pb-4 items-center justify-center'>
+      <div className='us-overflow-y-scroll us-h-full us-w-full us-@container'>
+        <div className='us-grid us-grid-cols-5 @3xl:us-grid-cols-10 us-gap-1 @7xl:us-gap-2 us-px-1 us-pt-1 us-pb-4 us-items-center us-justify-center'>
           {imageNames.map((name: string, i: number) => (
             <ImageTag
               name={name}

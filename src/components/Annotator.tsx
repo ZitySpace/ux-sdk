@@ -78,8 +78,8 @@ const Annotator = ({
   const { getImage } = useAPIs();
 
   return (
-    <div className='bg-gray-100 h-96 min-h-full flex flex-col text-xs shadow-lg rounded-md relative select-none'>
-      <div className='bg-indigo-400 py-2 px-2 rounded-t-md flex justify-center space-x-2'>
+    <div className='us-bg-gray-100 us-h-96 us-min-h-full us-flex us-flex-col us-text-xs us-shadow-lg us-rounded-md us-relative us-select-none'>
+      <div className='us-bg-indigo-400 us-py-2 us-px-2 us-rounded-t-md us-flex us-justify-center us-space-x-2'>
         <span>Annotator</span>
       </div>
 

@@ -39,18 +39,18 @@ const ImageList = ({
 
   return (
     <>
-      <div className='bg-gray-100 h-full max-w-full flex flex-col text-xs shadow-lg rounded-md select-none'>
-        <div className='bg-indigo-400 py-2 px-2 rounded-t-md flex justify-center space-x-2'>
+      <div className='us-bg-gray-100 us-h-full us-max-w-full us-flex us-flex-col us-text-xs us-shadow-lg us-rounded-md us-select-none'>
+        <div className='us-bg-indigo-400 us-py-2 us-px-2 us-rounded-t-md us-flex us-justify-center us-space-x-2'>
           <span>Image List</span>
         </div>
-        <div className='overflow-auto h-full max-w-full px-4 py-2 flex flex-col space-y-2'>
-          <div className='p-0.5 rounded-lg flex flex-wrap'>
+        <div className='us-overflow-auto us-h-full us-max-w-full us-px-4 us-py-2 us-flex us-flex-col us-space-y-2'>
+          <div className='us-p-0.5 us-rounded-lg us-flex us-flex-wrap'>
             <span
               onClick={toggleSelectable}
-              className='m-0.5 inline-flex items-center px-2 py-1 border border-transparent shadow-sm text-xs leading-4 font-medium rounded-md text-white bg-indigo-500 hover:bg-indigo-600'
+              className='us-m-0.5 us-inline-flex us-items-center us-px-2 us-py-1 us-border us-border-transparent us-shadow-sm us-text-xs us-leading-4 us-font-medium us-rounded-md us-text-white us-bg-indigo-500 hover:us-bg-indigo-600'
             >
               <input
-                className='-ml-0.5 mr-2 h-2.5 w-2.5 border-none focus:outline-none focus:ring-0 focus:ring-offset-0 bg-gray-50'
+                className='-us-ml-0.5 us-mr-2 us-h-2.5 us-w-2.5 us-border-none focus:us-outline-none focus:us-ring-0 focus:us-ring-offset-0 us-bg-gray-50'
                 type='checkbox'
                 checked={selectable}
                 readOnly
@@ -59,33 +59,36 @@ const ImageList = ({
             </span>
             <button
               type='button'
-              className='m-0.5 inline-flex items-center px-2 py-1 border border-transparent shadow-sm text-xs leading-4 font-medium rounded-md text-white bg-indigo-500 hover:bg-indigo-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500'
+              className='us-m-0.5 us-inline-flex us-items-center us-px-2 us-py-1 us-border us-border-transparent us-shadow-sm us-text-xs us-leading-4 us-font-medium us-rounded-md us-text-white us-bg-indigo-500 hover:us-bg-indigo-600 focus:us-outline-none focus:us-ring-2 focus:us-ring-offset-2 focus:us-ring-indigo-500'
               onClick={() => setDelImgModalOpen(true)}
             >
-              <TrashIcon className='-ml-0.5 mr-2 h-3 w-3' aria-hidden='true' />
+              <TrashIcon
+                className='-us-ml-0.5 us-mr-2 us-h-3 us-w-3'
+                aria-hidden='true'
+              />
               Delete selected
             </button>
             {/* <button
               type='button'
-              className='m-0.5 inline-flex items-center px-2 py-1 border border-transparent shadow-sm text-xs leading-4 font-medium rounded-md text-white bg-indigo-500 hover:bg-indigo-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500'
+              className='us-m-0.5 us-inline-flex us-items-center us-px-2 us-py-1 us-border us-border-transparent us-shadow-sm us-text-xs us-leading-4 us-font-medium us-rounded-md us-text-white us-bg-indigo-500 hover:us-bg-indigo-600 focus:us-outline-none focus:us-ring-2 focus:us-ring-offset-2 focus:us-ring-indigo-500'
             >
-              <TrashIcon className='-ml-0.5 mr-2 h-3 w-3' aria-hidden='true' />
+              <TrashIcon className='-us-ml-0.5 us-mr-2 us-h-3 us-w-3' aria-hidden='true' />
               Delete all
             </button> */}
           </div>
 
-          <div className='shadow overflow-y-scroll border-b border-gray-200 sm:rounded-lg w-full h-full'>
-            <table className='min-w-full divide-y divide-gray-200 relative table-fixed'>
-              <thead className='bg-gray-200 sticky top-0'>
+          <div className='us-shadow us-overflow-y-scroll us-border-b us-border-gray-200 sm:us-rounded-lg us-w-full us-h-full'>
+            <table className='us-min-w-full us-divide-y us-divide-gray-200 us-relative us-table-fixed'>
+              <thead className='us-bg-gray-200 us-sticky us-top-0'>
                 <tr>
                   <th
                     scope='col'
-                    className='px-3 py-2 text-left text-xs font-medium text-gray-500 w-1/8'
+                    className='us-px-3 us-py-2 us-text-left us-text-xs us-font-medium us-text-gray-500 us-w-1/8'
                     onClick={toggleSelectAll}
                   >
                     <input
                       type='checkbox'
-                      className='border-none focus:outline-none focus:ring-0 focus:ring-offset-0 bg-white w-3.5 h-3.5'
+                      className='us-border-none focus:us-outline-none focus:us-ring-0 focus:us-ring-offset-0 us-bg-white us-w-3.5 us-h-3.5'
                       checked={allSelected}
                       readOnly
                     />
@@ -93,25 +96,25 @@ const ImageList = ({
 
                   <th
                     scope='col'
-                    className='px-3 py-2 text-left text-xs font-medium text-gray-500 w-1/2'
+                    className='us-px-3 us-py-2 us-text-left us-text-xs us-font-medium us-text-gray-500 us-w-1/2'
                   >
                     Image
                   </th>
                   <th
                     scope='col'
-                    className='px-3 py-2 text-center text-xs font-medium text-gray-500 w-1/8'
+                    className='us-px-3 us-py-2 us-text-center us-text-xs us-font-medium us-text-gray-500 us-w-1/8'
                   >
                     Size
                   </th>
                   <th
                     scope='col'
-                    className='px-3 py-2 text-center text-xs font-medium text-gray-500 w-1/8'
+                    className='us-px-3 us-py-2 us-text-center us-text-xs us-font-medium us-text-gray-500 us-w-1/8'
                   >
                     #Annotations
                   </th>
                   <th
                     scope='col'
-                    className='px-3 py-2 text-center text-xs font-medium text-gray-500 w-1/8'
+                    className='us-px-3 us-py-2 us-text-center us-text-xs us-font-medium us-text-gray-500 us-w-1/8'
                   >
                     UploadAt
                   </th>
@@ -121,33 +124,33 @@ const ImageList = ({
                 {Object.values(carouselData).map((imgObj: any, idx: number) => (
                   <tr
                     key={idx}
-                    className={`bg-white border-b ${
-                      selected[imgObj.name] ? 'bg-indigo-50' : ''
+                    className={`us-bg-white us-border-b ${
+                      selected[imgObj.name] ? 'us-bg-indigo-50' : ''
                     }`}
                     onClick={() => {
                       toggleImageSelect(imgObj.name);
                     }}
                   >
-                    <td className='px-3 py-2 whtiespace-nowrap'>
-                      <div className='flex items-center'>
+                    <td className='us-px-3 us-py-2 us-whtiespace-nowrap'>
+                      <div className='us-flex us-items-center'>
                         <input
                           type='checkbox'
-                          className='border-none focus:outline-none focus:ring-0 focus:ring-offset-0 bg-indigo-100 w-3.5 h-3.5'
+                          className='us-border-none focus:us-outline-none focus:us-ring-0 focus:us-ring-offset-0 us-bg-indigo-100 us-w-3.5 us-h-3.5'
                           checked={selected[imgObj.name]}
                           readOnly
                         />
                       </div>
                     </td>
-                    <td className='px-3 py-2 whitespace-nowrap text-xs font-light text-gray-500 overflow-x-auto'>
+                    <td className='us-px-3 us-py-2 us-whitespace-nowrap us-text-xs us-font-light us-text-gray-500 us-overflow-x-auto'>
                       {imgObj.name}
                     </td>
-                    <td className='px-3 py-2 whitespace-nowrap text-center text-xs font-light text-gray-500 overflow-x-auto'>
+                    <td className='us-px-3 us-py-2 us-whitespace-nowrap us-text-center us-text-xs us-font-light us-text-gray-500 us-overflow-x-auto'>
                       {`${imgObj.height} x ${imgObj.width}`}
                     </td>
-                    <td className='px-3 py-2 whitespace-nowrap text-center text-xs font-light text-gray-500 overflow-x-auto'>
+                    <td className='us-px-3 us-py-2 us-whitespace-nowrap us-text-center us-text-xs us-font-light us-text-gray-500 us-overflow-x-auto'>
                       {(imgObj.annotations || []).length}
                     </td>
-                    <td className='px-3 py-2 whitespace-nowrap text-center text-xs font-light text-gray-500 overflow-x-auto'>
+                    <td className='us-px-3 us-py-2 us-whitespace-nowrap us-text-center us-text-xs us-font-light us-text-gray-500 us-overflow-x-auto'>
                       {new Date(imgObj.upload_time).toLocaleString()}
                     </td>
                   </tr>

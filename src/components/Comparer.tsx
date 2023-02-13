@@ -33,19 +33,24 @@ const Comparer = ({
 
   // hack so tailwind generate these utilities cuz dynamic Components.length
   // won't generate them unless in jit mode
-  const _ = ['grid-cols-2', 'grid-cols-3', 'grid-cols-4', 'grid-cols-5'];
+  const _ = [
+    'us-grid-cols-2',
+    'us-grid-cols-3',
+    'us-grid-cols-4',
+    'us-grid-cols-5',
+  ];
 
   return (
-    <div className='bg-gray-100 h-full flex flex-col text-xs shadow-lg rounded-md select-none'>
-      <div className='bg-indigo-400 py-2 px-2 rounded-t-md flex justify-center space-x-2'>
+    <div className='us-bg-gray-100 us-h-full us-flex us-flex-col us-text-xs us-shadow-lg us-rounded-md us-select-none'>
+      <div className='us-bg-indigo-400 us-py-2 us-px-2 us-rounded-t-md us-flex us-justify-center us-space-x-2'>
         <span>{title}</span>
       </div>
-      <div className='overflow-y-scroll h-full w-full @container'>
-        <div className='grid grid-cols-1 @3xl:grid-cols-2 gap-1 @7xl:gap-2 px-1 pt-1 pb-4 items-center justify-center'>
+      <div className='us-overflow-y-scroll us-h-full us-w-full us-@container'>
+        <div className='us-grid us-grid-cols-1 @3xl:us-grid-cols-2 us-gap-1 @7xl:us-gap-2 us-px-1 us-pt-1 us-pb-4 us-items-center us-justify-center'>
           {imageNames.map((name: string, i: number) => (
             <div
               key={i}
-              className={`grid grid-cols-${Components.length} gap-x-1 border-2 border-indigo-400/50 rounded-lg p-0.5`}
+              className={`us-grid us-grid-cols-${Components.length} us-gap-x-1 us-border-2 us-border-indigo-400/50 us-rounded-lg us-p-0.5`}
             >
               {Components.map(
                 (Component: React.FC<ComponentProps>, j: number) => (

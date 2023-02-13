@@ -94,24 +94,27 @@ const ImageTag = ({
 
   return (
     <div
-      className='h-full select-none relative rounded-lg hover:shadow-md' // transform hover:scale-105 transition delay-100 duration-100 ease-in"
+      className='us-h-full us-select-none us-relative us-rounded-lg hover:us-shadow-md' // transform hover:scale-105 transition delay-100 duration-100 ease-in"
     >
       <img
         alt={name}
         title={name}
         src={src}
         loading='lazy'
-        className='max-w-full max-h-full rounded-lg'
+        className='us-max-w-full us-max-h-full us-rounded-lg'
         onLoad={imgLoadedRef.current ? onImgLoad : () => {}}
         ref={imgElRef}
       />
 
-      <canvas ref={canvasElRef} className='absolute top-0 rounded-lg' />
+      <canvas
+        ref={canvasElRef}
+        className='us-absolute us-top-0 us-rounded-lg'
+      />
 
       {selectable ? (
         <CheckCircleIcon
-          className={`absolute top-0 h-8 w-8 ${
-            isSelected ? 'text-indigo-600' : 'text-gray-600'
+          className={`us-absolute us-top-0 us-h-8 us-w-8 ${
+            isSelected ? 'us-text-indigo-600' : 'us-text-gray-600'
           }`}
           onClick={() => toggleImageSelect(name)}
         />

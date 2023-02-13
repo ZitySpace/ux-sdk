@@ -29,22 +29,22 @@ const DataFrame = ({
   }, [header, data]);
 
   return (
-    <div className='bg-gray-100 h-full flex flex-col rounded-md shadow-lg'>
-      <div className='bg-indigo-400 py-2 px-2 rounded-t-md flex justify-center space-x-2 text-xs'>
+    <div className='us-bg-gray-100 us-h-full us-flex us-flex-col us-rounded-md us-shadow-lg'>
+      <div className='us-bg-indigo-400 us-py-2 us-px-2 us-rounded-t-md us-flex us-justify-center us-space-x-2 us-text-xs'>
         <span>{title}</span>
       </div>
-      <div className='resize-y overflow-auto h-48 bg-white '>
-        <table className='min-w-full divide-y divide-gray-200 relative table-fixed'>
-          <thead className='bg-gray-700 sticky top-0'>
+      <div className='us-resize-y us-overflow-auto us-h-48 us-bg-white '>
+        <table className='us-min-w-full us-divide-y us-divide-gray-200 us-relative us-table-fixed'>
+          <thead className='us-bg-gray-700 us-sticky us-top-0'>
             <tr>
               <th
                 scope='col'
-                className='px-3 py-2 text-left text-xs font-medium text-gray-200'
+                className='us-px-3 us-py-2 us-text-left us-text-xs us-font-medium us-text-gray-200'
                 onClick={() => toggleSelectSlice(pos, step)}
               >
                 <input
                   type='checkbox'
-                  className='border-none focus:outline-none focus:ring-0 focus:ring-offset-0 bg-white w-3.5 h-3.5'
+                  className='us-border-none focus:us-outline-none focus:us-ring-0 focus:us-ring-offset-0 us-bg-white us-w-3.5 us-h-3.5'
                   checked={
                     selected.slice(pos, pos + step).length
                       ? !selected.slice(pos, pos + step).includes(false)
@@ -58,7 +58,7 @@ const DataFrame = ({
                 <th
                   scope='col'
                   key={icol}
-                  className='px-3 py-2 text-left text-xs font-medium text-gray-200'
+                  className='us-px-3 us-py-2 us-text-left us-text-xs us-font-medium us-text-gray-200'
                 >
                   {name}
                 </th>
@@ -69,14 +69,14 @@ const DataFrame = ({
             {data.slice(pos, pos + step).map((row, irow) => (
               <tr
                 key={irow}
-                className='bg-white border-b'
+                className='us-bg-white us-border-b'
                 onClick={() => toggleSelect(pos + irow)}
               >
-                <td className='px-3 py-2 whtiespace-nowrap'>
-                  <div className='flex items-center'>
+                <td className='us-px-3 us-py-2 us-whitespace-nowrap'>
+                  <div className='us-flex us-items-center'>
                     <input
                       type='checkbox'
-                      className='border-none focus:outline-none focus:ring-0 focus:ring-offset-0 bg-indigo-100 w-3.5 h-3.5'
+                      className='us-border-none focus:us-outline-none focus:us-ring-0 focus:us-ring-offset-0 us-bg-indigo-100 us-w-3.5 us-h-3.5'
                       checked={selected[pos + irow] || false}
                       readOnly
                     />
@@ -86,7 +86,7 @@ const DataFrame = ({
                 {row.map((cell, icol) => (
                   <td
                     key={icol}
-                    className='px-3 py-2 whitespace-nowrap text-xs font-light text-gray-500 overflow-x-auto'
+                    className='us-px-3 us-py-2 us-whitespace-nowrap us-text-xs us-font-light us-text-gray-500 us-overflow-x-auto'
                   >
                     {cell}
                   </td>

@@ -75,19 +75,21 @@ const ScikitGroup = forwardRef(
 
     return (
       <div
-        className={`bg-gray-100 h-full flex flex-col rounded-md ${
-          flat ? '' : 'shadow-lg'
+        className={`us-bg-gray-100 us-h-full us-flex us-flex-col us-rounded-md ${
+          flat ? '' : 'us-shadow-lg'
         }`}
       >
         {!hideTitle && (
-          <div className='bg-indigo-400 py-2 px-2 rounded-t-md flex justify-center space-x-2 text-xs'>
+          <div className='us-bg-indigo-400 us-py-2 us-px-2 us-rounded-t-md us-flex us-justify-center us-space-x-2 us-text-xs'>
             <span>{title}</span>
           </div>
         )}
         <div
-          className={`flex justify-center ${scroll ? 'overflow-scroll' : ''}`}
+          className={`us-flex us-justify-center ${
+            scroll ? 'us-overflow-scroll' : ''
+          }`}
         >
-          <div className='flex-col space-y-2 pt-2 pb-4 h-full'>
+          <div className='us-flex-col us-space-y-2 us-pt-2 us-pb-4 us-h-full'>
             {React.Children.map(children, (c) => {
               const pass =
                 React.isValidElement(c) &&
@@ -110,20 +112,23 @@ const ScikitGroup = forwardRef(
             })}
 
             {!hideFooter && (
-              <div className='pt-3 flex space-x-2 justify-start ml-28 pl-3'>
+              <div className='us-pt-3 us-flex us-space-x-2 us-justify-start us-ml-28 us-pl-3'>
                 <button
                   type='button'
-                  className='inline-flex items-center px-5 py-1 border border-transparent shadow-sm text-sm leading-4 font-medium rounded-md text-white  bg-amber-400 hover:bg-amber-500 focus:outline-none focus:ring-2 focus:ring-offset-1 focus:ring-amber-600'
+                  className='us-inline-flex us-items-center us-px-5 us-py-1 us-border us-border-transparent us-shadow-sm us-text-sm us-leading-4 us-font-medium us-rounded-md us-text-white  us-bg-amber-400 hover:us-bg-amber-500 focus:us-outline-none focus:us-ring-2 focus:us-ring-offset-1 focus:us-ring-amber-600'
                   onClick={reset}
                 >
-                  <RefreshIcon className='h-4 w-4' aria-hidden='true' />
+                  <RefreshIcon className='us-h-4 us-w-4' aria-hidden='true' />
                 </button>
                 <button
                   type='button'
-                  className='inline-flex items-center px-5 py-1 border border-transparent shadow-sm text-sm leading-4 font-medium rounded-md text-white bg-teal-400 hover:bg-teal-500 focus:outline-none focus:ring-2 focus:ring-offset-1 focus:ring-teal-600'
+                  className='us-inline-flex us-items-center us-px-5 us-py-1 us-border us-border-transparent us-shadow-sm us-text-sm us-leading-4 us-font-medium us-rounded-md us-text-white us-bg-teal-400 hover:us-bg-teal-500 focus:us-outline-none focus:us-ring-2 focus:us-ring-offset-1 focus:us-ring-teal-600'
                   onClick={() => yesCallback(getValue())}
                 >
-                  <CheckCircleIcon className='h-5 w-5' aria-hidden='true' />
+                  <CheckCircleIcon
+                    className='us-h-5 us-w-5'
+                    aria-hidden='true'
+                  />
                 </button>
               </div>
             )}

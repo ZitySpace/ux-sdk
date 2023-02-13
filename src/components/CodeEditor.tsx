@@ -67,26 +67,26 @@ const ACECodeEditor = ({
     };
 
   return (
-    <div className='bg-gray-100 h-full flex flex-col rounded-md shadow-lg'>
-      <div className='bg-indigo-400 py-1 px-2 rounded-t-md inline-grid grid-cols-3'>
-        <div className='flex justify-start items-center pl-4'>
+    <div className='us-bg-gray-100 us-h-full us-flex us-flex-col us-rounded-md us-shadow-lg'>
+      <div className='us-bg-indigo-400 us-py-1 us-px-2 us-rounded-t-md us-inline-grid us-grid-cols-3'>
+        <div className='us-flex us-justify-start us-items-center us-pl-4'>
           {onCodeRun && (
             <>
               <PlayIcon
-                className='h-8 w-8 hover:text-emerald-700'
+                className='us-h-8 us-w-8 hover:us-text-emerald-700'
                 aria-hidden='true'
                 onClick={() => onRun()}
               />
               <InformationCircleIcon
-                className={`h-8 w-8 hover:text-emerald-700 ${
-                  showLog ? 'text-emerald-700' : ''
+                className={`us-h-8 us-w-8 hover:us-text-emerald-700 ${
+                  showLog ? 'us-text-emerald-700' : ''
                 }`}
                 aria-hidden='true'
                 onClick={() => setShowLog(!showLog)}
               />
               <DocumentReportIcon
-                className={`h-8 w-8 hover:text-emerald-700 ${
-                  showResult ? 'text-emerald-700' : ''
+                className={`us-h-8 us-w-8 hover:us-text-emerald-700 ${
+                  showResult ? 'us-text-emerald-700' : ''
                 }`}
                 aria-hidden='true'
                 onClick={() => {
@@ -96,13 +96,13 @@ const ACECodeEditor = ({
             </>
           )}
         </div>
-        <span className='flex justify-center items-center text-sm select-none'>
+        <span className='us-flex us-justify-center us-items-center us-text-sm us-select-none'>
           {title}
         </span>
         <div></div>
       </div>
       <div
-        className='resize-y overflow-auto h-48 pt-1'
+        className='us-resize-y us-overflow-auto us-h-48 us-pt-1'
         style={{ backgroundColor: '#272822' }}
       >
         <AceEditor
@@ -129,7 +129,7 @@ const ACECodeEditor = ({
 
       {showLog && (
         <textarea
-          className='resize-y overflow-auto h-48 mt-1 bg-gray-700 text-gray-200 text-xs px-4 pt-1 focus:outline-none'
+          className='us-resize-y us-overflow-auto us-h-48 us-mt-1 us-bg-gray-700 us-text-gray-200 us-text-xs us-px-4 us-pt-1 focus:us-outline-none'
           value={log}
           placeholder='This displays the code run logs'
           readOnly
@@ -137,7 +137,7 @@ const ACECodeEditor = ({
       )}
       {showResult && (
         <textarea
-          className='resize-y overflow-auto h-48 mt-1 bg-gray-700 text-gray-200 text-xs px-4 pt-1 focus:outline-none'
+          className='us-resize-y us-overflow-auto us-h-48 us-mt-1 us-bg-gray-700 us-text-gray-200 us-text-xs us-px-4 us-pt-1 focus:us-outline-none'
           value={
             typeof result === 'string'
               ? result

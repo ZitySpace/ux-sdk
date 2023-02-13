@@ -109,25 +109,28 @@ const AugmentedImageTag = ({
 
   return (
     <div
-      className='h-full select-none relative rounded-lg hover:shadow-md' // transform hover:scale-105 transition delay-100 duration-100 ease-in"
+      className='us-h-full us-select-none us-relative us-rounded-lg hover:us-shadow-md' // transform hover:scale-105 transition delay-100 duration-100 ease-in"
     >
       <img
         alt={name}
         title={name}
         src={src}
         loading='lazy'
-        className='max-w-full max-h-full rounded-lg'
+        className='us-max-w-full us-max-h-full us-rounded-lg'
         onLoad={imgLoadedRef.current ? onImgLoad : () => {}}
         ref={imgElRef}
       />
 
-      <canvas ref={canvasElRef} className='absolute top-0 rounded-lg' />
+      <canvas
+        ref={canvasElRef}
+        className='us-absolute us-top-0 us-rounded-lg'
+      />
 
       <div
-        className='absolute top-0 right-2 h-6 w-6 rounded-sm md:h-8 md:w-8 md:rounded-full flex justify-center items-center cursor-pointer bg-gray-200 hover:bg-indigo-600 hover:text-gray-100'
+        className='us-absolute us-top-0 us-right-2 us-h-6 us-w-6 us-rounded-sm md:us-h-8 md:us-w-8 md:us-rounded-full us-flex us-justify-center us-items-center us-cursor-pointer us-bg-gray-200 hover:us-bg-indigo-600 hover:us-text-gray-100'
         onClick={reAugment}
       >
-        <RefreshIcon className='h-4 w-4' />
+        <RefreshIcon className='us-h-4 us-w-4' />
       </div>
     </div>
   );

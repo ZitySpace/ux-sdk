@@ -36,10 +36,18 @@ const Toggle = forwardRef(
     }));
 
     return (
-      <Switch.Group as='div' className='flex items-center justify-start'>
-        <div className='w-28 mr-3 relative h-7'>
-          <Switch.Label as='span' className='text-right absolute right-0'>
-            <span className='text-sm font-medium text-gray-700'>{name}</span>
+      <Switch.Group
+        as='div'
+        className='us-flex us-items-center us-justify-start'
+      >
+        <div className='us-w-28 us-mr-3 us-relative us-h-7'>
+          <Switch.Label
+            as='span'
+            className='us-text-right us-absolute us-right-0'
+          >
+            <span className='us-text-sm us-font-medium us-text-gray-700'>
+              {name}
+            </span>
           </Switch.Label>
         </div>
 
@@ -47,28 +55,28 @@ const Toggle = forwardRef(
           checked={enabled}
           onChange={setEnabled}
           className={classNames(
-            enabled ? 'bg-indigo-600' : 'bg-gray-200',
-            'relative inline-flex flex-shrink-0 h-6 w-11 border-2 border-transparent rounded-full cursor-pointer transition-colors ease-in-out duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500'
+            enabled ? 'us-bg-indigo-600' : 'us-bg-gray-200',
+            'us-relative us-inline-flex us-flex-shrink-0 us-h-6 us-w-11 us-border-2 us-border-transparent us-rounded-full us-cursor-pointer us-transition-colors us-ease-in-out us-duration-200 focus:us-outline-none focus:us-ring-2 focus:us-ring-offset-2 focus:us-ring-indigo-500'
           )}
         >
-          <span className='sr-only'>{name}</span>
+          <span className='us-sr-only'>{name}</span>
           <span
             className={classNames(
-              enabled ? 'translate-x-5' : 'translate-x-0',
-              'pointer-events-none relative inline-block h-5 w-5 rounded-full bg-white shadow transform ring-0 transition ease-in-out duration-200'
+              enabled ? 'us-translate-x-5' : 'us-translate-x-0',
+              'us-pointer-events-none us-relative us-inline-block us-h-5 us-w-5 us-rounded-full us-bg-white us-shadow us-transform us-ring-0 us-transition us-ease-in-out us-duration-200'
             )}
           >
             <span
               className={classNames(
                 enabled
-                  ? 'opacity-0 ease-out duration-100'
-                  : 'opacity-100 ease-in duration-200',
-                'absolute inset-0 h-full w-full flex items-center justify-center transition-opacity'
+                  ? 'us-opacity-0 us-ease-out us-duration-100'
+                  : 'us-opacity-100 us-ease-in us-duration-200',
+                'us-absolute us-inset-0 us-h-full us-w-full us-flex us-items-center us-justify-center us-transition-opacity'
               )}
               aria-hidden='true'
             >
               <svg
-                className='h-3 w-3 text-gray-400'
+                className='us-h-3 us-w-3 us-text-gray-400'
                 fill='none'
                 viewBox='0 0 12 12'
               >
@@ -84,14 +92,14 @@ const Toggle = forwardRef(
             <span
               className={classNames(
                 enabled
-                  ? 'opacity-100 ease-in duration-200'
-                  : 'opacity-0 ease-out duration-100',
-                'absolute inset-0 h-full w-full flex items-center justify-center transition-opacity'
+                  ? 'us-opacity-100 us-ease-in us-duration-200'
+                  : 'us-opacity-0 us-ease-out us-duration-100',
+                'us-absolute us-inset-0 us-h-full us-w-full us-flex us-items-center us-justify-center us-transition-opacity'
               )}
               aria-hidden='true'
             >
               <svg
-                className='h-3 w-3 text-indigo-600'
+                className='us-h-3 us-w-3 us-text-indigo-600'
                 fill='currentColor'
                 viewBox='0 0 12 12'
               >

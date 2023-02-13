@@ -60,38 +60,38 @@ const PaginationBar = ({
   };
 
   return (
-    <div className='flex justify-center py-1 w-full bg-gray-100'>
-      <div className='flex justify-between w-full @container'>
-        <div className='flex-1 inline-flex justify-start items-center @3xl:pl-2 '>
-          <div className='text-gray-500 text-xs'>
+    <div className='us-flex us-justify-center us-py-1 us-w-full us-bg-gray-100'>
+      <div className='us-flex us-justify-between us-w-full us-@container'>
+        <div className='us-flex-1 us-inline-flex us-justify-start us-items-center @3xl:us-pl-2 '>
+          <div className='us-text-gray-500 us-text-xs'>
             {total
               ? `${pos + 1} to ${Math.min(pos + step, total)} of ${total} items`
               : 'No items'}
           </div>
         </div>
 
-        <div className='flex justify-center space-x-1 @3xl:space-x-2 items-center'>
-          <div className='flex text-gray-500'>
+        <div className='us-flex us-justify-center us-space-x-1 @3xl:us-space-x-2 us-items-center'>
+          <div className='us-flex us-text-gray-500'>
             <div
               onClick={toFstPage}
-              className={`h-6 w-6 rounded-sm @3xl:h-8 @3xl:w-8 @3xl:rounded-full mr-1 flex justify-center items-center bg-gray-200 cursor-pointer ${
+              className={`us-h-6 us-w-6 us-rounded-sm @3xl:us-h-8 @3xl:us-w-8 @3xl:us-rounded-full us-mr-1 us-flex us-justify-center us-items-center us-bg-gray-200 us-cursor-pointer ${
                 curPage === 1
-                  ? 'text-gray-400'
-                  : 'hover:bg-indigo-600 hover:text-gray-100'
+                  ? 'us-text-gray-400'
+                  : 'hover:us-bg-indigo-600 hover:us-text-gray-100'
               }`}
             >
-              <ChevronDoubleLeftIcon className='h-4 w-4' />
+              <ChevronDoubleLeftIcon className='us-h-4 us-w-4' />
             </div>
             <div
               onClick={toPrevPage}
               className={`
-                'h-6 w-6 rounded-sm @3xl:h-8 @3xl:w-8 @3xl:rounded-full flex justify-center items-center bg-gray-200 cursor-pointer ${
+                'us-h-6 us-w-6 us-rounded-sm @3xl:us-h-8 @3xl:us-w-8 @3xl:us-rounded-full us-flex us-justify-center us-items-center us-bg-gray-200 us-cursor-pointer ${
                   curPage === 1
-                    ? 'text-gray-400'
-                    : 'hover:bg-indigo-600 hover:text-gray-100'
+                    ? 'us-text-gray-400'
+                    : 'hover:us-bg-indigo-600 hover:us-text-gray-100'
                 }`}
             >
-              <ChevronLeftIcon className='h-4 w-4' />
+              <ChevronLeftIcon className='us-h-4 us-w-4' />
             </div>
           </div>
 
@@ -102,35 +102,35 @@ const PaginationBar = ({
             onKeyPress={(evt: React.KeyboardEvent) => {
               evt.key === 'Enter' ? toPageInputHandler(evt) : null;
             }}
-            className='flex justify-center h-6 w-6 rounded-sm @3xl:h-8 @3xl:w-8 @3xl:rounded-full text-center bg-indigo-600 text-gray-100 text-xs focus:outline-none'
+            className='us-flex us-justify-center us-h-6 us-w-6 us-rounded-sm @3xl:us-h-8 @3xl:us-w-8 @3xl:us-rounded-full us-text-center us-bg-indigo-600 us-text-gray-100 us-text-xs focus:us-outline-none'
           />
 
-          <div className='flex text-gray-500'>
+          <div className='us-flex us-text-gray-500'>
             <div
               onClick={toNextPage}
-              className={`h-6 w-6 rounded-sm @3xl:h-8 @3xl:w-8 @3xl:rounded-full mr-1 flex justify-center items-center bg-gray-200 cursor-pointer ${
+              className={`us-h-6 us-w-6 us-rounded-sm @3xl:us-h-8 @3xl:us-w-8 @3xl:us-rounded-full us-mr-1 us-flex us-justify-center us-items-center us-bg-gray-200 us-cursor-pointer ${
                 curPage === totPages
-                  ? 'text-gray-400'
-                  : 'hover:bg-indigo-600 hover:text-gray-100'
+                  ? 'us-text-gray-400'
+                  : 'hover:us-bg-indigo-600 hover:us-text-gray-100'
               }`}
             >
-              <ChevronRightIcon className='h-4 w-4' />
+              <ChevronRightIcon className='us-h-4 us-w-4' />
             </div>
             <div
               onClick={toLstPage}
-              className={`h-6 w-6 rounded-sm @3xl:h-8 @3xl:w-8 @3xl:rounded-full flex justify-center items-center bg-gray-200 cursor-pointer ${
+              className={`us-h-6 us-w-6 us-rounded-sm @3xl:us-h-8 @3xl:us-w-8 @3xl:us-rounded-full us-flex us-justify-center us-items-center us-bg-gray-200 us-cursor-pointer ${
                 curPage === totPages
-                  ? 'text-gray-400'
-                  : 'hover:bg-indigo-600 hover:text-gray-100'
+                  ? 'us-text-gray-400'
+                  : 'hover:us-bg-indigo-600 hover:us-text-gray-100'
               }`}
             >
-              <ChevronDoubleRightIcon className='h-4 w-4' />
+              <ChevronDoubleRightIcon className='us-h-4 us-w-4' />
             </div>
           </div>
         </div>
 
-        <div className='hidden @3xl:inline-flex flex-1 justify-end space-x-2 items-center pr-2'>
-          <div className='hidden @3xl:flex text-gray-500 items-center text-xs'>
+        <div className='us-hidden @3xl:us-inline-flex us-flex-1 us-justify-end us-space-x-2 us-items-center us-pr-2'>
+          <div className='us-hidden @3xl:us-flex us-text-gray-500 us-items-center us-text-xs'>
             <input
               key={step}
               defaultValue={step}
@@ -138,14 +138,14 @@ const PaginationBar = ({
               onKeyPress={(evt: React.KeyboardEvent) => {
                 evt.key === 'Enter' ? setStepInputHandler(evt) : null;
               }}
-              className='h-8 w-8 flex justify-center items-center mr-1 rounded-full text-center bg-gray-200 text-xs focus:outline-none'
+              className='us-h-8 us-w-8 us-flex us-justify-center us-items-center us-mr-1 us-rounded-full us-text-center us-bg-gray-200 us-text-xs focus:us-outline-none'
             />
             items / page
           </div>
 
-          <div className='hidden @3xl:flex text-gray-500 items-center text-xs'>
+          <div className='us-hidden @3xl:us-flex us-text-gray-500 us-items-center us-text-xs'>
             total
-            <div className='h-8 w-8 mx-1 flex justify-center items-center rounded-full bg-gray-200 cursor-not-allowed text-xs'>
+            <div className='us-h-8 us-w-8 us-mx-1 us-flex us-justify-center us-items-center us-rounded-full us-bg-gray-200 us-cursor-not-allowed us-text-xs'>
               {totPages}
             </div>
             pages

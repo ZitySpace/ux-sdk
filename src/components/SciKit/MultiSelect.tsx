@@ -50,29 +50,29 @@ const MultiSelect = forwardRef(
     return (
       <Listbox value={selected} onChange={setSelected} multiple>
         {({ open }) => (
-          <div className='flex items-center justify-start'>
-            <div className='w-28 mr-3 relative h-7'>
-              <Listbox.Label className='absolute right-0 text-right'>
-                <span className='text-sm font-medium text-gray-700'>
+          <div className='us-flex us-items-center us-justify-start'>
+            <div className='us-w-28 us-mr-3 us-relative us-h-7'>
+              <Listbox.Label className='us-absolute us-right-0 us-text-right'>
+                <span className='us-text-sm us-font-medium us-text-gray-700'>
                   {name}
                 </span>
               </Listbox.Label>
             </div>
-            <div className='relative w-64'>
-              <span className='inline-block w-full rounded-md shadow-sm'>
-                <Listbox.Button className='bg-white relative w-full border border-gray-100 rounded-md shadow-sm pl-3 pr-10 py-1 text-left cursor-default focus:outline-none focus:ring-1 focus:ring-indigo-500 focus:border-indigo-500 text-sm'>
-                  <span className='flex flex-wrap gap-2'>
+            <div className='us-relative us-w-64'>
+              <span className='us-inline-block us-w-full us-rounded-md us-shadow-sm'>
+                <Listbox.Button className='us-bg-white us-relative us-w-full us-border us-border-gray-100 us-rounded-md us-shadow-sm us-pl-3 us-pr-10 us-py-1 us-text-left us-cursor-default focus:us-outline-none focus:us-ring-1 focus:us-ring-indigo-500 focus:us-border-indigo-500 us-text-sm'>
+                  <span className='us-flex us-flex-wrap us-gap-2'>
                     {selected.length === 0 ? (
-                      <span className='p-0.5 text-gray-200'>Empty</span>
+                      <span className='us-p-0.5 us-text-gray-200'>Empty</span>
                     ) : (
                       selected.map((opt) => (
                         <span
                           key={opt.id}
-                          className='flex items-center gap-1 rounded bg-blue-50 px-2 py-0.5'
+                          className='us-flex us-items-center us-gap-1 us-rounded us-bg-blue-50 us-px-2 us-py-0.5'
                         >
                           <span>{opt.value}</span>
                           <svg
-                            className='h-4 w-4 cursor-pointer'
+                            className='us-h-4 us-w-4 us-cursor-pointer'
                             fill='none'
                             stroke='currentColor'
                             viewBox='0 0 24 24'
@@ -96,9 +96,9 @@ const MultiSelect = forwardRef(
                       ))
                     )}
                   </span>
-                  <span className='pointer-events-none absolute inset-y-0 right-0 flex items-center pr-2'>
+                  <span className='us-pointer-events-none us-absolute us-inset-y-0 us-right-0 us-flex us-items-center us-pr-2'>
                     <SelectorIcon
-                      className='h-5 w-5 text-gray-400'
+                      className='us-h-5 us-w-5 us-text-gray-400'
                       aria-hidden='true'
                     />
                   </span>
@@ -112,14 +112,16 @@ const MultiSelect = forwardRef(
                 leaveFrom='opacity-100'
                 leaveTo='opacity-0'
               >
-                <Listbox.Options className='absolute z-10 mt-1 w-full bg-white shadow-lg max-h-60 rounded-md py-1 text-sm ring-1 ring-black ring-opacity-5 overflow-auto focus:outline-none '>
+                <Listbox.Options className='us-absolute us-z-10 us-mt-1 us-w-full us-bg-white us-shadow-lg us-max-h-60 us-rounded-md us-py-1 us-text-sm us-ring-1 us-ring-black us-ring-opacity-5 us-overflow-auto focus:us-outline-none '>
                   {optionList.current.map((opt) => (
                     <Listbox.Option
                       key={opt.id}
                       className={({ active }) =>
                         classNames(
-                          active ? 'text-white bg-indigo-600' : 'text-gray-700',
-                          'cursor-default select-none relative py-1 pl-8 pr-4'
+                          active
+                            ? 'us-text-white us-bg-indigo-600'
+                            : 'us-text-gray-700',
+                          'us-cursor-default us-select-none us-relative us-py-1 us-pl-8 us-pr-4'
                         )
                       }
                       value={opt}
@@ -128,8 +130,8 @@ const MultiSelect = forwardRef(
                         <>
                           <span
                             className={classNames(
-                              selected ? 'font-semibold' : 'font-normal',
-                              'block truncate'
+                              selected ? 'us-font-semibold' : 'us-font-normal',
+                              'us-block us-truncate'
                             )}
                           >
                             {opt.value}
@@ -138,12 +140,12 @@ const MultiSelect = forwardRef(
                           {selected ? (
                             <span
                               className={classNames(
-                                active ? 'text-white' : 'text-indigo-600',
-                                'absolute inset-y-0 left-0 flex items-center pl-1.5'
+                                active ? 'us-text-white' : 'us-text-indigo-600',
+                                'us-absolute us-inset-y-0 us-left-0 us-flex us-items-center us-pl-1.5'
                               )}
                             >
                               <CheckIcon
-                                className='h-5 w-5'
+                                className='us-h-5 us-w-5'
                                 aria-hidden='true'
                               />
                             </span>

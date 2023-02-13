@@ -74,17 +74,17 @@ const Chart = ({
 
   return (
     <div
-      className={`bg-gray-100 h-full flex flex-col rounded-md ${
-        flat ? '' : 'shadow-lg'
+      className={`us-bg-gray-100 us-h-full us-flex us-flex-col us-rounded-md ${
+        flat ? '' : 'us-shadow-lg'
       }`}
     >
       {!hideTitle && (
-        <div className='bg-indigo-400 py-2 px-2 rounded-t-md flex justify-center space-x-2 text-xs'>
+        <div className='us-bg-indigo-400 us-py-2 us-px-2 us-rounded-t-md us-flex us-justify-center us-space-x-2 us-text-xs'>
           <span>{title}</span>
         </div>
       )}
       <div
-        className='h-full w-full flex justify-center'
+        className='us-h-full us-w-full us-flex us-justify-center'
         ref={chartDivRef}
       ></div>
     </div>

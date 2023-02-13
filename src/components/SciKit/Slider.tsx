@@ -142,14 +142,16 @@ const Slider = forwardRef(
     }));
 
     return (
-      <div className='flex items-center justify-start pb-2'>
-        <div className='w-28 mr-3 relative h-7'>
-          <div className='text-right absolute right-0'>
-            <span className='text-sm font-medium text-gray-700'>{name}</span>
+      <div className='us-flex us-items-center us-justify-start us-pb-2'>
+        <div className='us-w-28 us-mr-3 us-relative us-h-7'>
+          <div className='us-text-right us-absolute us-right-0'>
+            <span className='us-text-sm us-font-medium us-text-gray-700'>
+              {name}
+            </span>
           </div>
         </div>
 
-        <div className='pl-1 w-52'>
+        <div className='us-pl-1 us-w-52'>
           {asRange ? (
             <SliderRc
               range

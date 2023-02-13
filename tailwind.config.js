@@ -5,6 +5,7 @@ module.exports = {
   },
   plugins: [require('@tailwindcss/container-queries')],
   corePlugins: {
-    preflight: true,
+    preflight: false,
   },
+  prefix: 'us-',
 };
