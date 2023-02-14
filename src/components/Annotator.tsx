@@ -48,7 +48,10 @@ const Annotator = ({
     forceUpdate();
   }, [switchOfFreshData]);
 
-  const onSave = (curImageData: ImageData) => {
+  const { getImage, saveAnnotations } = useAPIs();
+
+  const onSave = async (curImageData: ImageData) => {
+    await saveAnnotations(curImageData);
     setImageData(curImageData.name, {
       ...carouselData[curImageData.name],
       annotations: curImageData.annotations.map((anno) => {
@@ -74,8 +77,6 @@ const Annotator = ({
     });
     return true;
   };
-
-  const { getImage } = useAPIs();
 
   return (
     <div className='us-bg-gray-100 us-h-96 us-min-h-full us-flex us-flex-col us-text-xs us-shadow-lg us-rounded-md us-relative us-select-none'>

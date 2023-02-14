@@ -1,4 +1,5 @@
 import { CarouselStoreData } from '../stores/carouselStore';
+import { ImageData } from '@zityspace/react-annotate';
 
 const responseHandlerTemplate = async (response: Response) => {
   if (response.status === 401) {
@@ -158,7 +159,7 @@ export const useAPIs = () => {
     normalizeImagesMeta
   );
 
-  const getImage = requestTemplate(
+  const getImage: { (file_name: string): Promise<string> } = requestTemplate(
     (file_name: string) => {
       return {
         url:
@@ -216,7 +217,9 @@ export const useAPIs = () => {
     normalizeImagesMeta
   );
 
-  const deleteImages = requestTemplate(
+  const deleteImages: {
+    (filenames: string[], keepAnnotations?: boolean): Promise<string>;
+  } = requestTemplate(
     (filenames: string[], keepAnnotations: boolean = false) => {
       const formData = new FormData();
       formData.set('slug', projectSlug!);
@@ -231,6 +234,34 @@ export const useAPIs = () => {
     }
   );
 
+  const saveAnnotations: { (imageData: ImageData): Promise<string> } =
+    requestTemplate((imageData: ImageData) => {
+      const formData = new FormData();
+      formData.set('slug', projectSlug!);
+      formData.set(
+        'annotation_records',
+        JSON.stringify([
+          {
+            image_hash: imageData.name,
+            image_width: imageData.width,
+            image_height: imageData.height,
+            annotations: imageData.annotations.map((anno) => ({
+              ...anno,
+              image_hash: imageData.name,
+              timestamp_z: anno.timestamp,
+              unique_hash_z: anno.hash,
+            })),
+          },
+        ])
+      );
+
+      return {
+        url: apiEndpoint + '/project/annotations',
+        method: 'PUT',
+        body: formData,
+      };
+    });
+
   return {
     getImagesCount,
     getImagesMeta,
@@ -238,5 +269,6 @@ export const useAPIs = () => {
     getImagesCountByCategory,
     getImagesMetaByCategory,
     deleteImages,
+    saveAnnotations,
   };
 };
