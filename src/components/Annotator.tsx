@@ -48,7 +48,7 @@ const Annotator = ({
     forceUpdate();
   }, [switchOfFreshData]);
 
-  const { getImage, saveAnnotations } = useAPIs();
+  const { getImage, saveAnnotations, renameCategory } = useAPIs();
 
   const onSave = async (curImageData: ImageData) => {
     await saveAnnotations(curImageData);
@@ -78,6 +78,21 @@ const Annotator = ({
     return true;
   };
 
+  const onRenameCategory = async (
+    oldCategory: string,
+    newCategory: string,
+    timestamp?: string
+  ) => {
+    const categories = await renameCategory(
+      oldCategory,
+      newCategory,
+      timestamp
+    );
+
+    console.log(oldCategory, ' -> ', newCategory, ' @ ', timestamp);
+    return true;
+  };
+
   return (
     <div className='us-bg-gray-100 us-h-96 us-min-h-full us-flex us-flex-col us-text-xs us-shadow-lg us-rounded-md us-relative us-select-none'>
       <div className='us-bg-indigo-400 us-py-2 us-px-2 us-rounded-t-md us-flex us-justify-center us-space-x-2'>
@@ -96,10 +111,7 @@ const Annotator = ({
             console.log('add new category ', c);
             return true;
           }}
-          onRenameCategory={async (o: string, n: string, t?: string) => {
-            console.log(o, ' -> ', n, ' @ ', t);
-            return true;
-          }}
+          onRenameCategory={onRenameCategory}
         />
       )}
     </div>

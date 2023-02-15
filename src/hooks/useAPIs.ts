@@ -262,6 +262,27 @@ export const useAPIs = () => {
       };
     });
 
+  const renameCategory: {
+    (oldCategory: string, newCategory: string, timestamp?: string): Promise<
+      string[]
+    >;
+  } = requestTemplate(
+    (oldCategory: string, newCategory: string, timestamp?: string) => {
+      return {
+        url:
+          apiEndpoint +
+          '/project/category?slug=' +
+          projectSlug +
+          '&category=' +
+          oldCategory +
+          '&rename_to=' +
+          newCategory +
+          (timestamp ? '&at=' + timestamp : ''),
+        method: 'PATCH',
+      };
+    }
+  );
+
   return {
     getImagesCount,
     getImagesMeta,
@@ -270,5 +291,6 @@ export const useAPIs = () => {
     getImagesMetaByCategory,
     deleteImages,
     saveAnnotations,
+    renameCategory,
   };
 };
