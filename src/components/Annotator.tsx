@@ -2,10 +2,9 @@ import React, { useEffect, useRef, useReducer } from 'react';
 import {
   Annotator as AnnotatorCore,
   ImageData,
-  LabelType,
 } from '@zityspace/react-annotate';
 import { useCarouselStore } from '../stores/carouselStore';
-import { useAPIs } from '../hooks';
+import { useAPIStore } from '../stores/apiStore';
 import { useStore } from 'zustand';
 
 const Annotator = ({
@@ -16,6 +15,11 @@ const Annotator = ({
   const [carouselData, setImageData, switchOfFreshData] = useStore(
     useCarouselStore(carouselStoreName),
     (s) => [s.carouselData, s.setImageData, s.switchOfFreshData]
+  );
+
+  const [getImage, saveAnnotations, renameCategory] = useStore(
+    useAPIStore(),
+    (s) => [s.apis.getImage, s.apis.saveAnnotations, s.apis.renameCategory]
   );
 
   const imagesListRef: React.MutableRefObject<ImageData[]> = useRef<
@@ -32,48 +36,21 @@ const Annotator = ({
   // so use imagesListRef instead of imagesList to only re-render
   // Annotator for the first case
   useEffect(() => {
-    imagesListRef.current = Object.values(carouselData).map((props) => ({
-      ...props,
-      annotations: props.annotations
-        ? props.annotations.map((anno) => ({
-            ...anno,
-            type: LabelType.Box as const,
-            category: anno.category!,
-            timestamp: anno.timestamp_z,
-            hash: anno.unique_hash_z,
-          }))
-        : [],
-    }));
+    // be careful here, carouselData is immutable, so we need to
+    // pass a deep copy of it to AnnotatorCore
+    imagesListRef.current = JSON.parse(
+      JSON.stringify(Object.values(carouselData))
+    ) as ImageData[];
 
     forceUpdate();
   }, [switchOfFreshData]);
 
-  const { getImage, saveAnnotations, renameCategory } = useAPIs();
-
   const onSave = async (curImageData: ImageData) => {
     await saveAnnotations(curImageData);
+
     setImageData(curImageData.name, {
       ...carouselData[curImageData.name],
-      annotations: curImageData.annotations.map((anno) => {
-        const {
-          x,
-          y,
-          w,
-          h,
-          category,
-          timestamp: timestamp_z,
-          hash: unique_hash_z,
-        } = anno as {
-          x: number;
-          y: number;
-          w: number;
-          h: number;
-          category: string;
-          timestamp: string;
-          hash: string;
-        };
-        return { x, y, w, h, category, timestamp_z, unique_hash_z };
-      }),
+      annotations: curImageData.annotations,
     });
     return true;
   };

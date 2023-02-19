@@ -1,4 +1,4 @@
-import { useAPIs } from '../hooks';
+import { useAPIStore } from './apiStore';
 import { CarouselStoreData } from './carouselStore';
 
 import { createContext } from 'react';
@@ -10,7 +10,7 @@ const {
   getImagesMeta,
   getImagesCountByCategory,
   getImagesMetaByCategory,
-} = useAPIs();
+} = useAPIStore().getState().apis;
 
 export type SizeFilterBaseType = {
   (): number | Promise<number>;
@@ -59,7 +59,6 @@ const storeDataDefault = {
 };
 
 interface Store extends StoreData {
-  filter: FilterProps;
   setFilter: (p: FilterProps) => void;
 }
 

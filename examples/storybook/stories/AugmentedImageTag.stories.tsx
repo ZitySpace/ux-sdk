@@ -1,16 +1,26 @@
 import { ComponentMeta, ComponentStory } from '@storybook/react';
 import React from 'react';
-import { useCarouselStore } from '@zityspace/ux-sdk/stores';
-import { useAPIs, QueryProvider } from '@zityspace/ux-sdk/hooks';
+import { useCarouselStore, useAPIStore } from '@zityspace/ux-sdk/stores';
+import { QueryProvider } from '@zityspace/ux-sdk/hooks';
 import { AugmentedImageTag } from '@zityspace/ux-sdk/components';
+import { LabelType } from '@zityspace/react-annotate';
+import { useStore } from 'zustand';
 
 export default {
   title: 'UX-SDK/AugmentedImageTag',
   component: AugmentedImageTag,
 } as ComponentMeta<typeof AugmentedImageTag>;
 
-const Template: ComponentStory<typeof AugmentedImageTag> = (args) => {
-  const carouselStore = useCarouselStore(args.carouselStoreName!, {
+interface BoxProps {
+  x: number;
+  y: number;
+  w: number;
+  h: number;
+  category?: string;
+}
+
+const Template: ComponentStory<any> = (args) => {
+  const carouselStore = useCarouselStore(args.carouselStoreName, {
     carouselData: {
       duck: {
         name: 'duck',
@@ -21,6 +31,7 @@ const Template: ComponentStory<typeof AugmentedImageTag> = (args) => {
             w: 50,
             h: 80,
             category: 'cateA',
+            type: LabelType.Box,
           },
           {
             x: 200,
@@ -28,6 +39,7 @@ const Template: ComponentStory<typeof AugmentedImageTag> = (args) => {
             w: 100,
             h: 50,
             category: 'cateB',
+            type: LabelType.Box,
           },
         ],
       },
@@ -36,43 +48,41 @@ const Template: ComponentStory<typeof AugmentedImageTag> = (args) => {
     selection: { selectable: true, selected: { duck: false } },
   });
 
+  const apiStore = useAPIStore();
+
+  const getImage = useStore(apiStore, (s) => s.apis.getImage);
+
+  const augmenter = async (name: string, bboxes: BoxProps[] = []) => {
+    return {
+      imageSrc: await getImage(name),
+      augBoxes: [
+        ...bboxes,
+        {
+          x: 300,
+          y: 400,
+          w: Math.floor(Math.random() * 50 + 50),
+          h: Math.floor(Math.random() * 50 + 50),
+          category: 'augmentedBox',
+        },
+      ],
+    };
+  };
+
   return (
     <QueryProvider>
       <div className='h-64 w-64'>
-        <AugmentedImageTag {...args} />
+        <AugmentedImageTag
+          name={args.name}
+          augmenter={augmenter}
+          carouselStoreName={args.carouselStoreName}
+        />
       </div>
     </QueryProvider>
   );
 };
 
-interface BoxProps {
-  x: number;
-  y: number;
-  w: number;
-  h: number;
-  category?: string;
-}
-const { getImage } = useAPIs();
-
-const augmenter = async (name: string, bboxes: BoxProps[] = []) => {
-  return {
-    imageSrc: await getImage(name),
-    augBoxes: [
-      ...bboxes,
-      {
-        x: 300,
-        y: 400,
-        w: Math.floor(Math.random() * 50 + 50),
-        h: Math.floor(Math.random() * 50 + 50),
-        category: 'augmentedBox',
-      },
-    ],
-  };
-};
-
 export const Story = Template.bind({});
 Story.args = {
   name: 'duck',
-  augmenter: augmenter,
   carouselStoreName: 'AugmentedImageTag.stories.carouselStore',
 };

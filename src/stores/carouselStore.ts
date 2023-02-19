@@ -3,15 +3,7 @@ import { createContext } from 'react';
 import { createStore, StoreApi } from 'zustand';
 import { newUseStore } from './factory';
 
-interface DetectionProps {
-  x: number;
-  y: number;
-  w: number;
-  h: number;
-  category?: string;
-  timestamp_z?: string;
-  unique_hash_z?: string;
-}
+import { Annotations } from '@zityspace/react-annotate';
 
 export interface ImageProps {
   id?: number;
@@ -21,7 +13,7 @@ export interface ImageProps {
   height?: number;
   width?: number;
   upload_time?: string;
-  annotations?: DetectionProps[] | null;
+  annotations?: Annotations | null;
 }
 
 interface StoreData {

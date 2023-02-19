@@ -48,7 +48,10 @@ const AugmentedImageTag = ({
   // load image on mount
   useEffect(() => {
     const augment = async () => {
-      const { imageSrc, augBoxes } = await augmenter(name, annotations!);
+      const { imageSrc, augBoxes } = await augmenter(
+        name,
+        annotations! as BoxProps[]
+      );
 
       setSrc(imageSrc);
       setBoxes(augBoxes);
@@ -59,7 +62,10 @@ const AugmentedImageTag = ({
   }, [name]);
 
   const reAugment = async () => {
-    const { imageSrc, augBoxes } = await augmenter(name, annotations!);
+    const { imageSrc, augBoxes } = await augmenter(
+      name,
+      annotations! as BoxProps[]
+    );
     setSrc(imageSrc);
     setBoxes(augBoxes);
   };

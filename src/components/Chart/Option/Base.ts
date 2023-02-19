@@ -1,4 +1,5 @@
-import { requestTemplate, useFilterFromDataframe } from '../../../hooks';
+import { useFilterFromDataframe } from '../../../hooks';
+import { requestTemplate } from '../../../stores/apiStore';
 import * as echarts from 'echarts';
 import merge from 'ts-deepmerge';
 

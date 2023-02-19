@@ -2,9 +2,15 @@ import { CheckCircleIcon } from '@heroicons/react/solid';
 import { fabric } from 'fabric';
 import React, { useEffect, useRef, useState } from 'react';
 import { useCarouselStore } from '../stores/carouselStore';
-import { useAPIs } from '../hooks';
+import { useAPIStore } from '../stores/apiStore';
 import { useResizeDetector } from 'react-resize-detector';
-import { ColorStore } from '@zityspace/react-annotate';
+import {
+  ColorStore,
+  BoxLabel,
+  MaskLabel,
+  Label,
+  Annotations,
+} from '@zityspace/react-annotate';
 import { useStore } from 'zustand';
 
 const ImageTag = ({
@@ -30,7 +36,7 @@ const ImageTag = ({
     s.carouselData[name].height,
   ]);
 
-  const { getImage } = useAPIs();
+  const getImage = useStore(useAPIStore(), (s) => s.apis.getImage);
 
   const getColor = useStore(ColorStore, (s) => s.getColor);
 
@@ -72,22 +78,40 @@ const ImageTag = ({
     canvas.setWidth(cw);
     canvas.setHeight(ch);
 
+    const scale_x = cw / iw;
+    const scale_y = ch / ih;
+    const scale = Math.min(scale_x, scale_y);
+    const offset = {
+      x: (cw - iw * scale) / 2,
+      y: (ch - ih * scale) / 2,
+    };
+
     annotations &&
-      annotations.map(({ x, y, w, h, category, color }: any) => {
-        canvas.add(
-          new fabric.Rect({
-            left: (x * cw) / iw,
-            top: (y * ch) / ih,
-            originX: 'left',
-            originY: 'top',
-            width: (w * cw) / iw,
-            height: (h * ch) / ih,
-            fill: 'rgba(255,0,0,0)',
-            stroke: color || getColor(category) || 'red',
-            strokeWidth: 1.5,
-          })
-        );
-      });
+      (JSON.parse(JSON.stringify(annotations)) as Annotations).map(
+        (anno, id) => {
+          let label: Label | null = null;
+
+          if (anno.type === 'box') {
+            label = new BoxLabel({
+              ...anno,
+              id,
+            });
+          } else if (anno.type === 'mask') {
+            label = new MaskLabel({
+              ...anno,
+              id,
+            });
+          }
+
+          if (label === null) return;
+
+          const canvasObjects = label
+            .toCanvasCoordSystem({ scale, offset }, false)
+            .toCanvasObjects(getColor(anno.category) || 'red', 'preview')
+            .flat(2);
+          canvas.add(...canvasObjects);
+        }
+      );
 
     canvas.renderAll();
   };
