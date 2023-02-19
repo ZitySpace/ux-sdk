@@ -54,12 +54,12 @@ const ImageTag = ({
     imgLoadedRef.current = true;
   }, [name, annotations]);
 
-  const { width, height } = useResizeDetector({
-    targetRef: imgElRef,
-    refreshMode: 'debounce',
-    refreshRate: 100,
-    onResize: () => onImgLoad(),
-  });
+  // const { width, height } = useResizeDetector({
+  //   targetRef: imgElRef,
+  //   refreshMode: 'debounce',
+  //   refreshRate: 100,
+  //   onResize: () => onImgLoad(),
+  // });
 
   // render canvas after image has loaded
   const onImgLoad = () => {

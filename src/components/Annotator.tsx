@@ -3,7 +3,7 @@ import {
   Annotator as AnnotatorCore,
   ImageData,
 } from '@zityspace/react-annotate';
-import { useCarouselStore } from '../stores/carouselStore';
+import { useCarouselStore, ImageProps } from '../stores/carouselStore';
 import { useAPIStore } from '../stores/apiStore';
 import { useStore } from 'zustand';
 
@@ -46,8 +46,10 @@ const Annotator = ({
   }, [switchOfFreshData]);
 
   const onSave = async (curImageData: ImageData) => {
+    // backend side
     await saveAnnotations(curImageData);
 
+    // client carousel side
     setImageData(curImageData.name, {
       ...carouselData[curImageData.name],
       annotations: curImageData.annotations,
