@@ -78,7 +78,7 @@
     "@types/react": "^18.0.26",
     "@typescript-eslint/eslint-plugin": "^5.31.0",
     "@typescript-eslint/parser": "^5.31.0",
-    "@zityspace/react-annotate": "^0.11.1-beta.2",
+    "@zityspace/react-annotate": "^0.11.1-beta.7",
     "autoprefixer": "^10.4.1",
     "babel-jest": "^27.4.5",
     "babel-loader": "^8.2.3",

@@ -2453,14 +2453,14 @@
   resolved "https://registry.yarnpkg.com/@xtuc/long/-/long-4.2.2.tgz#d291c6a4e97989b5c61d9acf396ae4fe133a718d"
   integrity sha512-NuHqBY1PB/D8xU6s/thBgOAiAP7HOYDQ32+BFZILJ8ivkUkAHQnWfn6WhL79Owj1qmUnoN/YPhktdIoucipkAQ==
 
-"@zityspace/react-annotate@^0.11.1-beta.2":
-  version "0.11.1-beta.3"
-  resolved "https://registry.yarnpkg.com/@zityspace/react-annotate/-/react-annotate-0.11.1-beta.3.tgz#535639776e73086ad3f9bab6586ad71cb84b879e"
-  integrity sha512-1o2wlK1gm24MgGLm01okviJ2WiUc3uOeafjqBZAcEcs1uo6+Qy0uaB2uEuU+BVsZ3FcfMvivuTHc7u3j6XMECA==
+"@zityspace/react-annotate@^0.11.1-beta.7":
+  version "0.11.1-beta.7"
+  resolved "https://registry.yarnpkg.com/@zityspace/react-annotate/-/react-annotate-0.11.1-beta.7.tgz#40ce489f374663f34ae451e4c629463a5ae840f5"
+  integrity sha512-V5UlBe6JLQZVYkwQS+KSEyZzIOMokSU93M83YyMaZh8UxsrOn9UGMx0DLFIp/QieTMcrwGtKyju0xxNz+1H/cQ==
   dependencies:
     "@headlessui/react" "^1.7.3"
     "@use-gesture/react" "^10.2.4"
-    fabric "^5.2.1"
+    fabric "^5.3.0"
     md5 "^2.3.0"
     randomcolor "^0.6.2"
     react-draggable "^4.4.4"
@@ -4303,7 +4303,7 @@ expect@^27.5.1:
     jest-matcher-utils "^27.5.1"
     jest-message-util "^27.5.1"
 
-fabric@^5.2.1, fabric@^5.3.0:
+fabric@^5.3.0:
   version "5.3.0"
   resolved "https://registry.yarnpkg.com/fabric/-/fabric-5.3.0.tgz#199297b6409e3a6279c16c1166da2b2a9e3e8b9b"
   integrity sha512-AVayKuzWoXM5cTn7iD3yNWBlfEa8r1tHaOe2g8NsZrmWKAHjryTxT/j6f9ncRfOWOF0I1Ci1AId3y78cC+GExQ==
