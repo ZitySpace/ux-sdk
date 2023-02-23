@@ -3,7 +3,11 @@ import { createStore, StoreApi } from 'zustand';
 import { newUseStore } from './factory';
 
 import { CarouselStoreData } from '../stores/carouselStore';
-import { ImageData, LabelType } from '@zityspace/react-annotate';
+import {
+  ImageData,
+  LabelType,
+  keypointsLabelConfig,
+} from '@zityspace/react-annotate';
 
 const responseHandlerTemplate = async (response: Response) => {
   if (response.status === 401) {
@@ -140,7 +144,26 @@ export const normalizeImagesMeta = (data: ImageMetaProps[]) => {
                   })),
                 };
               // fallback to origin point if anno.type not recognized
-              else
+              else if (anno.type === 'keypoints') {
+                const keypoints = anno.keypoints as number[];
+
+                return {
+                  type: LabelType.Keypoints as const,
+                  category: anno.category,
+                  timestamp: anno.timestamp_z,
+                  hash: anno.unique_hash_z,
+                  keypoints: Array.from(
+                    { length: keypoints.length / 3 },
+                    (_, i) => ({
+                      x: keypoints[3 * i],
+                      y: keypoints[3 * i + 1],
+                      vis: keypoints[3 * i + 2] === 2,
+                      sid: keypoints[3 * i + 2] === 0 ? -1 : i + 1,
+                    })
+                  ).filter((pt) => pt.sid !== -1),
+                  structure: anno.structure,
+                };
+              } else
                 return {
                   type: LabelType.Point as const,
                   category: anno.category,
@@ -340,7 +363,6 @@ const createStoreFromData = (data: Partial<StoreData> = storeDataDefault) =>
               annotations: imageData.annotations.map((anno) => {
                 if (anno.type === 'box')
                   return {
-                    image_hash: imageData.name,
                     timestamp_z: anno.timestamp,
                     unique_hash_z: anno.hash,
                     category: anno.category,
@@ -351,7 +373,6 @@ const createStoreFromData = (data: Partial<StoreData> = storeDataDefault) =>
                   };
                 else if (anno.type === 'mask')
                   return {
-                    image_hash: imageData.name,
                     timestamp_z: anno.timestamp,
                     unique_hash_z: anno.hash,
                     category: anno.category,
@@ -362,6 +383,31 @@ const createStoreFromData = (data: Partial<StoreData> = storeDataDefault) =>
                       points: path.points.map((pt) => [pt.x, pt.y]).flat(),
                     })),
                   };
+                else if (anno.type === 'keypoints') {
+                  const keypointsMap = anno.keypoints.reduce(
+                    (m: { [key: number]: number[] }, kp) => {
+                      if (kp.sid === -1) return m;
+                      return { ...m, [kp.sid]: [kp.x, kp.y, kp.vis ? 2 : 1] };
+                    },
+                    {}
+                  );
+
+                  return {
+                    timestamp_z: anno.timestamp,
+                    unique_hash_z: anno.hash,
+                    category: anno.category,
+                    keypoints: Array.from(
+                      {
+                        length: Math.max(
+                          ...keypointsLabelConfig.structure.flat()
+                        ),
+                      },
+                      (_, i) => i
+                    )
+                      .map((i) => keypointsMap[i + 1] || [0, 0, 0])
+                      .flat(),
+                  };
+                }
               }),
             },
           ])

@@ -8,6 +8,7 @@ import {
   ColorStore,
   BoxLabel,
   MaskLabel,
+  KeypointsLabel,
   Label,
   Annotations,
 } from '@zityspace/react-annotate';
@@ -98,6 +99,11 @@ const ImageTag = ({
             });
           } else if (anno.type === 'mask') {
             label = new MaskLabel({
+              ...anno,
+              id,
+            });
+          } else if (anno.type === 'keypoints') {
+            label = new KeypointsLabel({
               ...anno,
               id,
             });

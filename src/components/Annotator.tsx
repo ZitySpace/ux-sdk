@@ -2,6 +2,7 @@ import React, { useEffect, useRef, useReducer } from 'react';
 import {
   Annotator as AnnotatorCore,
   ImageData,
+  LabelConfigs,
 } from '@zityspace/react-annotate';
 import { useCarouselStore, ImageProps } from '../stores/carouselStore';
 import { useAPIStore } from '../stores/apiStore';
@@ -26,6 +27,9 @@ const Annotator = ({
     ImageData[]
   >([]);
 
+  const labelConfigsRef: React.MutableRefObject<LabelConfigs> =
+    useRef<LabelConfigs>({});
+
   const forceUpdate = useReducer(() => ({}), {})[1] as () => void;
 
   // hack: use switchOfFreshData to differentiate two cases:
@@ -41,6 +45,14 @@ const Annotator = ({
     imagesListRef.current = JSON.parse(
       JSON.stringify(Object.values(carouselData))
     ) as ImageData[];
+
+    labelConfigsRef.current = {};
+    const keypointsStructure = (imagesListRef.current[0].annotations[0] as any)
+      .structure;
+    if (keypointsStructure)
+      labelConfigsRef.current['keypoints'] = {
+        structure: keypointsStructure,
+      };
 
     forceUpdate();
   }, [switchOfFreshData]);
@@ -91,6 +103,7 @@ const Annotator = ({
             return true;
           }}
           onRenameCategory={onRenameCategory}
+          labelConfigs={labelConfigsRef.current}
         />
       )}
     </div>
