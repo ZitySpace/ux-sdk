@@ -46,9 +46,17 @@ const Annotator = ({
       JSON.stringify(Object.values(carouselData))
     ) as ImageData[];
 
+    // set labelConfigsRef properly
     labelConfigsRef.current = {};
-    const keypointsStructure = (imagesListRef.current[0].annotations[0] as any)
-      .structure;
+    let keypointsStructure: [number, number][] | undefined = undefined;
+
+    if (
+      imagesListRef.current.length &&
+      imagesListRef.current[0].annotations.length
+    )
+      keypointsStructure = (imagesListRef.current[0].annotations[0] as any)
+        .structure;
+
     if (keypointsStructure)
       labelConfigsRef.current['keypoints'] = {
         structure: keypointsStructure,
