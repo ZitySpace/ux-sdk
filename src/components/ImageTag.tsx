@@ -137,7 +137,7 @@ const ImageTag = ({
 
       <canvas
         ref={canvasElRef}
-        className='us-absolute us-top-0 us-rounded-lg'
+        className='us-absolute us-top-0 us-left-0 us-rounded-lg'
       />
 
       {selectable ? (

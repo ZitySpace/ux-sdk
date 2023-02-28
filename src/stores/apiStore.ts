@@ -236,8 +236,11 @@ interface StoreData {
 
 const storeDataDefault = {
   apiEndpoint:
-    localStorage.getItem('apiEndpoint') || 'http://localhost:8080/api',
-  projectSlug: localStorage.getItem('projectSlug') || 'fashiona',
+    (typeof window !== 'undefined' && localStorage.getItem('apiEndpoint')) ||
+    'http://localhost:8080/api',
+  projectSlug:
+    (typeof window !== 'undefined' && localStorage.getItem('projectSlug')) ||
+    'fashiona',
 };
 
 interface Store extends StoreData {
