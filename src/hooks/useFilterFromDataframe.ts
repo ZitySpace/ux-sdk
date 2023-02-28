@@ -24,7 +24,7 @@ export const useFilterFromDataframe = (
     };
   }
 
-  const required = ['x', 'y', 'w', 'h'];
+  const required = ['x', 'y', 'w', 'h', 'type'];
   const optional = ['category'];
   const pass = !required.some((field) => !header.includes(field));
 

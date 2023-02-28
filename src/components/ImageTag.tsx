@@ -1,5 +1,5 @@
 import { CheckCircleIcon } from '@heroicons/react/solid';
-import { fabric } from 'fabric';
+import * as fabric from 'fabric';
 import React, { useEffect, useRef, useState } from 'react';
 import { useCarouselStore } from '../stores/carouselStore';
 import { useAPIStore } from '../stores/apiStore';
@@ -72,12 +72,11 @@ const ImageTag = ({
     const ih = imgHeight || img.naturalHeight;
 
     if (canvasRef.current === null)
-      canvasRef.current = new fabric.StaticCanvas(canvasElRef.current);
+      canvasRef.current = new fabric.StaticCanvas(canvasElRef.current!);
 
     const canvas = canvasRef.current;
     canvas.clear();
-    canvas.setWidth(cw);
-    canvas.setHeight(ch);
+    canvas.setDimensions({ width: cw, height: ch });
 
     const scale_x = cw / iw;
     const scale_y = ch / ih;

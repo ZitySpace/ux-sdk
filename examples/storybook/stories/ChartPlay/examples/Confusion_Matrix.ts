@@ -287,7 +287,7 @@ export const makeOption = (
         setFilter(
           await Option.filterFromQuery(
             HOST,
-            "res = df[['image_hash', 'x', 'y', 'w', 'h', 'category']]"
+            "res = df[['image_hash', 'x', 'y', 'w', 'h', 'category', 'type']]"
           )
         );
       },
@@ -307,7 +307,7 @@ export const makeOption = (
         setFilter(
           await Option.filterFromQuery(
             HOST,
-            "res = df.iloc[data['idx']][['image_hash', 'x', 'y', 'w', 'h', 'category']]",
+            "res = df.iloc[data['idx']][['image_hash', 'x', 'y', 'w', 'h', 'category', 'type']]",
             params
           )
         );

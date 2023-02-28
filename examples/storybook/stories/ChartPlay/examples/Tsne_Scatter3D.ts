@@ -68,7 +68,7 @@ res = df[
     & (df.y == data[2])
     & (df.w == data[3])
     & (df.h == data[4])
-][['image_hash', 'x', 'y', 'w', 'h', 'category']]
+][['image_hash', 'x', 'y', 'w', 'h', 'category', 'type']]
             `,
             params
           )

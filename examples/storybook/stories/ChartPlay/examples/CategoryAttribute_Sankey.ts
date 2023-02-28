@@ -83,7 +83,7 @@ export const makeOption = (
         setFilter(
           await Option.filterFromQuery(
             HOST,
-            "res = df[['image_hash', 'x', 'y', 'w', 'h', 'category']]"
+            "res = df[['image_hash', 'x', 'y', 'w', 'h', 'category', 'type']]"
           )
         );
       },
@@ -109,7 +109,7 @@ export const makeOption = (
               .orig_path.split('.')
               .pop();
             queryStr = `
-res = df[df.category == '${cate}'][['image_hash', 'x', 'y', 'w', 'h', 'category']]
+res = df[df.category == '${cate}'][['image_hash', 'x', 'y', 'w', 'h', 'category', 'type']]
             `;
           } else if (data.type === 'attr') {
             const attrNode = nodes.find((n: any) => n.name === data.target);
@@ -135,7 +135,7 @@ def check(path, anno):
 
 slice = df[df.attributes.apply(lambda x: check('${attrNode.orig_path}', ast.literal_eval(x)))]
 
-res = slice[['image_hash', 'x', 'y', 'w', 'h']]
+res = slice[['image_hash', 'x', 'y', 'w', 'h', 'type']]
             `;
           } else if (data.type === 'cate_attr') {
             const cate = nodes
@@ -152,7 +152,7 @@ slice = df[df[['category', 'attributes']].apply(
     axis=1
 )]
 
-res = slice[['image_hash', 'x', 'y', 'w', 'h']]
+res = slice[['image_hash', 'x', 'y', 'w', 'h', 'type']]
             `;
           }
         } else if (params.dataType === 'node') {
@@ -173,7 +173,7 @@ res = slice[['image_hash', 'x', 'y', 'w', 'h']]
             queryStr = `
 global cates
 cates = ${JSON.stringify(cates)}
-res = df[df.category.isin(cates)][['image_hash', 'x', 'y', 'w', 'h', 'category']]
+res = df[df.category.isin(cates)][['image_hash', 'x', 'y', 'w', 'h', 'category', 'type']]
             `;
           } else if (data.type === 'attr') {
             queryStr = `
@@ -198,7 +198,7 @@ def check(path, anno):
 
 slice = df[df.attributes.apply(lambda x: check('${data.orig_path}', ast.literal_eval(x)))]
 
-res = slice[['image_hash', 'x', 'y', 'w', 'h']]
+res = slice[['image_hash', 'x', 'y', 'w', 'h', 'type']]
             `;
           }
         }

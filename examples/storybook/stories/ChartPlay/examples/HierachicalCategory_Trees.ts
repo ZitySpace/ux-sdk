@@ -166,7 +166,7 @@ export const makeOption = (
         setFilter(
           await Option.filterFromQuery(
             HOST,
-            "res = df[['image_hash', 'x', 'y', 'w', 'h', 'category']]"
+            "res = df[['image_hash', 'x', 'y', 'w', 'h', 'category', 'type']]"
           )
         );
       },
@@ -208,7 +208,7 @@ export const makeOption = (
         }
 
         const queryStr =
-          "res = df[df.category.isin(leafs)][['image_hash', 'x', 'y', 'w', 'h', 'category']]";
+          "res = df[df.category.isin(leafs)][['image_hash', 'x', 'y', 'w', 'h', 'category', 'type']]";
         const queryStrWithData = `global leafs\nleafs = ${JSON.stringify(
           leafs
         )}\n${queryStr}`;

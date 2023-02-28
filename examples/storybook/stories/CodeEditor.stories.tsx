@@ -6,13 +6,13 @@ import {
   usePagingStore,
   useDataframeStore,
   useCarouselStore,
+  requestTemplate,
 } from '@zityspace/ux-sdk/stores';
 import {
   useCarouselSetSize,
   useCarouselSetPage,
   useContextSetFilter,
   useFilterFromDataframe,
-  requestTemplate,
   QueryProvider,
 } from '@zityspace/ux-sdk/hooks';
 import {

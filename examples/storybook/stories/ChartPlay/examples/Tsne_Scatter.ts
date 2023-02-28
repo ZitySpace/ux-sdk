@@ -89,7 +89,7 @@ export const makeOption = (
         setFilter(
           await Option.filterFromQuery(
             HOST,
-            "res = df[['image_hash', 'x', 'y', 'w', 'h', 'category']]"
+            "res = df[['image_hash', 'x', 'y', 'w', 'h', 'category', 'type']]"
           )
         );
       },
@@ -116,7 +116,7 @@ res = df[
     & (df.y == data['y'])
     & (df.w == data['w'])
     & (df.h == data['h'])
-][['image_hash', 'x', 'y', 'w', 'h', 'category']]
+][['image_hash', 'x', 'y', 'w', 'h', 'category', 'type']]
             `,
             params
           )

@@ -1,4 +1,4 @@
-import { fabric } from 'fabric';
+import * as fabric from 'fabric';
 import React, { useEffect, useRef, useState } from 'react';
 import { useCarouselStore } from '../stores/carouselStore';
 import { useResizeDetector } from 'react-resize-detector';
@@ -86,13 +86,12 @@ const AugmentedImageTag = ({
     const iw = img.naturalWidth;
     const ih = img.naturalHeight;
 
-    if (canvasRef.current === null)
-      canvasRef.current = new fabric.StaticCanvas(canvasElRef.current);
+    if (!canvasRef.current)
+      canvasRef.current = new fabric.StaticCanvas(canvasElRef.current!);
 
     const canvas = canvasRef.current;
     canvas.clear();
-    canvas.setWidth(cw);
-    canvas.setHeight(ch);
+    canvas.setDimensions({ width: cw, height: ch });
 
     boxes.map(({ x, y, w, h, category }: any) => {
       canvas.add(
@@ -110,7 +109,7 @@ const AugmentedImageTag = ({
       );
     });
 
-    canvas.renderAll();
+    canvas.requestRenderAll();
   };
 
   return (

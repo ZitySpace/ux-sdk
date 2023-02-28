@@ -97,7 +97,7 @@ export const makeOption = (
         setFilter(
           await Option.filterFromQuery(
             HOST,
-            "res = df[['image_hash', 'x', 'y', 'w', 'h', 'category']]"
+            "res = df[['image_hash', 'x', 'y', 'w', 'h', 'category', 'type']]"
           )
         );
       },
@@ -141,7 +141,7 @@ def check(path, anno):
 
 slice = df[df.attributes.apply(lambda x: check('${path}', ast.literal_eval(x)))]
 
-res = slice[['image_hash', 'x', 'y', 'w', 'h']]
+res = slice[['image_hash', 'x', 'y', 'w', 'h', 'type']]
         `;
 
         setFilter(await Option.filterFromQuery(HOST, queryStr));
