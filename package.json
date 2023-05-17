@@ -56,7 +56,6 @@
     }
   },
   "devDependencies": {
-    "@ZitySpace/iframe-auth": "^0.0.1-alpha1",
     "@babel/core": "^7.16.7",
     "@babel/preset-env": "^7.16.7",
     "@babel/preset-react": "^7.16.7",
@@ -74,6 +73,7 @@
     "@tailwindcss/container-queries": "^0.1.0",
     "@testing-library/react": "^13.4.0",
     "@types/jest": "^27.4.0",
+    "@types/node": "^20.1.7",
     "@types/react": "^18.0.26",
     "@typescript-eslint/eslint-plugin": "^5.31.0",
     "@typescript-eslint/parser": "^5.31.0",
@@ -89,11 +89,11 @@
     "immer": "^9.0.12",
     "jest": "^27.4.5",
     "lint-staged": "^13.0.3",
-    "postcss": "^8.4.5",
+    "postcss": "^8.4.23",
     "postcss-cli": "^9.1.0",
     "prettier": "^2.7.1",
     "prop-types": "^15.8.1",
-    "react-resize-detector": "^7.0.0",
+    "react-resize-detector": "^9.1.0",
     "react-toastify": "^8.1.1",
     "rollup": "^3.9.0",
     "rollup-plugin-peer-deps-external": "^2.2.4",
@@ -102,7 +102,7 @@
     "tailwindcss": "^3.2.4",
     "ts-deepmerge": "^2.0.1",
     "tslib": "^2.3.1",
-    "typescript": "^4.5.4",
+    "typescript": "^4.9.5",
     "webpack": "5.65.0"
   },
   "peerDependencies": {
@@ -113,9 +113,11 @@
     "@tanstack/react-query": "^4.24.6",
     "echarts": "^5.3.2",
     "echarts-gl": "^2.0.9",
+    "fabric": "^6.0.0-beta1",
     "rc-slider": "^10.1.0",
     "rc-tooltip": "^5.2.2",
-    "react-ace": "^10.0.0",
+    "rc-util": "^5.30.0",
+    "react-ace": "^10.1.0",
     "zustand": "^4.1.1"
   }
 }

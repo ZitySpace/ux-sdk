@@ -114,7 +114,9 @@ const ImageTag = ({
             .toCanvasCoordSystem({ scale, offset }, false)
             .toCanvasObjects(getColor(anno.category) || 'red', 'preview')
             .flat(2);
-          canvas.add(...canvasObjects);
+
+          // in fabric v6, static canvas expects BaseFabricObject[] but its type is not exposed yet, convert to any for now
+          canvas.add(...(canvasObjects as any));
         }
       );
 
