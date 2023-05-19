@@ -1,6 +1,7 @@
 export { default as ImageCarousel } from './ImageCarousel';
 export { default as ImageTag } from './ImageTag';
 export { default as PaginationBar } from './PaginationBar';
+export { default as JotaiPaginationBar } from './PaginationBar.Jotai';
 export { default as ImageList } from './ImageList';
 export { default as Annotator } from './Annotator';
 export { default as Comparer } from './Comparer';

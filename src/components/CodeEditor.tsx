@@ -5,10 +5,10 @@ import {
   DocumentReportIcon,
 } from '@heroicons/react/solid';
 
-// import AceEditor from 'react-ace';
-// import 'ace-builds/src-noconflict/mode-python';
-// import 'ace-builds/src-noconflict/theme-monokai';
-// import 'ace-builds/src-noconflict/ext-language_tools';
+import AceEditor from 'react-ace';
+import 'ace-builds/src-noconflict/mode-python';
+import 'ace-builds/src-noconflict/theme-monokai';
+import 'ace-builds/src-noconflict/ext-language_tools';
 
 export type CodeEditorResultProps =
   | {
@@ -32,13 +32,6 @@ const ACECodeEditor = ({
   onCodeRun?: Function | null;
   onSuccessCallback?: Function | null;
 }) => {
-  if (typeof window === 'undefined') return null;
-
-  const AceEditor = require('react-ace').default;
-  require('ace-builds/src-noconflict/mode-python');
-  require('ace-builds/src-noconflict/theme-monokai');
-  require('ace-builds/src-noconflict/ext-language_tools');
-
   const code = useRef<string>(initCode);
 
   const [log, setLog] = useState<string>('');
