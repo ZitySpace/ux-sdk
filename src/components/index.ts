@@ -9,7 +9,7 @@ export { default as DataFrame } from './DataFrame';
 export { default as CodeEditor } from './CodeEditor';
 export {
   default as AugmentedImageTag,
-  AugmenterTypes,
+  type AugmenterTypes,
 } from './AugmentedImageTag';
 
 export * from './SciKit';

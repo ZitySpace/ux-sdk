@@ -1,7 +1,6 @@
 {
   "compilerOptions": {
     "target": "es6",
-    "lib": ["es2019", "dom"],
     "esModuleInterop": true,
     "forceConsistentCasingInFileNames": true,
     "strict": true,
@@ -16,8 +15,13 @@
     "outDir": "dist",
     "moduleResolution": "node",
     "allowSyntheticDefaultImports": true,
-    "emitDeclarationOnly": true
+    "emitDeclarationOnly": true,
+
+    "baseUrl": ".",
+    "paths": {
+      "@/*": ["src/*"]
+    }
   },
-  "include": ["src"],
-  "exclude": ["node_modules", "dist", "examples", "src/**/*.stories.tsx"]
+  "include": ["src", "stories"],
+  "exclude": ["node_modules", "dist"]
 }

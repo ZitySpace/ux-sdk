@@ -1,24 +1,11 @@
-import React from 'react';
-import { atom, useAtom } from 'jotai';
-import { atomWithDefault } from 'jotai/utils';
-
-const count1Atom = atom(1);
-const count2Atom = atomWithDefault((get) => get(count1Atom) * 2);
+import React, { useEffect } from 'react';
 
 const PaginationBar = () => {
-  const [count1, setCount1] = useAtom(count1Atom);
-  const [count2, setCount2] = useAtom(count2Atom);
+  useEffect(() => {
+    console.log('useEffect called');
+  }, []);
 
-  return (
-    <>
-      <div>
-        count1: {count1}, count2: {count2}
-      </div>
-      <button onClick={() => setCount1((c) => c + 1)}>increments count1</button>
-      <button onClick={() => setCount2((c) => c + 1)}>increments count2</button>
-      <div>fuc</div>
-    </>
-  );
+  return <div className='w-full us-bg-indigo-400'>hello world</div>;
 };
 
 export default PaginationBar;

@@ -3,12 +3,17 @@ import commonjs from '@rollup/plugin-commonjs';
 import typescript from '@rollup/plugin-typescript';
 import terser from '@rollup/plugin-terser';
 import peerDepsExternal from 'rollup-plugin-peer-deps-external';
+import path from 'path';
 
 import postcss from 'rollup-plugin-postcss';
 
 const packageJson = require('./package.json');
 
 const isProduction = process.env.NODE_ENV === 'production';
+
+const deps = Object.keys(packageJson.dependencies || {});
+
+const projectRootDir = path.resolve(__dirname);
 
 export default [
   {
@@ -46,6 +51,7 @@ export default [
           inlineSources: !isProduction,
           ...(!isProduction && { target: 'esnext' }),
         },
+        exclude: ['stories/**/*.@(ts|tsx)'],
       }),
       isProduction &&
         terser({
@@ -63,6 +69,9 @@ export default [
         inject: true,
       }),
     ],
-    external: [...Object.keys(packageJson.dependencies || {})],
+    external: (id) => {
+      const [pkg] = id.split('/');
+      return deps.includes(pkg);
+    },
   },
 ];

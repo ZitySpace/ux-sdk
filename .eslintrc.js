@@ -4,12 +4,11 @@ module.exports = {
   extends: [
     'plugin:react/recommended',
     'plugin:@typescript-eslint/recommended',
-    // 'plugin:prettier/recommended',
+    'plugin:storybook/recommended',
   ],
   parserOptions: {
     ecmaVersion: 2021,
     sourceType: 'module',
-
     ecmaFeatures: {
       jsx: true,
     },
@@ -40,7 +39,12 @@ module.exports = {
     'react/react-in-jsx-scope': 'off',
     'react/display-name': 'off',
     'react/prop-types': 'off',
-    'prefer-const': ['error', { destructuring: 'all' }],
+    'prefer-const': [
+      'error',
+      {
+        destructuring: 'all',
+      },
+    ],
     'no-console': 'off',
   },
   ignorePatterns: [
