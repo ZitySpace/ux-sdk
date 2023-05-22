@@ -10,7 +10,7 @@ export default meta;
 
 const Template = () => {
   return (
-    <div className='us-bg-red-400 us-p-3'>
+    <div className='us-bg-gray-100 us-flex-grow us-flex us-justify-center'>
       <JotaiPaginationBar />
     </div>
   );
