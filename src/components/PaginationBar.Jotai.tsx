@@ -5,53 +5,26 @@ import {
   ChevronRightIcon,
 } from '@heroicons/react/solid';
 import React from 'react';
-import { atom, useAtom, useAtomValue, useSetAtom } from 'jotai';
+import { atom, useAtom } from 'jotai';
 
 const posAtom = atom<number>(0);
 const stepAtom = atom<number>(10);
 const totAtom = atom<number>(100);
-const curPageAtom = atom((get) => Math.floor(get(posAtom) / get(stepAtom)) + 1);
-const totPagesAtom = atom(
-  (get) => Math.floor((get(totAtom) - 1) / get(stepAtom)) + 1 || 1
-);
-const toPrevPageAtom = atom(null, (get, set) => {
-  set(posAtom, Math.max(get(posAtom) - get(stepAtom), 0));
-});
-const toNextPageAtom = atom(null, (get, set) => {
-  set(
-    posAtom,
-    Math.min(
-      get(posAtom) + get(stepAtom),
-      get(stepAtom) * (get(totPagesAtom) - 1)
-    )
-  );
-});
-const toFstPageAtom = atom(null, (get, set) => {
-  set(posAtom, 0);
-});
-const toLstPageAtom = atom(null, (get, set) => {
-  set(posAtom, get(stepAtom) * (get(totPagesAtom) - 1));
-});
-const toPageAtom = atom(null, (get, set, n: number) => {
-  set(
-    posAtom,
-    get(stepAtom) * (Math.max(1, Math.min(n, get(totPagesAtom))) - 1)
-  );
-});
 
 const PaginationBar = () => {
-  const [pos] = useAtom(posAtom);
+  const [pos, setPos] = useAtom(posAtom);
   const [step, setStep] = useAtom(stepAtom);
   const [total] = useAtom(totAtom);
 
-  const curPage = useAtomValue(curPageAtom);
-  const totPages = useAtomValue(totPagesAtom);
+  const curPage = Math.floor(pos / step) + 1;
+  const totPages = Math.floor((total - 1) / step) + 1 || 1;
 
-  const toPrevPage = useSetAtom(toPrevPageAtom);
-  const toNextPage = useSetAtom(toNextPageAtom);
-  const toFstPage = useSetAtom(toFstPageAtom);
-  const toLstPage = useSetAtom(toLstPageAtom);
-  const toPage = useSetAtom(toPageAtom);
+  const toPrevPage = () => setPos(Math.max(pos - step, 0));
+  const toNextPage = () => setPos(Math.min(pos + step, step * (totPages - 1)));
+  const toFstPage = () => setPos(0);
+  const toLstPage = () => setPos(step * (totPages - 1));
+  const toPage = (n: number) =>
+    setPos(step * (Math.max(1, Math.min(n, totPages)) - 1));
 
   const toPageInputHandler = (evt: React.BaseSyntheticEvent) => {
     const v = parseInt(evt.target.value);
