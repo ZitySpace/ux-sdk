@@ -1,9 +1,12 @@
 lockfileVersion: '6.0'
 
 dependencies:
+  '@tanstack/query-core':
+    specifier: ^4.29.11
+    version: 4.29.11
   '@tanstack/react-query':
-    specifier: ^4.24.6
-    version: 4.24.6(react-dom@18.2.0)(react@18.2.0)
+    specifier: ^4.29.12
+    version: 4.29.12(react-dom@18.2.0)(react@18.2.0)
   '@zityspace/react-annotate':
     specifier: 0.12.0-beta.1
     version: 0.12.0-beta.1(react-dom@18.2.0)(react@18.2.0)
@@ -22,6 +25,9 @@ dependencies:
   jotai:
     specifier: ^2.1.0
     version: 2.1.0(react@18.2.0)
+  jotai-tanstack-query:
+    specifier: ^0.7.1
+    version: 0.7.1(@tanstack/query-core@4.29.11)(jotai@2.1.0)
   rc-slider:
     specifier: ^10.1.0
     version: 10.1.0(react-dom@18.2.0)(react@18.2.0)
@@ -4880,12 +4886,12 @@ packages:
       tailwindcss: 3.2.4(postcss@8.4.23)(ts-node@10.9.1)
     dev: true
 
-  /@tanstack/query-core@4.24.6:
-    resolution: {integrity: sha512-Tfru6YTDTCpX7dKVwHp/sosw/dNjEdzrncduUjIkQxn7n7u+74HT2ZrGtwwrU6Orws4x7zp3FKRqBPWVVhpx9w==}
+  /@tanstack/query-core@4.29.11:
+    resolution: {integrity: sha512-8C+hF6SFAb/TlFZyS9FItgNwrw4PMa7YeX+KQYe2ZAiEz6uzg6yIr+QBzPkUwZ/L0bXvGd1sufTm3wotoz+GwQ==}
     dev: false
 
-  /@tanstack/react-query@4.24.6(react-dom@18.2.0)(react@18.2.0):
-    resolution: {integrity: sha512-pbJUVZCS4pcXS0kZiY+mVJ01ude0GrH5OXT2g9whcqSveRG/YVup/XdA9NdRpSMGkP2HxDRxxRNsTXkniWeIIA==}
+  /@tanstack/react-query@4.29.12(react-dom@18.2.0)(react@18.2.0):
+    resolution: {integrity: sha512-zhcN6+zF6cxprxhTHQajHGlvxgK8npnp9uLe9yaWhGc6sYcPWXzyO4raL4HomUzQOPzu3jLvkriJQ7BOrDM8vA==}
     peerDependencies:
       react: ^16.8.0 || ^17.0.0 || ^18.0.0
       react-dom: ^16.8.0 || ^17.0.0 || ^18.0.0
@@ -4896,7 +4902,7 @@ packages:
       react-native:
         optional: true
     dependencies:
-      '@tanstack/query-core': 4.24.6
+      '@tanstack/query-core': 4.29.11
       react: 18.2.0
       react-dom: 18.2.0(react@18.2.0)
       use-sync-external-store: 1.2.0(react@18.2.0)
@@ -9900,6 +9906,16 @@ packages:
     resolution: {integrity: sha512-QAdOptna2NYiSSpv0O/BwoHBSmz4YhpzJHyi+fnMRTXFjp7B8i/YG5Z8IfusxB1ufjcD2Sre1F3R+nX3fvy7gg==}
     hasBin: true
     dev: true
+
+  /jotai-tanstack-query@0.7.1(@tanstack/query-core@4.29.11)(jotai@2.1.0):
+    resolution: {integrity: sha512-62PDt8s3c1fN/f3AmTMzAFUHZAstUIPUZMFdhERbmTRWiGznVAq6uJMt08FCI3JL53wZj5q5FhuA39LTL5zqRg==}
+    peerDependencies:
+      '@tanstack/query-core': '*'
+      jotai: '>=1.11.0'
+    dependencies:
+      '@tanstack/query-core': 4.29.11
+      jotai: 2.1.0(react@18.2.0)
+    dev: false
 
   /jotai@2.1.0(react@18.2.0):
     resolution: {integrity: sha512-fR82PtHAmEQrc/daMEYGc4EteW96/b6wodtDSCzLvoJA/6y4YG70er4hh2f8CYwYjqwQ0eZUModGfG4DmwkTyQ==}

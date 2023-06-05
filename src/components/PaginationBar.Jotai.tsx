@@ -5,11 +5,8 @@ import {
   ChevronRightIcon,
 } from '@heroicons/react/solid';
 import React from 'react';
-import { atom, useAtom } from 'jotai';
-
-const posAtom = atom<number>(0);
-const stepAtom = atom<number>(10);
-const totAtom = atom<number>(100);
+import { useAtom } from 'jotai';
+import { posAtom, stepAtom, totAtom } from '../atoms';
 
 const PaginationBar = () => {
   const [pos, setPos] = useAtom(posAtom);
