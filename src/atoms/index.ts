@@ -1,14 +1,16 @@
-import { atom, useAtom, useAtomValue, useSetAtom } from 'jotai';
-import { useQuery } from '@tanstack/react-query';
+import produce from 'immer';
+import { atom, useAtomValue, useSetAtom } from 'jotai';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { queryContext } from '@/hooks';
 import {
   LabelType,
   Annotations,
   ImageData,
   keypointsLabelConfig,
 } from '@zityspace/react-annotate';
-import { queryContext } from '@/hooks';
 import { useEffect } from 'react';
-import { atomsWithQuery } from 'jotai-tanstack-query';
+import { toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 interface ImageMetaProps {
   id: number;
@@ -45,6 +47,19 @@ interface CarouselData {
     selected: { [key: string]: boolean };
   };
   switchOfFreshData?: boolean;
+}
+
+type SizeFilter = () => number | Promise<number>;
+
+type PageFilter = (
+  pos: number,
+  step: number,
+  ...args: Array<any>
+) => CarouselData | Promise<CarouselData>;
+
+interface Filter {
+  sizeFilter: SizeFilter;
+  pageFilter: PageFilter;
 }
 
 const responseHandlerTemplate = async (response: Response) => {
@@ -224,6 +239,53 @@ export const carouselDataAtom = atom<CarouselData>({
   selection: { selectable: false, selected: {} },
   switchOfFreshData: false,
 });
+
+const defaultFilterAtom = atom<Filter>((get) => ({
+  sizeFilter: get(getImagesCountAtom),
+  pageFilter: get(getImagesMetaAtom),
+}));
+
+export const categoryAtom = atom<string | null>(null);
+const categoryFilterAtom = atom<Filter>((get) => {
+  const category = get(categoryAtom);
+
+  if (!category) return get(defaultFilterAtom);
+
+  const getImagesCountByCategory = get(getImagesCountByCategoryAtom);
+  const getImagesMetaByCategory = get(getImagesMetaByCategoryAtom);
+
+  return {
+    sizeFilter: async () => await getImagesCountByCategory(category),
+    pageFilter: async (offset: number, limit: number, order_by: string) =>
+      await getImagesMetaByCategory(category, offset, limit, order_by),
+  };
+});
+
+const filterAtomMap = {
+  default: defaultFilterAtom,
+  byCategory: categoryFilterAtom,
+};
+export const filterAtom = atom<
+  { choice: keyof typeof filterAtomMap; value?: string },
+  { choice: keyof typeof filterAtomMap; value?: string }[],
+  void
+>(
+  {
+    choice: 'default',
+    value: undefined,
+  },
+  (_, set, { choice, value }) => {
+    set(filterAtom, { choice, value });
+
+    if (choice === 'default') {
+      set(categoryAtom, null);
+    }
+
+    if (choice === 'byCategory') {
+      set(categoryAtom, value!);
+    }
+  }
+);
 
 // api atoms
 const getImagesCountAtom = atom<() => Promise<number>>((get) =>
@@ -443,27 +505,19 @@ const renameCategoryAtom = atom<
   )
 );
 
-// query atoms
-const carouselSizeAtom = atomsWithQuery((get) => ({
-  queryKey: ['carouselSize'],
-  queryFn: get(getImagesCountAtom),
-  keepPreviousData: true,
-  refetchOnWindowFocus: false,
-  context: queryContext,
-}));
-
 // hooks
 export const useJotaiCarouselSetSize = () => {
   const setTotal = useSetAtom(totAtom);
-  const getImagesCount = useAtomValue(getImagesCountAtom);
+  const filter = useAtomValue(filterAtom);
+  const { sizeFilter } = useAtomValue(filterAtomMap[filter.choice]);
 
   const {
     data: total,
     isLoading,
     isSuccess,
   } = useQuery({
-    queryKey: ['carouselSize'],
-    queryFn: getImagesCount,
+    queryKey: ['carouselSize', filter],
+    queryFn: sizeFilter,
     keepPreviousData: true,
     refetchOnWindowFocus: false,
     context: queryContext,
@@ -480,23 +534,68 @@ export const useJotaiCarouselSetPage = () => {
   const pos = useAtomValue(posAtom);
   const step = useAtomValue(stepAtom);
   const setCarouselData = useSetAtom(carouselDataAtom);
-  const getImagesMeta = useAtomValue(getImagesMetaAtom);
+  const filter = useAtomValue(filterAtom);
+  const { pageFilter } = useAtomValue(filterAtomMap[filter.choice]);
 
   const {
     data: carouselData,
     isLoading,
     isSuccess,
   } = useQuery({
-    queryKey: ['carouselData', pos, step],
-    queryFn: () => getImagesMeta(pos, step, 'upload_time'),
+    queryKey: ['carouselPage', pos, step, filter],
+    queryFn: () => pageFilter(pos, step, 'upload_time'),
     keepPreviousData: true,
     refetchOnWindowFocus: false,
     context: queryContext,
   });
 
   useEffect(() => {
-    if (isSuccess) setCarouselData(carouselData);
+    if (isSuccess)
+      setCarouselData(
+        produce((d) => {
+          d.carouselData = carouselData.carouselData;
+          d.selection.selected = carouselData.selection.selected;
+          d.switchOfFreshData = !d.switchOfFreshData;
+        })
+      );
   }, [isSuccess, carouselData]);
 
   return { isLoading };
+};
+
+export const useJotaiCarouselDelSelectedImages = () => {
+  const carouselData = useAtomValue(carouselDataAtom);
+  const selected = carouselData.selection.selected;
+  const selectedImageNames = Object.keys(selected).filter(
+    (name) => selected[name]
+  );
+
+  const deleteImages = useAtomValue(deleteImagesAtom);
+  const queryClient = useQueryClient({ context: queryContext });
+
+  const deleteImagesMutation = useMutation(
+    (imglist: string[]) => deleteImages(imglist),
+    {
+      onSuccess: () => {
+        queryClient.invalidateQueries(['carouselSize']);
+        queryClient.invalidateQueries(['carouselPage']);
+        toast.success('Successfully deleted images');
+      },
+      onError: (err: string) => {
+        toast.error(err);
+      },
+      context: queryContext,
+    }
+  );
+
+  const delSelectedImages = () => {
+    if (!selectedImageNames.length) {
+      toast.warning('No images selected');
+      return;
+    }
+
+    deleteImagesMutation.mutate(selectedImageNames);
+  };
+
+  return delSelectedImages;
 };
