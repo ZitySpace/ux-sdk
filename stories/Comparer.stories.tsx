@@ -1,7 +1,7 @@
 import { Meta, StoryObj } from '@storybook/react';
 import React from 'react';
-import { useCarouselStore, usePagingStore, useContextStore } from '@/stores';
-import { useCarouselSetSize, useCarouselSetPage, QueryProvider } from '@/hooks';
+import { QueryProvider } from '@/hooks';
+import { useCarouselSetSize, useCarouselSetPage } from '@/atoms';
 import { Comparer, ImageTag } from '@/components';
 
 const meta: Meta<typeof Comparer> = {
@@ -18,32 +18,12 @@ const factory =
 
 const Template = (args: any) => {
   const Story = () => {
-    const contextStore = useContextStore(args.context.storeName);
-    const pagingStore = usePagingStore(args.paginationBar.storeName);
-    const carouselStore = useCarouselStore(args.imageCarousel.storeName);
+    const { isLoading: isSizeLoading } = useCarouselSetSize();
+    const { isLoading: isPageLoading } = useCarouselSetPage();
 
-    const setCarouselSize = useCarouselSetSize({
-      contextStore,
-      pagingStore,
-    });
-    const setCarouselPage = useCarouselSetPage({
-      contextStore,
-      pagingStore,
-      carouselStore,
-    });
+    if (isSizeLoading || isPageLoading) return <></>;
 
-    const sizeQuery = setCarouselSize();
-    const pageQuery = setCarouselPage();
-
-    if (sizeQuery.isLoading || pageQuery.isLoading) return <></>;
-
-    return (
-      <Comparer
-        Components={args.Components}
-        pagingStoreName={args.paginationBar.storeName}
-        carouselStoreName={args.imageCarousel.storeName}
-      />
-    );
+    return <Comparer Components={args.Components} />;
   };
 
   return (
@@ -53,23 +33,9 @@ const Template = (args: any) => {
   );
 };
 
-const storeNames = {
-  imageCarousel: {
-    storeName: 'Comparer.stories.carouselStore',
-  },
-  paginationBar: {
-    storeName: 'Comparer.stories.pagingStore',
-  },
-  context: {
-    storeName: 'Comparer.stories.contextStore',
-  },
-};
 export const Story: StoryObj<typeof Template> = {
   render: (args) => <Template {...args} />,
   args: {
-    Components: [ImageTag, ImageTag].map((c) =>
-      factory(c, { carouselStoreName: storeNames.imageCarousel.storeName })
-    ),
-    ...storeNames,
+    Components: [ImageTag, ImageTag].map((c) => factory(c, {})),
   },
 };

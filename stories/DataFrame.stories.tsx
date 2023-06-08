@@ -1,7 +1,8 @@
 import { Meta, StoryObj } from '@storybook/react';
 import React from 'react';
-import { usePagingStore, useDataframeStore } from '@/stores';
 import { DataFrame, PaginationBar } from '@/components';
+import { dataframeAtom } from '@/atoms';
+import { useSetAtom } from 'jotai';
 
 const meta: Meta<typeof DataFrame> = {
   title: 'UX-SDK/DataFrame',
@@ -15,13 +16,16 @@ const initDF = {
 };
 
 const Template = (args: any) => {
-  const pagingStore = usePagingStore(args.pagingStoreName!);
-  const dataframeStore = useDataframeStore(args.dataframeStoreName!, initDF);
+  const setDataframe = useSetAtom(dataframeAtom);
+  setDataframe({
+    ...initDF,
+    selected: Array(initDF.data.length).fill(false),
+  });
 
   return (
     <>
       <DataFrame {...args} />
-      <PaginationBar pagingStoreName={args.pagingStoreName} />
+      <PaginationBar />
     </>
   );
 };
@@ -30,7 +34,5 @@ export const Story: StoryObj<typeof Template> = {
   render: (args) => <Template {...args} />,
   args: {
     title: 'DataFrame Preview',
-    dataframeStoreName: 'DataFrame.stories.dataframeStore',
-    pagingStoreName: 'DataFrame.stories.pagingStore',
   },
 };

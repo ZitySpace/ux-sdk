@@ -1,10 +1,10 @@
 import { Meta, StoryObj } from '@storybook/react';
 import React from 'react';
-import { useCarouselStore, useAPIStore } from '@/stores';
 import { QueryProvider } from '@/hooks';
 import { AugmentedImageTag } from '@/components';
 import { LabelType } from '@zityspace/react-annotate';
-import { useStore } from 'zustand';
+import { carouselDataAtom, getImageAtom } from '@/atoms';
+import { useAtomValue, useSetAtom } from 'jotai';
 
 const meta: Meta<typeof AugmentedImageTag> = {
   title: 'UX-SDK/AugmentedImageTag',
@@ -21,7 +21,8 @@ interface BoxProps {
 }
 
 const Template = (args: any) => {
-  const carouselStore = useCarouselStore(args.carouselStoreName, {
+  const setCarouselData = useSetAtom(carouselDataAtom);
+  setCarouselData({
     carouselData: {
       duck: {
         name: 'duck',
@@ -46,12 +47,10 @@ const Template = (args: any) => {
       },
     },
 
-    selection: { selectable: true, selected: { duck: false } },
+    selection: { selectable: false, selected: { duck: false } },
   });
 
-  const apiStore = useAPIStore();
-
-  const getImage = useStore(apiStore, (s) => s.apis.getImage);
+  const getImage = useAtomValue(getImageAtom);
 
   const augmenter = async (name: string, bboxes: BoxProps[] = []) => {
     return {
@@ -72,11 +71,7 @@ const Template = (args: any) => {
   return (
     <QueryProvider>
       <div className='us-h-64 us-w-64'>
-        <AugmentedImageTag
-          name={args.name}
-          augmenter={augmenter}
-          carouselStoreName={args.carouselStoreName}
-        />
+        <AugmentedImageTag name={args.name} augmenter={augmenter} />
       </div>
     </QueryProvider>
   );
@@ -86,6 +81,5 @@ export const Story: StoryObj<typeof Template> = {
   render: (args) => <Template {...args} />,
   args: {
     name: 'duck',
-    carouselStoreName: 'AugmentedImageTag.stories.carouselStore',
   },
 };

@@ -1,9 +1,9 @@
 import * as fabric from 'fabric';
 import React, { useEffect, useRef, useState } from 'react';
-import { useCarouselStore } from '../stores/carouselStore';
 import { useResizeDetector } from 'react-resize-detector';
 import { RefreshIcon } from '@heroicons/react/solid';
-import { useStore } from 'zustand';
+import { useAtomValue } from 'jotai';
+import { carouselDataAtom } from '../atoms';
 
 interface BoxProps {
   x: number;
@@ -23,16 +23,12 @@ export type AugmenterTypes = {
 const AugmentedImageTag = ({
   name,
   augmenter,
-  carouselStoreName = '.carouselStore',
 }: {
   name: string;
   augmenter: AugmenterTypes;
-  carouselStoreName?: string;
 }) => {
-  const annotations = useStore(
-    useCarouselStore(carouselStoreName),
-    (s) => s.carouselData[name].annotations
-  );
+  const carouselData = useAtomValue(carouselDataAtom);
+  const annotations = carouselData.carouselData[name].annotations;
 
   const [src, setSrc] = useState<string>(
     'data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs%3D'

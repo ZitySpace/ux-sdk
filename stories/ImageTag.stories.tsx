@@ -1,9 +1,10 @@
 import { Meta, StoryObj } from '@storybook/react';
 import React from 'react';
-import { useCarouselStore } from '@/stores';
 import { ImageTag } from '@/components';
 import { QueryProvider } from '@/hooks';
 import { LabelType } from '@zityspace/react-annotate';
+import { carouselDataAtom } from '@/atoms';
+import { useSetAtom } from 'jotai';
 
 const meta: Meta<typeof ImageTag> = {
   title: 'UX-SDK/ImageTag',
@@ -12,7 +13,8 @@ const meta: Meta<typeof ImageTag> = {
 export default meta;
 
 const Template = (args: any) => {
-  const carouselStore = useCarouselStore(args.carouselStoreName!, {
+  const setCarouselData = useSetAtom(carouselDataAtom);
+  setCarouselData({
     carouselData: {
       duck: {
         name: 'duck',
@@ -43,7 +45,7 @@ const Template = (args: any) => {
   return (
     <QueryProvider>
       <div className='us-h-64 us-w-64'>
-        <ImageTag name={args.name} carouselStoreName={args.carouselStoreName} />
+        <ImageTag name={args.name} />
       </div>
     </QueryProvider>
   );
@@ -53,6 +55,5 @@ export const Story: StoryObj<typeof Template> = {
   render: (args) => <Template {...args} />,
   args: {
     name: 'duck',
-    carouselStoreName: 'ImageTage.stories.carouselStore',
   },
 };

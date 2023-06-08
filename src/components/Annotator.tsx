@@ -1,27 +1,32 @@
+import produce from 'immer';
 import React, { useEffect, useRef, useReducer } from 'react';
 import {
   Annotator as AnnotatorCore,
   ImageData,
   LabelConfigs,
 } from '@zityspace/react-annotate';
-import { useCarouselStore, ImageProps } from '../stores/carouselStore';
-import { useAPIStore } from '../stores/apiStore';
-import { useStore } from 'zustand';
+import {
+  carouselDataAtom,
+  getImageAtom,
+  saveAnnotationsAtom,
+  renameCategoryAtom,
+  ImageProps,
+} from '@/atoms';
+import { useAtom, useAtomValue } from 'jotai';
 
-const Annotator = ({
-  carouselStoreName = '.carouselStore',
-}: {
-  carouselStoreName?: string;
-}) => {
-  const [carouselData, setImageData, switchOfFreshData] = useStore(
-    useCarouselStore(carouselStoreName),
-    (s) => [s.carouselData, s.setImageData, s.switchOfFreshData]
-  );
+const Annotator = () => {
+  const [carouselData, setCarouselData] = useAtom(carouselDataAtom);
+  const switchOfFreshData = carouselData.switchOfFreshData;
+  const setImageData = (name: string, data: ImageProps) =>
+    setCarouselData(
+      produce((d) => {
+        d.carouselData[name] = data;
+      })
+    );
 
-  const [getImage, saveAnnotations, renameCategory] = useStore(
-    useAPIStore(),
-    (s) => [s.apis.getImage, s.apis.saveAnnotations, s.apis.renameCategory]
-  );
+  const getImage = useAtomValue(getImageAtom);
+  const saveAnnotations = useAtomValue(saveAnnotationsAtom);
+  const renameCategory = useAtomValue(renameCategoryAtom);
 
   const imagesListRef: React.MutableRefObject<ImageData[]> = useRef<
     ImageData[]
@@ -43,7 +48,7 @@ const Annotator = ({
     // be careful here, carouselData is immutable, so we need to
     // pass a deep copy of it to AnnotatorCore
     imagesListRef.current = JSON.parse(
-      JSON.stringify(Object.values(carouselData))
+      JSON.stringify(Object.values(carouselData.carouselData))
     ) as ImageData[];
 
     // set labelConfigsRef properly
@@ -71,7 +76,7 @@ const Annotator = ({
 
     // client carousel side
     setImageData(curImageData.name, {
-      ...carouselData[curImageData.name],
+      ...carouselData.carouselData[curImageData.name],
       annotations: curImageData.annotations,
     });
     return true;

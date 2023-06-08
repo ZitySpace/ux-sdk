@@ -1,39 +1,43 @@
+import produce from 'immer';
 import React, { useState } from 'react';
 import { TrashIcon } from '@heroicons/react/solid';
-import { useCarouselDelSelectedImages } from '../hooks';
-import { useCarouselStore } from '../stores/carouselStore';
 import Modal from './Generic/modal';
 import { ToastContainer } from 'react-toastify';
-import { useStore } from 'zustand';
+import { carouselDataAtom, useCarouselDelSelectedImages } from '../atoms';
+import { useAtom } from 'jotai';
 
-const ImageList = ({
-  carouselStoreName = '.carouselStore',
-}: {
-  carouselStoreName?: string;
-}) => {
-  const store = useCarouselStore(carouselStoreName);
+const ImageList = () => {
+  const [carouselData, setCarouselData] = useAtom(carouselDataAtom);
+  const selectable = carouselData.selection.selectable;
+  const selected = carouselData.selection.selected;
+  const allSelected = !Object.values(selected).includes(false);
 
-  const deleteSelectedImages = useCarouselDelSelectedImages({
-    carouselStore: store,
-  });
+  const toggleSelectable = () =>
+    setCarouselData(
+      produce((d) => {
+        d.selection.selectable = !d.selection.selectable;
+      })
+    );
 
-  const [
-    selectable,
-    selected,
-    allSelected,
-    toggleSelectable,
-    toggleImageSelect,
-    toggleSelectAll,
-    carouselData,
-  ] = useStore(store, (s) => [
-    s.selection.selectable,
-    s.selection.selected,
-    !Object.values(s.selection.selected).includes(false),
-    s.selection.toggleSelectable,
-    s.selection.toggleImageSelect,
-    s.selection.toggleSelectAll,
-    s.carouselData,
-  ]);
+  const toggleImageSelect = (name: string) =>
+    setCarouselData(
+      produce((d) => {
+        d.selection.selected[name] = !d.selection.selected[name];
+      })
+    );
+
+  const toggleSelectAll = () =>
+    setCarouselData(
+      produce((d) => {
+        const selected = d.selection.selected;
+        const allSelected = !Object.values(selected).includes(false);
+        Object.keys(selected).forEach(
+          (name) => (selected[name] = !allSelected)
+        );
+      })
+    );
+
+  const deleteSelectedImages = useCarouselDelSelectedImages();
 
   const [delImgModalOpen, setDelImgModalOpen] = useState(false);
 
@@ -121,40 +125,42 @@ const ImageList = ({
                 </tr>
               </thead>
               <tbody>
-                {Object.values(carouselData).map((imgObj: any, idx: number) => (
-                  <tr
-                    key={idx}
-                    className={`us-bg-white us-border-b ${
-                      selected[imgObj.name] ? 'us-bg-indigo-50' : ''
-                    }`}
-                    onClick={() => {
-                      toggleImageSelect(imgObj.name);
-                    }}
-                  >
-                    <td className='us-px-3 us-py-2 us-whtiespace-nowrap'>
-                      <div className='us-flex us-items-center'>
-                        <input
-                          type='checkbox'
-                          className='us-border-none focus:us-outline-none focus:us-ring-0 focus:us-ring-offset-0 us-bg-indigo-100 us-w-3.5 us-h-3.5'
-                          checked={selected[imgObj.name]}
-                          readOnly
-                        />
-                      </div>
-                    </td>
-                    <td className='us-px-3 us-py-2 us-whitespace-nowrap us-text-xs us-font-light us-text-gray-500 us-overflow-x-auto'>
-                      {imgObj.name}
-                    </td>
-                    <td className='us-px-3 us-py-2 us-whitespace-nowrap us-text-center us-text-xs us-font-light us-text-gray-500 us-overflow-x-auto'>
-                      {`${imgObj.height} x ${imgObj.width}`}
-                    </td>
-                    <td className='us-px-3 us-py-2 us-whitespace-nowrap us-text-center us-text-xs us-font-light us-text-gray-500 us-overflow-x-auto'>
-                      {(imgObj.annotations || []).length}
-                    </td>
-                    <td className='us-px-3 us-py-2 us-whitespace-nowrap us-text-center us-text-xs us-font-light us-text-gray-500 us-overflow-x-auto'>
-                      {new Date(imgObj.upload_time).toLocaleString()}
-                    </td>
-                  </tr>
-                ))}
+                {Object.values(carouselData.carouselData).map(
+                  (imgObj: any, idx: number) => (
+                    <tr
+                      key={idx}
+                      className={`us-bg-white us-border-b ${
+                        selected[imgObj.name] ? 'us-bg-indigo-50' : ''
+                      }`}
+                      onClick={() => {
+                        toggleImageSelect(imgObj.name);
+                      }}
+                    >
+                      <td className='us-px-3 us-py-2 us-whtiespace-nowrap'>
+                        <div className='us-flex us-items-center'>
+                          <input
+                            type='checkbox'
+                            className='us-border-none focus:us-outline-none focus:us-ring-0 focus:us-ring-offset-0 us-bg-indigo-100 us-w-3.5 us-h-3.5'
+                            checked={selected[imgObj.name]}
+                            readOnly
+                          />
+                        </div>
+                      </td>
+                      <td className='us-px-3 us-py-2 us-whitespace-nowrap us-text-xs us-font-light us-text-gray-500 us-overflow-x-auto'>
+                        {imgObj.name}
+                      </td>
+                      <td className='us-px-3 us-py-2 us-whitespace-nowrap us-text-center us-text-xs us-font-light us-text-gray-500 us-overflow-x-auto'>
+                        {`${imgObj.height} x ${imgObj.width}`}
+                      </td>
+                      <td className='us-px-3 us-py-2 us-whitespace-nowrap us-text-center us-text-xs us-font-light us-text-gray-500 us-overflow-x-auto'>
+                        {(imgObj.annotations || []).length}
+                      </td>
+                      <td className='us-px-3 us-py-2 us-whitespace-nowrap us-text-center us-text-xs us-font-light us-text-gray-500 us-overflow-x-auto'>
+                        {new Date(imgObj.upload_time).toLocaleString()}
+                      </td>
+                    </tr>
+                  )
+                )}
               </tbody>
             </table>
           </div>

@@ -1,8 +1,8 @@
-import { Meta, StoryObj } from '@storybook/react';
 import React from 'react';
-import { useContextStore, usePagingStore, useCarouselStore } from '@/stores';
-import { useCarouselSetPage, QueryProvider } from '@/hooks';
+import { Meta, StoryObj } from '@storybook/react';
 import { ImageList } from '@/components';
+import { useCarouselSetPage } from '@/atoms';
+import { QueryProvider } from '@/hooks';
 
 const meta: Meta<typeof ImageList> = {
   title: 'UX-SDK/ImageList',
@@ -10,23 +10,13 @@ const meta: Meta<typeof ImageList> = {
 };
 export default meta;
 
-const Template = (args: any) => {
+const Template = () => {
   const Story = () => {
-    const contextStore = useContextStore(args.context.storeName);
-    const pagingStore = usePagingStore(args.paginationBar.storeName);
-    const carouselStore = useCarouselStore(args.imageCarousel.storeName);
+    const { isLoading: isPageLoading } = useCarouselSetPage();
 
-    const setCarouselPage = useCarouselSetPage({
-      contextStore,
-      pagingStore,
-      carouselStore,
-    });
+    if (isPageLoading) return <></>;
 
-    const pageQuery = setCarouselPage();
-
-    if (pageQuery.isLoading) return <></>;
-
-    return <ImageList carouselStoreName={args.imageCarousel.storeName} />;
+    return <ImageList />;
   };
 
   return (
@@ -37,16 +27,6 @@ const Template = (args: any) => {
 };
 
 export const Story: StoryObj<typeof Template> = {
-  render: (args) => <Template {...args} />,
-  args: {
-    imageCarousel: {
-      storeName: 'ImageList.stories.carouselStore',
-    },
-    paginationBar: {
-      storeName: 'ImageList.stories.pagingStore',
-    },
-    context: {
-      storeName: 'ImageList.stories.contextStore',
-    },
-  },
+  render: () => <Template />,
+  args: {},
 };

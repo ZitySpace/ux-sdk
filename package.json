@@ -34,10 +34,10 @@
       "import": "./dist/index.esm.js",
       "types": "./dist/components/index.d.ts"
     },
-    "./stores": {
+    "./atoms": {
       "require": "./dist/index.js",
       "import": "./dist/index.esm.js",
-      "types": "./dist/stores/index.d.ts"
+      "types": "./dist/atoms/index.d.ts"
     },
     "./hooks": {
       "require": "./dist/index.js",
@@ -50,8 +50,8 @@
       "components": [
         "dist/components"
       ],
-      "stores": [
-        "dist/stores"
+      "atoms": [
+        "dist/atoms"
       ],
       "hooks": [
         "dist/hooks"

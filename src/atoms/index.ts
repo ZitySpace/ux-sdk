@@ -624,7 +624,7 @@ export const renameCategoryAtom = atom<
 );
 
 // hooks
-export const useJotaiCarouselSetSize = () => {
+export const useCarouselSetSize = () => {
   const setTotal = useSetAtom(totAtom);
   const filter = useAtomValue(filterAtom);
   const { sizeFilter } = useAtomValue(filterAtomMap[filter.choice]);
@@ -648,7 +648,7 @@ export const useJotaiCarouselSetSize = () => {
   return { isLoading };
 };
 
-export const useJotaiCarouselSetPage = () => {
+export const useCarouselSetPage = () => {
   const pos = useAtomValue(posAtom);
   const step = useAtomValue(stepAtom);
   const setCarouselData = useSetAtom(carouselDataAtom);
@@ -681,7 +681,7 @@ export const useJotaiCarouselSetPage = () => {
   return { isLoading };
 };
 
-export const useJotaiCarouselDelSelectedImages = () => {
+export const useCarouselDelSelectedImages = () => {
   const carouselData = useAtomValue(carouselDataAtom);
   const selected = carouselData.selection.selected;
   const selectedImageNames = Object.keys(selected).filter(

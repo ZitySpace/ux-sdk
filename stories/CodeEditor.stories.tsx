@@ -1,20 +1,14 @@
 import { Meta, StoryObj } from '@storybook/react';
 import React, { useEffect } from 'react';
-import { useStore } from 'zustand';
+import { useAtom, useSetAtom } from 'jotai';
 import {
-  useContextStore,
-  usePagingStore,
-  useDataframeStore,
-  useCarouselStore,
   requestTemplate,
-} from '@/stores';
-import {
-  useCarouselSetSize,
   useCarouselSetPage,
-  useContextSetFilter,
-  useFilterFromDataframe,
-  QueryProvider,
-} from '@/hooks';
+  useCarouselSetSize,
+  filterAtom,
+  dataframeAtom,
+} from '@/atoms';
+import { QueryProvider } from '@/hooks';
 import {
   CodeEditor,
   DataFrame,
@@ -51,62 +45,49 @@ const runCode = requestTemplate(
 
 const Template = (args: any) => {
   const Story = () => {
-    const pagingStore = usePagingStore(args.DataFrame.pagingStoreName);
-    const dataframeStore = useDataframeStore(args.DataFrame.dataframeStoreName);
-    const contextStore = useContextStore(args.Carousel.contextStoreName);
-    const carouselStore = useCarouselStore(args.Carousel.carouselStoreName);
+    const { isLoading: isSizeLoading } = useCarouselSetSize();
+    const { isLoading: isPageLoading } = useCarouselSetPage();
 
-    const setCarouselSize = useCarouselSetSize({
-      contextStore,
-      pagingStore,
-    });
-    const setCarouselPage = useCarouselSetPage({
-      contextStore,
-      pagingStore,
-      carouselStore,
-    });
-
-    const sizeQuery = setCarouselSize();
-    const pageQuery = setCarouselPage();
-
-    const setContextFilter = useContextSetFilter({
-      pagingStore: pagingStore,
-      contextStore: contextStore,
-    });
-
-    const [header, data, setDataframe] = useStore(dataframeStore, (s) => [
-      s.header,
-      s.data,
-      s.setDataframe,
-    ]);
-
-    // Optimization Note
-    // https://react-query.tanstack.com/guides/query-keys
-    // due to how react query compare queryKeys, when update context filters, it is recommended:
-    // 1. regenerate filterOpt when dependencies changed
-    // 2. use a unique filterOpt.value to identify this update
-    // Otherwise, for filterOpt with {value: null, dependsOnValue: false}, useCarouselSizeQuery
-    // and useCarouselPageQuery won't be able to pick up filtering's change, thus will
-    // return cached query results. However, paging will trigger the latest query due to change
-    // of pos and step.
+    const setFilter = useSetAtom(filterAtom);
+    const [dataframe, setDataframe] = useAtom(dataframeAtom);
+    const header = dataframe.header;
+    const data = dataframe.data;
 
     useEffect(() => {
-      const filter = useFilterFromDataframe({ header, data });
-      setContextFilter(filter);
+      setFilter({
+        choice: 'byDataframe',
+        value: {
+          header,
+          data,
+          selected: Array(data.length).fill(false),
+        },
+      });
     }, [header, data]);
 
-    if (sizeQuery.isLoading || pageQuery.isLoading) return <></>;
+    if (isSizeLoading || isPageLoading) return <></>;
 
     return (
       <>
         <CodeEditor
           onCodeRun={runCode}
-          onSuccessCallback={setDataframe}
+          onSuccessCallback={({
+            header,
+            data,
+          }: {
+            header: string[];
+            data: any[][];
+          }) =>
+            setDataframe({
+              header,
+              data,
+              selected: Array(data.length).fill(false),
+            })
+          }
           {...args.CodeEditor}
         />
         <DataFrame {...args.DataFrame} />
-        <PaginationBar pagingStoreName={args.DataFrame.pagingStoreName} />
-        <ImageCarousel carouselStoreName={args.Carousel.carouselStoreName} />
+        <PaginationBar />
+        <ImageCarousel />
       </>
     );
   };
@@ -128,12 +109,6 @@ export const Story: StoryObj<typeof Template> = {
     },
     DataFrame: {
       title: 'Query Result',
-      dataframeStoreName: 'CodeEditor.stories.dataframeStore',
-      pagingStoreName: 'CodeEditor.stories.pagingStore',
-    },
-    Carousel: {
-      contextStoreName: 'CodeEditor.stories.contextStore',
-      carouselStoreName: 'CodeEditor.stories.carouselStore',
     },
   },
 };

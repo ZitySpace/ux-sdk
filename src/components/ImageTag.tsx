@@ -1,8 +1,7 @@
+import produce from 'immer';
 import { CheckCircleIcon } from '@heroicons/react/solid';
 import * as fabric from 'fabric';
 import React, { useEffect, useRef, useState } from 'react';
-import { useCarouselStore } from '../stores/carouselStore';
-import { useAPIStore } from '../stores/apiStore';
 import { useResizeDetector } from 'react-resize-detector';
 import {
   ColorStore,
@@ -13,31 +12,26 @@ import {
   Annotations,
 } from '@zityspace/react-annotate';
 import { useStore } from 'zustand';
+import { useAtom, useAtomValue } from 'jotai';
+import { carouselDataAtom, getImageAtom } from '../atoms';
 
-const ImageTag = ({
-  name,
-  carouselStoreName = '.carouselStore',
-}: {
-  name: string;
-  carouselStoreName?: string;
-}) => {
-  const [
-    selectable,
-    toggleImageSelect,
-    isSelected,
+const ImageTag = ({ name }: { name: string }) => {
+  const [carouselData, setCarouselData] = useAtom(carouselDataAtom);
+  const selectable = carouselData.selection.selectable;
+  const toggleImageSelect = (name: string) =>
+    setCarouselData(
+      produce((d) => {
+        d.selection.selected[name] = !d.selection.selected[name];
+      })
+    );
+  const isSelected = carouselData.selection.selected[name];
+  const {
     annotations,
-    imgWidth,
-    imgHeight,
-  ] = useStore(useCarouselStore(carouselStoreName), (s) => [
-    s.selection.selectable,
-    s.selection.toggleImageSelect,
-    s.selection.selected[name],
-    s.carouselData[name].annotations,
-    s.carouselData[name].width,
-    s.carouselData[name].height,
-  ]);
+    width: imgWidth,
+    height: imgHeight,
+  } = carouselData.carouselData[name];
 
-  const getImage = useStore(useAPIStore(), (s) => s.apis.getImage);
+  const getImage = useAtomValue(getImageAtom);
 
   const getColor = useStore(ColorStore, (s) => s.getColor);
 

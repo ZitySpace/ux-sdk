@@ -1,5 +1,4 @@
-import { requestTemplate } from '../../../stores/apiStore';
-import { filterAtomMap } from '../../../atoms';
+import { filterAtomMap, requestTemplate } from '../../../atoms';
 import * as echarts from 'echarts';
 import merge from 'ts-deepmerge';
 

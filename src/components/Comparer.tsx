@@ -1,8 +1,7 @@
 import React, { useEffect } from 'react';
-import { useCarouselStore } from '../stores/carouselStore';
-import { usePagingStore } from '../stores/pagingStore';
 import PaginationBar from './PaginationBar';
-import { useStore } from 'zustand';
+import { useAtomValue, useSetAtom } from 'jotai';
+import { stepAtom, carouselDataAtom } from '../atoms';
 
 interface ComponentProps {
   name: string;
@@ -12,20 +11,14 @@ const Comparer = ({
   Components,
   nItems = 6,
   title = 'Comparer',
-  pagingStoreName = '.pagingStore',
-  carouselStoreName = '.carouselStore',
 }: {
   Components: React.FC<ComponentProps>[];
   nItems?: number;
   title?: string;
-  pagingStoreName?: string;
-  carouselStoreName?: string;
 }) => {
-  const setStep = useStore(usePagingStore(pagingStoreName), (s) => s.setStep);
-
-  const imageNames = useStore(useCarouselStore(carouselStoreName), (s) =>
-    s.getNames()
-  );
+  const setStep = useSetAtom(stepAtom);
+  const carouselData = useAtomValue(carouselDataAtom);
+  const imageNames = Object.keys(carouselData.carouselData);
 
   useEffect(() => {
     setStep(nItems);
@@ -61,7 +54,7 @@ const Comparer = ({
           ))}
         </div>
       </div>
-      <PaginationBar pagingStoreName={pagingStoreName} />
+      <PaginationBar />
     </div>
   );
 };

@@ -1,16 +1,8 @@
 import { Meta, StoryObj } from '@storybook/react';
 import React from 'react';
 import { QueryProvider } from '@/hooks';
-import {
-  JotaiImageCarousel,
-  JotaiImageList,
-  JotaiPaginationBar,
-} from '@/components';
-import {
-  useJotaiCarouselSetSize,
-  useJotaiCarouselSetPage,
-  filterAtom,
-} from '@/atoms';
+import { ImageCarousel, ImageList, PaginationBar } from '@/components';
+import { useCarouselSetSize, useCarouselSetPage, filterAtom } from '@/atoms';
 import { useSetAtom } from 'jotai';
 
 const FilterGroup = () => <></>;
@@ -23,16 +15,16 @@ export default meta;
 
 const TemplateSimple = () => {
   const Story = () => {
-    const { isLoading: isSizeLoading } = useJotaiCarouselSetSize();
-    const { isLoading: isPageLoading } = useJotaiCarouselSetPage();
+    const { isLoading: isSizeLoading } = useCarouselSetSize();
+    const { isLoading: isPageLoading } = useCarouselSetPage();
 
     if (isSizeLoading || isPageLoading) return <></>;
 
     return (
       <>
-        <JotaiImageCarousel />
-        <JotaiPaginationBar />
-        <JotaiImageList />
+        <ImageCarousel />
+        <PaginationBar />
+        <ImageList />
       </>
     );
   };
@@ -51,8 +43,8 @@ export const SimpleStory: StoryObj<typeof TemplateSimple> = {
 
 const TemplateDynamic = () => {
   const Story = () => {
-    const { isLoading: isSizeLoading } = useJotaiCarouselSetSize();
-    const { isLoading: isPageLoading } = useJotaiCarouselSetPage();
+    const { isLoading: isSizeLoading } = useCarouselSetSize();
+    const { isLoading: isPageLoading } = useCarouselSetPage();
 
     const setFilter = useSetAtom(filterAtom);
 
@@ -93,9 +85,9 @@ const TemplateDynamic = () => {
           pants
         </button>
         <>
-          <JotaiImageCarousel />
-          <JotaiPaginationBar />
-          <JotaiImageList />
+          <ImageCarousel />
+          <PaginationBar />
+          <ImageList />
         </>
       </div>
     );

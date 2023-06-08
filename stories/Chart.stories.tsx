@@ -1,8 +1,6 @@
 import { Meta, StoryObj } from '@storybook/react';
 import React, { useState } from 'react';
 import * as echarts from 'echarts';
-import { useStore } from 'zustand';
-import { useDataframeStore } from '@/stores';
 import { Chart, Option, MouseEventParams } from '@/components';
 
 const meta: Meta<typeof Chart> = {
@@ -12,20 +10,12 @@ const meta: Meta<typeof Chart> = {
 export default meta;
 
 const Template = (args: any) => {
-  const datasetFromDF = useStore(
-    useDataframeStore(args.datasets.E.dataframeStoreName, args.datasets.A),
-    (s) => ({
-      header: s.header,
-      data: s.data,
-    })
-  );
-
   const [opt, setOpt] = useState<string>('A');
 
   const option = Option.makeBar()
-    .setData(opt === 'E' ? datasetFromDF : args.datasets[opt])
-    .setX(opt === 'G' ? 'category' : 'Day')
-    .setY(opt === 'G' ? 'count' : 'Value')
+    .setData(args.datasets[opt])
+    .setX(opt === 'F' ? 'category' : 'Day')
+    .setY(opt === 'F' ? 'count' : 'Value')
     .updateOption({
       series: [
         {
@@ -62,7 +52,7 @@ const Template = (args: any) => {
   return (
     <>
       <div className='us-p-2'>
-        {['A', 'B', 'C', 'D', 'E', 'F', 'G'].map((o, i) => (
+        {['A', 'B', 'C', 'D', 'E', 'F'].map((o, i) => (
           <button
             onClick={() => {
               setOpt(o);
@@ -127,13 +117,10 @@ export const Story: StoryObj<typeof Template> = {
         ],
       },
       E: {
-        dataframeStoreName: 'Chart.stories.dataframeStore',
-      },
-      F: {
         jsonUri:
           'https://mock-api-static-files.oss-cn-shenzhen.aliyuncs.com/ux-sdk/Chart.stories.data.json',
       },
-      G: {
+      F: {
         queryApi: {
           host: 'http://localhost:8008',
           query:

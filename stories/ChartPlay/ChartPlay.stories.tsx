@@ -2,17 +2,8 @@ import { Meta, StoryObj } from '@storybook/react';
 import React, { useEffect, useState, useRef } from 'react';
 
 import { QueryProvider } from '@/hooks';
-import {
-  Chart,
-  Option,
-  JotaiPaginationBar,
-  JotaiImageCarousel,
-} from '@/components';
-import {
-  useJotaiCarouselSetSize,
-  useJotaiCarouselSetPage,
-  filterAtom,
-} from '@/atoms';
+import { Chart, Option, PaginationBar, ImageCarousel } from '@/components';
+import { useCarouselSetSize, useCarouselSetPage, filterAtom } from '@/atoms';
 import { useSetAtom } from 'jotai';
 
 import {
@@ -38,8 +29,8 @@ export default meta;
 const HOST = 'http://localhost:8008';
 
 const ChartPlay = () => {
-  const { isLoading: isSizeLoading } = useJotaiCarouselSetSize();
-  const { isLoading: isPageLoading } = useJotaiCarouselSetPage();
+  const { isLoading: isSizeLoading } = useCarouselSetSize();
+  const { isLoading: isPageLoading } = useCarouselSetPage();
 
   const examples = [
     'Custom',
@@ -195,8 +186,8 @@ const ChartPlay = () => {
         />
       </div>
       <div>
-        <JotaiImageCarousel />
-        <JotaiPaginationBar />
+        <ImageCarousel />
+        <PaginationBar />
       </div>
     </div>
   );

@@ -1,27 +1,31 @@
+import produce from 'immer';
 import React, { useEffect } from 'react';
+import { useAtom, useAtomValue, useSetAtom } from 'jotai';
+import { posAtom, stepAtom, totAtom, dataframeAtom } from '../atoms';
 
-import { usePagingStore } from '../stores/pagingStore';
-import { useDataframeStore } from '../stores/dataframeStore';
-import { useStore } from 'zustand';
+const DataFrame = ({ title = 'DataFrame' }: { title?: string }) => {
+  const [dataframe, setDataframe] = useAtom(dataframeAtom);
 
-const DataFrame = ({
-  title = 'DataFrame',
-  dataframeStoreName = '.dataframeStore',
-  pagingStoreName = '.pagingStore',
-}: {
-  title?: string;
-  dataframeStoreName?: string;
-  pagingStoreName?: string;
-}) => {
-  const [header, data, selected, toggleSelect, toggleSelectSlice] = useStore(
-    useDataframeStore(dataframeStoreName),
-    (s) => [s.header, s.data, s.selected, s.toggleSelect, s.toggleSelectSlice]
-  );
+  const { header, data, selected } = dataframe;
+  const toggleSelect = (i: number) => {
+    setDataframe(
+      produce((d) => {
+        d.selected[i] = !d.selected[i];
+      })
+    );
+  };
+  const toggleSelectSlice = (i: number, step: number) => {
+    setDataframe(
+      produce((d) => {
+        const allSelected = !d.selected.slice(i, i + step).includes(false);
+        d.selected.splice(i, step, ...Array(step).fill(!allSelected));
+      })
+    );
+  };
 
-  const [pos, step, setPos, setTotal] = useStore(
-    usePagingStore(pagingStoreName),
-    (s) => [s.pos, s.step, s.setPos, s.setTotal]
-  );
+  const [pos, setPos] = useAtom(posAtom);
+  const step = useAtomValue(stepAtom);
+  const setTotal = useSetAtom(totAtom);
 
   useEffect(() => {
     setPos(0);

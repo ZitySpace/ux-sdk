@@ -5,47 +5,23 @@ import {
   ChevronRightIcon,
 } from '@heroicons/react/solid';
 import React from 'react';
-import shallow from 'zustand/shallow';
-import { useStore } from 'zustand';
-import { usePagingStore } from '../stores/pagingStore';
+import { useAtom } from 'jotai';
+import { posAtom, stepAtom, totAtom } from '../atoms';
 
-const PaginationBar = ({
-  pagingStoreName = '.pagingStore',
-}: {
-  pagingStoreName?: string;
-}) => {
-  const [
-    pos,
-    step,
-    total,
-    getCurPage,
-    getTotPages,
-    setStep,
-    toFstPage,
-    toLstPage,
-    toPrevPage,
-    toNextPage,
-    toPage,
-  ] = useStore(
-    usePagingStore(pagingStoreName),
-    (s) => [
-      s.pos,
-      s.step,
-      s.total,
-      s.getCurPage,
-      s.getTotPages,
-      s.setStep,
-      s.toFstPage,
-      s.toLstPage,
-      s.toPrevPage,
-      s.toNextPage,
-      s.toPage,
-    ],
-    shallow
-  );
+const PaginationBar = () => {
+  const [pos, setPos] = useAtom(posAtom);
+  const [step, setStep] = useAtom(stepAtom);
+  const [total] = useAtom(totAtom);
 
-  const curPage = getCurPage();
-  const totPages = getTotPages();
+  const curPage = Math.floor(pos / step) + 1;
+  const totPages = Math.floor((total - 1) / step) + 1 || 1;
+
+  const toPrevPage = () => setPos(Math.max(pos - step, 0));
+  const toNextPage = () => setPos(Math.min(pos + step, step * (totPages - 1)));
+  const toFstPage = () => setPos(0);
+  const toLstPage = () => setPos(step * (totPages - 1));
+  const toPage = (n: number) =>
+    setPos(step * (Math.max(1, Math.min(n, totPages)) - 1));
 
   const toPageInputHandler = (evt: React.BaseSyntheticEvent) => {
     const v = parseInt(evt.target.value);
