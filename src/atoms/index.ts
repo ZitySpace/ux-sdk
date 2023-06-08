@@ -29,7 +29,7 @@ interface ImageMetaProps {
   }[];
 }
 
-interface ImageProps {
+export interface ImageProps {
   id?: number;
   name: string;
   file_size?: number;
@@ -60,6 +60,12 @@ type PageFilter = (
 interface Filter {
   sizeFilter: SizeFilter;
   pageFilter: PageFilter;
+}
+
+interface Dataframe {
+  header: string[];
+  data: any[][];
+  selected: boolean[];
 }
 
 const responseHandlerTemplate = async (response: Response) => {
@@ -261,15 +267,117 @@ const categoryFilterAtom = atom<Filter>((get) => {
   };
 });
 
-const filterAtomMap = {
+export const dataframeAtom = atom<Dataframe>({
+  header: [],
+  data: [],
+  selected: [],
+});
+
+const dataframeUtilsAtom = atom((get) => {
+  const dataframe = get(dataframeAtom);
+  const header = dataframe.header;
+
+  const idx = header.findIndex((v) => v === 'image_hash');
+  const required = ['x', 'y', 'w', 'h', 'type'];
+  const optional = ['category'];
+  const pass = !required.some((field) => !header.includes(field));
+
+  const rowDataToAnno = (d: any[]) =>
+    pass
+      ? Object.fromEntries(
+          header
+            .map((h, i) =>
+              h === 'image_hash'
+                ? ['name', d[i]]
+                : required.includes(h) || optional.includes(h)
+                ? [h, d[i]]
+                : []
+            )
+            .filter((e) => e.length)
+        )
+      : { name: d[idx] };
+
+  const groupByImageFunc: (data: any[][]) => CarouselData['carouselData'] = (
+    data: any[][]
+  ) =>
+    data.reduce((res: CarouselData['carouselData'], d: any[]) => {
+      const anno = rowDataToAnno(d);
+      const name = anno.name;
+      return {
+        ...res,
+        [name]: {
+          name: name,
+          annotations: pass
+            ? [...(name in res ? res[name].annotations! : []), anno]
+            : null,
+        },
+      };
+    }, {});
+
+  const initSelectionFunc = (carouselData: CarouselData['carouselData']) => ({
+    selectable: false,
+    selected: Object.keys(carouselData).reduce(
+      (sel, name) => ({ ...sel, [name]: false }),
+      {}
+    ),
+  });
+
+  return { groupByImageFunc, initSelectionFunc };
+});
+
+const dataframeFilterAtom = atom<Filter>((get) => {
+  const dataframe = get(dataframeAtom);
+  const data = dataframe.data;
+
+  const { groupByImageFunc, initSelectionFunc } = get(dataframeUtilsAtom);
+
+  return {
+    sizeFilter: () => data.length,
+    pageFilter: (pos: number, step: number) => {
+      const carouselData = groupByImageFunc(data.slice(pos, pos + step));
+      const selection = initSelectionFunc(carouselData);
+      return { carouselData, selection };
+    },
+  };
+});
+
+const dataframeGroupByImageFilterAtom = atom<Filter>((get) => {
+  const dataframe = get(dataframeAtom);
+  const data = dataframe.data;
+
+  const { groupByImageFunc, initSelectionFunc } = get(dataframeUtilsAtom);
+  const dataGroupByImage = groupByImageFunc(data);
+  const images = Object.keys(dataGroupByImage);
+
+  return {
+    sizeFilter: () => images.length,
+    pageFilter: (pos: number, step: number) => {
+      const carouselData = images
+        .slice(pos, pos + step)
+        .reduce(
+          (res, name) => ({ ...res, [name]: dataGroupByImage[name] }),
+          {}
+        );
+      const selection = initSelectionFunc(carouselData);
+
+      return { carouselData, selection };
+    },
+  };
+});
+
+export const filterAtomMap = {
   default: defaultFilterAtom,
   byCategory: categoryFilterAtom,
+  byDataframe: dataframeFilterAtom,
+  byDataframeGroupByImage: dataframeGroupByImageFilterAtom,
 };
-export const filterAtom = atom<
-  { choice: keyof typeof filterAtomMap; value?: string },
-  { choice: keyof typeof filterAtomMap; value?: string }[],
-  void
->(
+
+export interface FilterProps {
+  choice: keyof typeof filterAtomMap;
+  value?: string | Dataframe;
+}
+
+export const filterAtom = atom<FilterProps, FilterProps[], void>(
   {
     choice: 'default',
     value: undefined,
@@ -277,13 +385,24 @@ export const filterAtom = atom<
   (_, set, { choice, value }) => {
     set(filterAtom, { choice, value });
 
-    if (choice === 'default') {
-      set(categoryAtom, null);
-    }
+    // if (choice === 'default') {
+    //   set(categoryAtom, null);
+    //   set(dataframeAtom, {
+    //     header: [],
+    //     data: [],
+    //     selected: [],
+    //   });
+    // }
 
     if (choice === 'byCategory') {
-      set(categoryAtom, value!);
+      set(categoryAtom, value! as string);
     }
+
+    if (choice === 'byDataframe' || choice === 'byDataframeGroupByImage') {
+      set(dataframeAtom, value! as Dataframe);
+    }
+
+    set(posAtom, 0);
   }
 );
 
@@ -407,80 +526,79 @@ const deleteImagesAtom = atom<
   })
 );
 
-const saveAnnotationsAtom = atom<(imageData: ImageData) => Promise<string>>(
-  (get) =>
-    requestTemplate((imageData: ImageData) => {
-      const formData = new FormData();
-      formData.set('slug', get(projectSlugAtom));
-      formData.set(
-        'annotation_records',
-        JSON.stringify([
-          {
-            image_hash: imageData.name,
-            image_width: imageData.width,
-            image_height: imageData.height,
-            annotations: imageData.annotations.map((anno) => {
-              if (anno.type === 'box')
-                return {
-                  timestamp_z: anno.timestamp,
-                  unique_hash_z: anno.hash,
-                  category: anno.category,
-                  x: anno.x,
-                  y: anno.y,
-                  w: anno.w,
-                  h: anno.h,
-                };
-              else if (anno.type === 'mask')
-                return {
-                  timestamp_z: anno.timestamp,
-                  unique_hash_z: anno.hash,
-                  category: anno.category,
-                  format: 'polygon',
-                  mask: anno.paths.map((path) => ({
-                    closed: path.closed,
-                    hole: path.hole,
-                    points: path.points.map((pt) => [pt.x, pt.y]).flat(),
-                  })),
-                };
-              else if (anno.type === 'keypoints') {
-                const keypointsMap = anno.keypoints.reduce(
-                  (m: { [key: number]: number[] }, kp) => {
-                    if (kp.sid === -1) return m;
-                    return { ...m, [kp.sid]: [kp.x, kp.y, kp.vis ? 2 : 1] };
+export const saveAnnotationsAtom = atom<
+  (imageData: ImageData) => Promise<string>
+>((get) =>
+  requestTemplate((imageData: ImageData) => {
+    const formData = new FormData();
+    formData.set('slug', get(projectSlugAtom));
+    formData.set(
+      'annotation_records',
+      JSON.stringify([
+        {
+          image_hash: imageData.name,
+          image_width: imageData.width,
+          image_height: imageData.height,
+          annotations: imageData.annotations.map((anno) => {
+            if (anno.type === 'box')
+              return {
+                timestamp_z: anno.timestamp,
+                unique_hash_z: anno.hash,
+                category: anno.category,
+                x: anno.x,
+                y: anno.y,
+                w: anno.w,
+                h: anno.h,
+              };
+            else if (anno.type === 'mask')
+              return {
+                timestamp_z: anno.timestamp,
+                unique_hash_z: anno.hash,
+                category: anno.category,
+                format: 'polygon',
+                mask: anno.paths.map((path) => ({
+                  closed: path.closed,
+                  hole: path.hole,
+                  points: path.points.map((pt) => [pt.x, pt.y]).flat(),
+                })),
+              };
+            else if (anno.type === 'keypoints') {
+              const keypointsMap = anno.keypoints.reduce(
+                (m: { [key: number]: number[] }, kp) => {
+                  if (kp.sid === -1) return m;
+                  return { ...m, [kp.sid]: [kp.x, kp.y, kp.vis ? 2 : 1] };
+                },
+                {}
+              );
+
+              return {
+                timestamp_z: anno.timestamp,
+                unique_hash_z: anno.hash,
+                category: anno.category,
+                keypoints: Array.from(
+                  {
+                    length: Math.max(...keypointsLabelConfig.structure.flat()),
                   },
-                  {}
-                );
+                  (_, i) => i
+                )
+                  .map((i) => keypointsMap[i + 1] || [0, 0, 0])
+                  .flat(),
+              };
+            }
+          }),
+        },
+      ])
+    );
 
-                return {
-                  timestamp_z: anno.timestamp,
-                  unique_hash_z: anno.hash,
-                  category: anno.category,
-                  keypoints: Array.from(
-                    {
-                      length: Math.max(
-                        ...keypointsLabelConfig.structure.flat()
-                      ),
-                    },
-                    (_, i) => i
-                  )
-                    .map((i) => keypointsMap[i + 1] || [0, 0, 0])
-                    .flat(),
-                };
-              }
-            }),
-          },
-        ])
-      );
-
-      return {
-        url: get(apiEndpointAtom) + '/project/annotations',
-        method: 'PUT',
-        body: formData,
-      };
-    })
+    return {
+      url: get(apiEndpointAtom) + '/project/annotations',
+      method: 'PUT',
+      body: formData,
+    };
+  })
 );
 
-const renameCategoryAtom = atom<
+export const renameCategoryAtom = atom<
   (
     oldCategory: string,
     newCategory: string,

@@ -1,4 +1,4 @@
-import { FilterProps } from '@/stores';
+import { FilterProps } from '@/atoms';
 import { Option, MouseEventParams } from '@/index';
 
 export const makeOption = (

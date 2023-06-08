@@ -1,5 +1,5 @@
-import { useFilterFromDataframe } from '../../../hooks';
 import { requestTemplate } from '../../../stores/apiStore';
+import { filterAtomMap } from '../../../atoms';
 import * as echarts from 'echarts';
 import merge from 'ts-deepmerge';
 
@@ -476,8 +476,14 @@ export class Base {
     }
     const df = await queryData(host, query_);
     const { header, data } = df ? df : { header: [], data: [] };
-    const filter = useFilterFromDataframe({ header, data }, true);
-    return filter;
+    return {
+      choice: 'byDataframeGroupByImage' as keyof typeof filterAtomMap,
+      value: {
+        header,
+        data,
+        selected: Array(data.length).fill(false),
+      },
+    };
   };
 
   public static unselectAll = (chart: echarts.ECharts) => {

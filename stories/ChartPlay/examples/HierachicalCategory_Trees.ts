@@ -1,4 +1,4 @@
-import { FilterProps } from '@/stores';
+import { FilterProps } from '@/atoms';
 import { Option, MouseEventParams, fetchData } from '@/components';
 
 const getRelationData = (HOST: string) => async () =>

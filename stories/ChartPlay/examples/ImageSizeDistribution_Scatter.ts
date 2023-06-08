@@ -1,5 +1,4 @@
-import { FilterProps } from '@/stores';
-import { useFilterFromDataframe } from '@/hooks';
+import { FilterProps, filterAtomMap } from '@/atoms';
 import {
   Option,
   MouseEventParams,
@@ -114,8 +113,13 @@ export const makeOption = (
       ) => {
         if (!params.batch[0].areas.length) return;
         const { selected, dimensions } = Option.getBrushedItems(params, chart);
-        setFilter(
-          useFilterFromDataframe({ header: dimensions, data: selected }, true)
-        );
+        setFilter({
+          choice: 'byDataframeGroupByImage' as keyof typeof filterAtomMap,
+          value: {
+            header: dimensions,
+            data: selected,
+            selected: Array(selected.length).fill(false),
+          },
+        });
       },
     });

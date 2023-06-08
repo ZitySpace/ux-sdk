@@ -1,15 +1,19 @@
 import { Meta, StoryObj } from '@storybook/react';
 import React, { useEffect, useState, useRef } from 'react';
 
-import { useContextStore, useCarouselStore, usePagingStore } from '@/stores';
+import { QueryProvider } from '@/hooks';
 import {
-  useFilterFromDataframe,
-  useContextSetFilter,
-  useCarouselSetSize,
-  useCarouselSetPage,
-  QueryProvider,
-} from '@/hooks';
-import { Chart, Option, PaginationBar, ImageCarousel } from '@/components';
+  Chart,
+  Option,
+  JotaiPaginationBar,
+  JotaiImageCarousel,
+} from '@/components';
+import {
+  useJotaiCarouselSetSize,
+  useJotaiCarouselSetPage,
+  filterAtom,
+} from '@/atoms';
+import { useSetAtom } from 'jotai';
 
 import {
   makeCategoryDistributionBarOption,
@@ -33,31 +37,9 @@ export default meta;
 
 const HOST = 'http://localhost:8008';
 
-const ChartPlay = ({
-  contextStoreName = '.contextStore',
-  pagingStoreName = '.pagingStore',
-  carouselStoreName = '.carouselStore',
-}: {
-  contextStoreName?: string;
-  pagingStoreName?: string;
-  carouselStoreName?: string;
-}) => {
-  const contextStore = useContextStore(contextStoreName);
-  const pagingStore = usePagingStore(pagingStoreName);
-  const carouselStore = useCarouselStore(carouselStoreName);
-
-  const setCarouselSize = useCarouselSetSize({
-    contextStore,
-    pagingStore,
-  });
-  const setCarouselPage = useCarouselSetPage({
-    contextStore,
-    pagingStore,
-    carouselStore,
-  });
-
-  const sizeQuery = setCarouselSize();
-  const pageQuery = setCarouselPage();
+const ChartPlay = () => {
+  const { isLoading: isSizeLoading } = useJotaiCarouselSetSize();
+  const { isLoading: isPageLoading } = useJotaiCarouselSetPage();
 
   const examples = [
     'Custom',
@@ -81,14 +63,17 @@ const ChartPlay = ({
   ];
   const [example, setExample] = useState<string>('Custom');
 
-  const setFilter = useContextSetFilter({
-    pagingStore: pagingStore,
-    contextStore: contextStore,
-  });
+  const setFilter = useSetAtom(filterAtom);
 
   useEffect(() => {
-    const filter = useFilterFromDataframe({ header: [], data: [] });
-    setFilter(filter);
+    setFilter({
+      choice: 'byDataframe',
+      value: {
+        header: [],
+        data: [],
+        selected: [],
+      },
+    });
   }, []);
 
   const optionRef = useRef<Option>(new Option());
@@ -168,6 +153,8 @@ const ChartPlay = ({
     }
   };
 
+  if (isSizeLoading || isPageLoading) return <></>;
+
   return (
     <div className='us-flex us-flex-col us-space-y-4'>
       <div className='us-relative us-flex us-items-center us-w-full'>
@@ -208,26 +195,22 @@ const ChartPlay = ({
         />
       </div>
       <div>
-        <ImageCarousel carouselStoreName={carouselStoreName} />
-        <PaginationBar pagingStoreName={pagingStoreName} />
+        <JotaiImageCarousel />
+        <JotaiPaginationBar />
       </div>
     </div>
   );
 };
 
-const Template = (args: any) => {
+const Template = () => {
   return (
     <QueryProvider>
-      <ChartPlay {...args} />
+      <ChartPlay />
     </QueryProvider>
   );
 };
 
 export const Story: StoryObj<typeof Template> = {
-  render: (args) => <Template {...args} />,
-  args: {
-    contextStoreName: 'ChartEditor.stories.contextStore',
-    pagingStoreName: 'ChartEditor.stories.pagingStore',
-    carouselStoreName: 'ChartEditor.stories.carouselStore',
-  },
+  render: () => <Template />,
+  args: {},
 };
