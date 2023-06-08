@@ -4,7 +4,7 @@ import React, { useEffect, useState, useRef } from 'react';
 import { QueryProvider, useCarouselSetSize, useCarouselSetPage } from '@/hooks';
 import { Chart, Option, PaginationBar, ImageCarousel } from '@/components';
 import { filterAtom } from '@/atoms';
-import { useSetAtom } from 'jotai';
+import { useSetAtom, Provider } from 'jotai';
 
 import {
   makeCategoryDistributionBarOption,
@@ -195,9 +195,11 @@ const ChartPlay = () => {
 
 const Template = () => {
   return (
-    <QueryProvider>
-      <ChartPlay />
-    </QueryProvider>
+    <Provider>
+      <QueryProvider>
+        <ChartPlay />
+      </QueryProvider>
+    </Provider>
   );
 };
 

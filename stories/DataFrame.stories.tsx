@@ -2,7 +2,7 @@ import { Meta, StoryObj } from '@storybook/react';
 import React from 'react';
 import { DataFrame, PaginationBar } from '@/components';
 import { dataframeAtom } from '@/atoms';
-import { useSetAtom } from 'jotai';
+import { useSetAtom, Provider } from 'jotai';
 
 const meta: Meta<typeof DataFrame> = {
   title: 'UX-SDK/DataFrame',
@@ -31,7 +31,11 @@ const Template = (args: any) => {
 };
 
 export const Story: StoryObj<typeof Template> = {
-  render: (args) => <Template {...args} />,
+  render: (args) => (
+    <Provider>
+      <Template {...args} />
+    </Provider>
+  ),
   args: {
     title: 'DataFrame Preview',
   },

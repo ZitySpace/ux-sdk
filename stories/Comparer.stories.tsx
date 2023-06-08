@@ -2,6 +2,7 @@ import { Meta, StoryObj } from '@storybook/react';
 import React from 'react';
 import { QueryProvider, useCarouselSetSize, useCarouselSetPage } from '@/hooks';
 import { Comparer, ImageTag } from '@/components';
+import { Provider } from 'jotai';
 
 const meta: Meta<typeof Comparer> = {
   title: 'UX-SDK/Comparer',
@@ -26,9 +27,11 @@ const Template = (args: any) => {
   };
 
   return (
-    <QueryProvider>
-      <Story />
-    </QueryProvider>
+    <Provider>
+      <QueryProvider>
+        <Story />
+      </QueryProvider>
+    </Provider>
   );
 };
 

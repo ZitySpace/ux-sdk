@@ -1,6 +1,7 @@
 import type { Meta, StoryObj } from '@storybook/react';
 import React from 'react';
 import { PaginationBar } from '@/components';
+import { Provider } from 'jotai';
 
 const meta: Meta<typeof PaginationBar> = {
   title: 'UX-SDK/PaginationBar',
@@ -17,6 +18,10 @@ const Template = () => {
 };
 
 export const Story: StoryObj<typeof Template> = {
-  render: () => <Template />,
+  render: () => (
+    <Provider>
+      <Template />
+    </Provider>
+  ),
   args: {},
 };

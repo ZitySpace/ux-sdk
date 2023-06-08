@@ -1,6 +1,6 @@
 import { Meta, StoryObj } from '@storybook/react';
 import React, { useEffect } from 'react';
-import { useAtom, useSetAtom } from 'jotai';
+import { useAtom, useSetAtom, Provider } from 'jotai';
 import { requestTemplate, filterAtom, dataframeAtom } from '@/atoms';
 import { QueryProvider, useCarouselSetPage, useCarouselSetSize } from '@/hooks';
 import {
@@ -87,9 +87,11 @@ const Template = (args: any) => {
   };
 
   return (
-    <QueryProvider>
-      <Story />
-    </QueryProvider>
+    <Provider>
+      <QueryProvider>
+        <Story />
+      </QueryProvider>
+    </Provider>
   );
 };
 

@@ -2,6 +2,7 @@ import React from 'react';
 import { Meta, StoryObj } from '@storybook/react';
 import { ImageList } from '@/components';
 import { QueryProvider, useCarouselSetPage } from '@/hooks';
+import { Provider } from 'jotai';
 
 const meta: Meta<typeof ImageList> = {
   title: 'UX-SDK/ImageList',
@@ -19,9 +20,11 @@ const Template = () => {
   };
 
   return (
-    <QueryProvider>
-      <Story />
-    </QueryProvider>
+    <Provider>
+      <QueryProvider>
+        <Story />
+      </QueryProvider>
+    </Provider>
   );
 };
 

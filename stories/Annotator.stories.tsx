@@ -2,6 +2,7 @@ import { Meta, StoryObj } from '@storybook/react';
 import React from 'react';
 import { QueryProvider, useCarouselSetSize, useCarouselSetPage } from '@/hooks';
 import { Annotator } from '@/components';
+import { Provider } from 'jotai';
 
 const meta: Meta<typeof Annotator> = {
   title: 'UX-SDK/Annotator',
@@ -24,9 +25,11 @@ const Template = () => {
   };
 
   return (
-    <QueryProvider>
-      <Story />
-    </QueryProvider>
+    <Provider>
+      <QueryProvider>
+        <Story />
+      </QueryProvider>
+    </Provider>
   );
 };
 

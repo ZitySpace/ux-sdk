@@ -3,7 +3,7 @@ import React from 'react';
 import { QueryProvider, useCarouselSetSize, useCarouselSetPage } from '@/hooks';
 import { ImageCarousel, ImageList, PaginationBar } from '@/components';
 import { filterAtom } from '@/atoms';
-import { useSetAtom } from 'jotai';
+import { useSetAtom, Provider } from 'jotai';
 
 const FilterGroup = () => <></>;
 
@@ -94,9 +94,11 @@ const TemplateDynamic = () => {
   };
 
   return (
-    <QueryProvider>
-      <Story />
-    </QueryProvider>
+    <Provider>
+      <QueryProvider>
+        <Story />
+      </QueryProvider>
+    </Provider>
   );
 };
 

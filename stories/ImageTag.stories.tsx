@@ -3,7 +3,7 @@ import React, { useEffect } from 'react';
 import { ImageTag } from '@/components';
 import { LabelType } from '@zityspace/react-annotate';
 import { carouselDataAtom } from '@/atoms';
-import { useAtom } from 'jotai';
+import { useAtom, Provider } from 'jotai';
 
 const meta: Meta<typeof ImageTag> = {
   title: 'UX-SDK/ImageTag',
@@ -53,7 +53,11 @@ const Template = (args: any) => {
 };
 
 export const Story: StoryObj<typeof Template> = {
-  render: (args) => <Template {...args} />,
+  render: (args) => (
+    <Provider>
+      <Template {...args} />
+    </Provider>
+  ),
   args: {
     name: 'duck',
   },

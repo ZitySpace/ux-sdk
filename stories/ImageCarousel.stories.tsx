@@ -2,6 +2,7 @@ import React from 'react';
 import { Meta, StoryObj } from '@storybook/react';
 import { ImageCarousel, PaginationBar } from '@/components';
 import { QueryProvider, useCarouselSetSize, useCarouselSetPage } from '@/hooks';
+import { Provider } from 'jotai';
 
 const meta: Meta<typeof ImageCarousel> = {
   title: 'UX-SDK/ImageCarousel',
@@ -26,9 +27,11 @@ const Template = () => {
     );
   };
   return (
-    <QueryProvider>
-      <Story />
-    </QueryProvider>
+    <Provider>
+      <QueryProvider>
+        <Story />
+      </QueryProvider>
+    </Provider>
   );
 };
 
