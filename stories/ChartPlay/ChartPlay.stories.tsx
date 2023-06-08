@@ -1,9 +1,9 @@
 import { Meta, StoryObj } from '@storybook/react';
 import React, { useEffect, useState, useRef } from 'react';
 
-import { QueryProvider } from '@/hooks';
+import { QueryProvider, useCarouselSetSize, useCarouselSetPage } from '@/hooks';
 import { Chart, Option, PaginationBar, ImageCarousel } from '@/components';
-import { useCarouselSetSize, useCarouselSetPage, filterAtom } from '@/atoms';
+import { filterAtom } from '@/atoms';
 import { useSetAtom } from 'jotai';
 
 import {

@@ -1,8 +1,8 @@
 import { Meta, StoryObj } from '@storybook/react';
 import React from 'react';
-import { QueryProvider } from '@/hooks';
+import { QueryProvider, useCarouselSetSize, useCarouselSetPage } from '@/hooks';
 import { ImageCarousel, ImageList, PaginationBar } from '@/components';
-import { useCarouselSetSize, useCarouselSetPage, filterAtom } from '@/atoms';
+import { filterAtom } from '@/atoms';
 import { useSetAtom } from 'jotai';
 
 const FilterGroup = () => <></>;

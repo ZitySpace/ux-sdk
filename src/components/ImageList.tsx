@@ -3,7 +3,8 @@ import React, { useState } from 'react';
 import { TrashIcon } from '@heroicons/react/solid';
 import Modal from './Generic/modal';
 import { ToastContainer } from 'react-toastify';
-import { carouselDataAtom, useCarouselDelSelectedImages } from '../atoms';
+import { carouselDataAtom } from '../atoms';
+import { useCarouselDelSelectedImages } from '../hooks';
 import { useAtom } from 'jotai';
 
 const ImageList = () => {

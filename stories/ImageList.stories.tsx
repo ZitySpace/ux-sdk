@@ -1,8 +1,7 @@
 import React from 'react';
 import { Meta, StoryObj } from '@storybook/react';
 import { ImageList } from '@/components';
-import { useCarouselSetPage } from '@/atoms';
-import { QueryProvider } from '@/hooks';
+import { QueryProvider, useCarouselSetPage } from '@/hooks';
 
 const meta: Meta<typeof ImageList> = {
   title: 'UX-SDK/ImageList',

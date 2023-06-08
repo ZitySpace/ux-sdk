@@ -1,8 +1,7 @@
 import React from 'react';
 import { Meta, StoryObj } from '@storybook/react';
 import { ImageCarousel, PaginationBar } from '@/components';
-import { useCarouselSetSize, useCarouselSetPage } from '@/atoms';
-import { QueryProvider } from '@/hooks';
+import { QueryProvider, useCarouselSetSize, useCarouselSetPage } from '@/hooks';
 
 const meta: Meta<typeof ImageCarousel> = {
   title: 'UX-SDK/ImageCarousel',

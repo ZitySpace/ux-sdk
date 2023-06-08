@@ -1,14 +1,8 @@
 import { Meta, StoryObj } from '@storybook/react';
 import React, { useEffect } from 'react';
 import { useAtom, useSetAtom } from 'jotai';
-import {
-  requestTemplate,
-  useCarouselSetPage,
-  useCarouselSetSize,
-  filterAtom,
-  dataframeAtom,
-} from '@/atoms';
-import { QueryProvider } from '@/hooks';
+import { requestTemplate, filterAtom, dataframeAtom } from '@/atoms';
+import { QueryProvider, useCarouselSetPage, useCarouselSetSize } from '@/hooks';
 import {
   CodeEditor,
   DataFrame,

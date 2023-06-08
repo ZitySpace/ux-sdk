@@ -1,7 +1,6 @@
 import { Meta, StoryObj } from '@storybook/react';
 import React from 'react';
-import { QueryProvider } from '@/hooks';
-import { useCarouselSetSize, useCarouselSetPage } from '@/atoms';
+import { QueryProvider, useCarouselSetSize, useCarouselSetPage } from '@/hooks';
 import { Comparer, ImageTag } from '@/components';
 
 const meta: Meta<typeof Comparer> = {

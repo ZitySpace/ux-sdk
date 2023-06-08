@@ -11,7 +11,7 @@ import {
   saveAnnotationsAtom,
   renameCategoryAtom,
   ImageProps,
-} from '@/atoms';
+} from '../atoms';
 import { useAtom, useAtomValue } from 'jotai';
 
 const Annotator = () => {
