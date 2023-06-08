@@ -1,10 +1,9 @@
 import { Meta, StoryObj } from '@storybook/react';
-import React from 'react';
-import { QueryProvider } from '@/hooks';
+import React, { useEffect } from 'react';
 import { AugmentedImageTag } from '@/components';
 import { LabelType } from '@zityspace/react-annotate';
 import { carouselDataAtom, getImageAtom } from '@/atoms';
-import { useAtomValue, useSetAtom } from 'jotai';
+import { useAtomValue, useAtom } from 'jotai';
 
 const meta: Meta<typeof AugmentedImageTag> = {
   title: 'UX-SDK/AugmentedImageTag',
@@ -21,34 +20,36 @@ interface BoxProps {
 }
 
 const Template = (args: any) => {
-  const setCarouselData = useSetAtom(carouselDataAtom);
-  setCarouselData({
-    carouselData: {
-      duck: {
-        name: 'duck',
-        annotations: [
-          {
-            x: 100,
-            y: 200,
-            w: 50,
-            h: 80,
-            category: 'cateA',
-            type: LabelType.Box,
-          },
-          {
-            x: 200,
-            y: 300,
-            w: 100,
-            h: 50,
-            category: 'cateB',
-            type: LabelType.Box,
-          },
-        ],
+  const [carouselData, setCarouselData] = useAtom(carouselDataAtom);
+  useEffect(() => {
+    setCarouselData({
+      carouselData: {
+        duck: {
+          name: 'duck',
+          annotations: [
+            {
+              x: 100,
+              y: 200,
+              w: 50,
+              h: 80,
+              category: 'cateA',
+              type: LabelType.Box,
+            },
+            {
+              x: 200,
+              y: 300,
+              w: 100,
+              h: 50,
+              category: 'cateB',
+              type: LabelType.Box,
+            },
+          ],
+        },
       },
-    },
 
-    selection: { selectable: false, selected: { duck: false } },
-  });
+      selection: { selectable: false, selected: { duck: false } },
+    });
+  }, []);
 
   const getImage = useAtomValue(getImageAtom);
 
@@ -68,12 +69,12 @@ const Template = (args: any) => {
     };
   };
 
+  if (!Object.keys(carouselData.carouselData).length) return <></>;
+
   return (
-    <QueryProvider>
-      <div className='us-h-64 us-w-64'>
-        <AugmentedImageTag name={args.name} augmenter={augmenter} />
-      </div>
-    </QueryProvider>
+    <div className='us-h-64 us-w-64'>
+      <AugmentedImageTag name={args.name} augmenter={augmenter} />
+    </div>
   );
 };
 
