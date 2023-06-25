@@ -105,7 +105,7 @@ export const requestTemplate =
     requestConstructor: Function,
     responseHandler: Function = responseHandlerTemplate,
     dataTransformer: Function | null = null,
-    requireAuthentication: boolean = true
+    requireAuthentication: boolean = false
   ) =>
   async (...args: any[]) => {
     const { url, method, headers, body } = requestConstructor(...args);
@@ -229,8 +229,9 @@ export const normalizeImagesMeta = (data: ImageMetaProps[]) => {
 };
 
 // base atoms
-const apiEndpointAtom = atom<string>('http://localhost:8080/api');
-const projectSlugAtom = atom<string>('fashiona');
+const apiEndpointAtom = atom<string>(
+  'http://localhost:8080/formula-serv/user-804005416/category-distribution/default'
+);
 export const posAtom = atom<number>(0);
 export const stepAtom = atom<number>(10);
 export const totAtom = atom<number>(100);
@@ -404,31 +405,24 @@ export const filterAtom = atom<FilterProps, FilterProps[], void>(
 const getImagesCountAtom = atom<() => Promise<number>>((get) =>
   requestTemplate(() => {
     return {
-      url:
-        get(apiEndpointAtom) +
-        '/project/images/count?slug=' +
-        get(projectSlugAtom),
+      url: get(apiEndpointAtom) + '/images/count',
       method: 'GET',
     };
   })
 );
 
 const getImagesMetaAtom = atom<
-  (offset: number, limit: number, order_by: string) => Promise<CarouselData>
+  (offset: number, limit: number) => Promise<CarouselData>
 >((get) =>
   requestTemplate(
-    (offset: number, limit: number, order_by: string) => {
+    (offset: number, limit: number) => {
       return {
         url:
           get(apiEndpointAtom) +
-          '/project/images/meta?slug=' +
-          get(projectSlugAtom) +
-          '&offset=' +
+          '/images/meta?offset=' +
           offset +
           '&limit=' +
-          limit +
-          '&order_by=' +
-          order_by,
+          limit,
         method: 'GET',
       };
     },
@@ -442,12 +436,7 @@ export const getImageAtom = atom<(file_name: string) => Promise<string>>(
     requestTemplate(
       (file_name: string) => {
         return {
-          url:
-            get(apiEndpointAtom) +
-            '/project/image?slug=' +
-            get(projectSlugAtom) +
-            '&file_name=' +
-            file_name,
+          url: get(apiEndpointAtom) + '/image?file_name=' + file_name,
           method: 'GET',
         };
       },
@@ -461,12 +450,7 @@ const getImagesCountByCategoryAtom = atom<
 >((get) =>
   requestTemplate((category: string) => {
     return {
-      url:
-        get(apiEndpointAtom) +
-        '/project/images/category/count?slug=' +
-        get(projectSlugAtom) +
-        '&category=' +
-        category,
+      url: get(apiEndpointAtom) + '/images/category/count?category=' + category,
       method: 'GET',
     };
   })
@@ -485,16 +469,12 @@ const getImagesMetaByCategoryAtom = atom<
       return {
         url:
           get(apiEndpointAtom) +
-          '/project/images/category/meta?slug=' +
-          get(projectSlugAtom) +
-          '&category=' +
+          '/images/category/meta?category=' +
           category +
           '&offset=' +
           offset +
           '&limit=' +
-          limit +
-          '&order_by=' +
-          order_by,
+          limit,
         method: 'GET',
       };
     },
@@ -508,12 +488,10 @@ export const deleteImagesAtom = atom<
 >((get) =>
   requestTemplate((filenames: string[], keepAnnotations: boolean = false) => {
     const formData = new FormData();
-    formData.set('slug', get(projectSlugAtom));
     formData.set('filenames', JSON.stringify(filenames));
-    formData.set('keep_annotations', JSON.stringify(keepAnnotations));
 
     return {
-      url: get(apiEndpointAtom) + '/project/images',
+      url: get(apiEndpointAtom) + '/images',
       method: 'DELETE',
       body: formData,
     };
@@ -525,7 +503,6 @@ export const saveAnnotationsAtom = atom<
 >((get) =>
   requestTemplate((imageData: ImageData) => {
     const formData = new FormData();
-    formData.set('slug', get(projectSlugAtom));
     formData.set(
       'annotation_records',
       JSON.stringify([
@@ -585,7 +562,7 @@ export const saveAnnotationsAtom = atom<
     );
 
     return {
-      url: get(apiEndpointAtom) + '/project/annotations',
+      url: get(apiEndpointAtom) + '/annotations',
       method: 'PUT',
       body: formData,
     };
@@ -604,9 +581,7 @@ export const renameCategoryAtom = atom<
       return {
         url:
           get(apiEndpointAtom) +
-          '/project/category?slug=' +
-          get(projectSlugAtom) +
-          '&category=' +
+          '/category?category=' +
           oldCategory +
           '&rename_to=' +
           newCategory +
