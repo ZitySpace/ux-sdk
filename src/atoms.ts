@@ -229,9 +229,7 @@ export const normalizeImagesMeta = (data: ImageMetaProps[]) => {
 };
 
 // base atoms
-const apiEndpointAtom = atom<string>(
-  'http://localhost:8080/formula-serv/user-804005416/category-distribution/default'
-);
+export const apiEndpointAtom = atom<string>('');
 export const posAtom = atom<number>(0);
 export const stepAtom = atom<number>(10);
 export const totAtom = atom<number>(100);
