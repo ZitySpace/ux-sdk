@@ -8,8 +8,8 @@ dependencies:
     specifier: 6.0.0-beta1
     version: 6.0.0-beta1
   '@zityspace/react-annotate':
-    specifier: 0.12.0-beta.3
-    version: 0.12.0-beta.3(react-dom@18.2.0)(react@18.2.0)
+    specifier: 0.12.0-beta.5
+    version: 0.12.0-beta.5(react-dom@18.2.0)(react@18.2.0)
   ace-builds:
     specifier: ^1.21.1
     version: 1.21.1
@@ -5550,8 +5550,8 @@ packages:
       - utf-8-validate
     dev: false
 
-  /@zityspace/react-annotate@0.12.0-beta.3(react-dom@18.2.0)(react@18.2.0):
-    resolution: {integrity: sha512-5+nar0YcSxbdfmE/3wsBaSFxy2zz+x+Aip4gRgwdc8nTe99z8cp3SJVX4ILBa8PCYUxGdivqusvn6t58Gvn1PQ==}
+  /@zityspace/react-annotate@0.12.0-beta.5(react-dom@18.2.0)(react@18.2.0):
+    resolution: {integrity: sha512-nyOeGPIqjl2WnDxu/EiQG2aH/c384626NxxjqM3JzGD4jpkyzpUgSdaIQNFo7BBEVQOsq20Zff+/mZZNRgKCdA==}
     peerDependencies:
       react: ^18.2.0
       react-dom: ^18.2.0
