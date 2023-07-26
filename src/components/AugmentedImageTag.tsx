@@ -1,4 +1,4 @@
-import * as fabric from 'fabric';
+import * as fabric from '@zityspace/fabric';
 import React, { useEffect, useRef, useState } from 'react';
 import { useResizeDetector } from 'react-resize-detector';
 import { RefreshIcon } from '@heroicons/react/solid';
