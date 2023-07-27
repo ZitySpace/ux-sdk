@@ -490,7 +490,7 @@ export const deleteImagesAtom = atom<
 
     return {
       url: get(apiEndpointAtom) + '/images',
-      method: 'DELETE',
+      method: 'POST',
       body: formData,
     };
   })

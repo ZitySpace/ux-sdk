@@ -14,7 +14,17 @@ import {
 } from '../atoms';
 import { useAtom, useAtomValue } from 'jotai';
 
-const Annotator = () => {
+const Annotator = ({
+  title = 'Annotator',
+  hideTitle = false,
+  flat = true,
+  rounded = false,
+}: {
+  title?: string;
+  hideTitle?: boolean;
+  flat?: boolean;
+  rounded?: boolean;
+}) => {
   const [carouselData, setCarouselData] = useAtom(carouselDataAtom);
   const switchOfFreshData = carouselData.switchOfFreshData;
   const setImageData = (name: string, data: ImageProps) =>
@@ -98,10 +108,16 @@ const Annotator = () => {
   };
 
   return (
-    <div className='us-bg-gray-100 us-h-96 us-min-h-full us-flex us-flex-col us-text-xs us-shadow-lg us-rounded-md us-relative us-select-none'>
-      <div className='us-bg-indigo-400 us-py-2 us-px-2 us-rounded-t-md us-flex us-justify-center us-space-x-2'>
-        <span>Annotator</span>
-      </div>
+    <div
+      className={`us-bg-gray-100 us-h-96 us-min-h-full us-flex us-flex-col us-text-xs
+    ${flat ? '' : 'us-shadow-lg'} ${rounded ? 'us-rounded-md' : ''}
+    us-relative us-select-none`}
+    >
+      {!hideTitle && (
+        <div className='us-bg-indigo-400 us-py-2 us-px-2 us-rounded-t-md us-flex us-justify-center us-space-x-2'>
+          <span>Annotator</span>
+        </div>
+      )}
 
       {imagesListRef.current.length > 0 && (
         <AnnotatorCore

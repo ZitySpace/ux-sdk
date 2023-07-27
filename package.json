@@ -65,7 +65,7 @@
     "@babel/preset-typescript": "^7.16.7",
     "@commitlint/cli": "^17.0.3",
     "@commitlint/config-conventional": "^17.0.3",
-    "@headlessui/react": "^1.7.4",
+    "@headlessui/react": "^1.7.15",
     "@heroicons/react": "^1.0.5",
     "@rollup/plugin-commonjs": "^24.0.0",
     "@rollup/plugin-node-resolve": "^15.0.1",

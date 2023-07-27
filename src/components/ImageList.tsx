@@ -7,7 +7,17 @@ import { carouselDataAtom } from '../atoms';
 import { useCarouselDelSelectedImages } from '../hooks';
 import { useAtom } from 'jotai';
 
-const ImageList = () => {
+const ImageList = ({
+  title = 'Image List',
+  hideTitle = false,
+  flat = true,
+  rounded = false,
+}: {
+  title?: string;
+  hideTitle?: boolean;
+  flat?: boolean;
+  rounded?: boolean;
+}) => {
   const [carouselData, setCarouselData] = useAtom(carouselDataAtom);
   const selectable = carouselData.selection.selectable;
   const selected = carouselData.selection.selected;
@@ -44,10 +54,17 @@ const ImageList = () => {
 
   return (
     <>
-      <div className='us-bg-gray-100 us-h-full us-max-w-full us-flex us-flex-col us-text-xs us-shadow-lg us-rounded-md us-select-none'>
-        <div className='us-bg-indigo-400 us-py-2 us-px-2 us-rounded-t-md us-flex us-justify-center us-space-x-2'>
-          <span>Image List</span>
-        </div>
+      <div
+        className={`us-bg-gray-100 us-h-full us-max-w-full us-flex us-flex-col us-text-xs ${
+          flat ? '' : 'us-shadow-lg'
+        } ${rounded ? 'us-rounded-md' : ''}
+      us-select-none`}
+      >
+        {!hideTitle && (
+          <div className='us-bg-indigo-400 us-py-2 us-px-2 us-rounded-t-md us-flex us-justify-center us-space-x-2'>
+            <span>{title}</span>
+          </div>
+        )}
         <div className='us-overflow-auto us-h-full us-max-w-full us-px-4 us-py-2 us-flex us-flex-col us-space-y-2'>
           <div className='us-p-0.5 us-rounded-lg us-flex us-flex-wrap'>
             <span
@@ -175,7 +192,12 @@ const ImageList = () => {
         yesCallback={deleteSelectedImages}
         confirmAlias='Delete'
       />
-      <ToastContainer autoClose={2500} hideProgressBar={true} theme='light' />
+      <ToastContainer
+        autoClose={2500}
+        hideProgressBar={true}
+        theme='light'
+        position='bottom-right'
+      />
     </>
   );
 };
