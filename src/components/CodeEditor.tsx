@@ -41,8 +41,8 @@ const ACECodeEditor = ({
   const code = useRef<string>(initCode);
 
   const [log, setLog] = useState<string>('');
-  const [showLog, setShowLog] = useState<boolean>(true);
-  const [showResult, setShowResult] = useState<boolean>(true);
+  const [showLog, setShowLog] = useState<boolean>(false);
+  const [showResult, setShowResult] = useState<boolean>(false);
 
   const [result, setResult] = useState<CodeEditorResultProps>('');
 
