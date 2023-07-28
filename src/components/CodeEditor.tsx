@@ -24,6 +24,9 @@ const ACECodeEditor = ({
   readOnly = false,
   onCodeRun = null,
   onSuccessCallback = null,
+  hideTitle = false,
+  flat = true,
+  rounded = false,
 }: {
   title?: string;
   initCode?: string;
@@ -31,6 +34,9 @@ const ACECodeEditor = ({
   readOnly?: boolean;
   onCodeRun?: Function | null;
   onSuccessCallback?: Function | null;
+  hideTitle?: boolean;
+  flat?: boolean;
+  rounded?: boolean;
 }) => {
   const code = useRef<string>(initCode);
 
@@ -67,7 +73,11 @@ const ACECodeEditor = ({
     };
 
   return (
-    <div className='us-bg-gray-100 us-h-full us-flex us-flex-col us-rounded-md us-shadow-lg'>
+    <div
+      className={`us-bg-gray-100 us-h-full us-flex us-flex-col
+    ${flat ? '' : 'us-shadow-lg'} ${rounded ? 'us-rounded-md' : ''}
+    `}
+    >
       <div className='us-bg-indigo-400 us-py-1 us-px-2 us-rounded-t-md us-inline-grid us-grid-cols-3'>
         <div className='us-flex us-justify-start us-items-center us-pl-4'>
           {onCodeRun && (
@@ -97,7 +107,7 @@ const ACECodeEditor = ({
           )}
         </div>
         <span className='us-flex us-justify-center us-items-center us-text-sm us-select-none'>
-          {title}
+          {hideTitle ? '' : title}
         </span>
         <div></div>
       </div>

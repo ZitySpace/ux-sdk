@@ -3,7 +3,17 @@ import React, { useEffect } from 'react';
 import { useAtom, useAtomValue, useSetAtom } from 'jotai';
 import { posAtom, stepAtom, totAtom, dataframeAtom } from '../atoms';
 
-const DataFrame = ({ title = 'DataFrame' }: { title?: string }) => {
+const DataFrame = ({
+  title = 'DataFrame',
+  hideTitle = false,
+  flat = true,
+  rounded = false,
+}: {
+  title?: string;
+  hideTitle?: boolean;
+  flat?: boolean;
+  rounded?: boolean;
+}) => {
   const [dataframe, setDataframe] = useAtom(dataframeAtom);
 
   const { header, data, selected } = dataframe;
@@ -33,10 +43,16 @@ const DataFrame = ({ title = 'DataFrame' }: { title?: string }) => {
   }, [header, data]);
 
   return (
-    <div className='us-bg-gray-100 us-h-full us-flex us-flex-col us-rounded-md us-shadow-lg'>
-      <div className='us-bg-indigo-400 us-py-2 us-px-2 us-rounded-t-md us-flex us-justify-center us-space-x-2 us-text-xs'>
-        <span>{title}</span>
-      </div>
+    <div
+      className={`us-bg-gray-100 us-h-full us-flex us-flex-col
+    ${flat ? '' : 'us-shadow-lg'} ${rounded ? 'us-rounded-md' : ''}
+    `}
+    >
+      {!hideTitle && (
+        <div className='us-bg-indigo-400 us-py-2 us-px-2 us-rounded-t-md us-flex us-justify-center us-space-x-2 us-text-xs'>
+          <span>{title}</span>
+        </div>
+      )}
       <div className='us-resize-y us-overflow-auto us-h-48 us-bg-white '>
         <table className='us-min-w-full us-divide-y us-divide-gray-200 us-relative us-table-fixed'>
           <thead className='us-bg-gray-700 us-sticky us-top-0'>
