@@ -179,7 +179,6 @@ export const normalizeImagesMeta = (data: ImageMetaProps[]) => {
                     hole,
                   })),
                 };
-              // fallback to origin point if anno.type not recognized
               else if (anno.type === 'keypoints') {
                 const keypoints = anno.keypoints as number[];
 
@@ -199,7 +198,9 @@ export const normalizeImagesMeta = (data: ImageMetaProps[]) => {
                   ).filter((pt) => pt.sid !== -1),
                   structure: anno.structure,
                 };
-              } else
+              }
+              // fallback to origin point if anno.type not recognized
+              else
                 return {
                   type: LabelType.Point as const,
                   category: anno.category,
