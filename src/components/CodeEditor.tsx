@@ -118,7 +118,7 @@ const ACECodeEditor = ({
         <AceEditor
           mode='python'
           theme='monokai'
-          name='Lambda'
+          name='Formula'
           fontSize={14}
           readOnly={readOnly}
           value={code.current}
