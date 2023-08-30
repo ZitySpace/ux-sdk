@@ -65,12 +65,14 @@ const Annotator = ({
     labelConfigsRef.current = {};
     let keypointsStructure: [number, number][] | undefined = undefined;
 
-    if (
-      imagesListRef.current.length &&
-      imagesListRef.current[0].annotations.length
-    )
-      keypointsStructure = (imagesListRef.current[0].annotations[0] as any)
-        .structure;
+    imageLoop: for (const image of imagesListRef.current) {
+      for (const anno of image.annotations) {
+        if (anno.type === 'keypoints') {
+          keypointsStructure = (anno as any).structure;
+          break imageLoop;
+        }
+      }
+    }
 
     if (keypointsStructure)
       labelConfigsRef.current['keypoints'] = {
