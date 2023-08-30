@@ -272,38 +272,81 @@ const dataframeUtilsAtom = atom((get) => {
   const header = dataframe.header;
 
   const idx = header.findIndex((v) => v === 'image_hash');
-  const required = ['x', 'y', 'w', 'h', 'type'];
+  const typeIdx = header.findIndex((v) => v === 'type');
   const optional = ['category'];
-  const pass = !required.some((field) => !header.includes(field));
 
-  const rowDataToAnno = (d: any[]) =>
-    pass
-      ? Object.fromEntries(
-          header
-            .map((h, i) =>
-              h === 'image_hash'
-                ? ['name', d[i]]
-                : required.includes(h) || optional.includes(h)
-                ? [h, d[i]]
-                : []
-            )
-            .filter((e) => e.length)
+  const requiredMap: Record<string, string[]> = {
+    box: ['x', 'y', 'w', 'h'],
+    mask: ['mask'],
+    keypoints: ['keypoints'],
+  };
+
+  const passMap: Record<string, boolean> = Object.fromEntries(
+    Object.entries(requiredMap).map(([type, required]) => [
+      type,
+      !required.some((field) => !header.includes(field)),
+    ])
+  );
+
+  const rowDataToAnno = (d: any[]) => {
+    if (typeIdx === -1) return { name: d[idx] };
+
+    const type = d[typeIdx] as string;
+    const pass = passMap[type];
+
+    if (!pass) return { name: d[idx] };
+
+    const required = requiredMap[type];
+
+    return Object.fromEntries(
+      header
+        .map((h, i) =>
+          h === 'image_hash'
+            ? ['name', d[i]]
+            : h === 'type'
+            ? ['type', d[i]]
+            : required.includes(h) || optional.includes(h)
+            ? h === 'mask'
+              ? [
+                  'paths',
+                  (
+                    d[i] as {
+                      points: number[];
+                      closed?: boolean;
+                      hole?: boolean;
+                    }[]
+                  ).map(({ points: pts, closed, hole }) => ({
+                    points: Array.from({ length: pts.length / 2 }, (_, i) => ({
+                      x: pts[2 * i],
+                      y: pts[2 * i + 1],
+                    })),
+                    closed,
+                    hole,
+                  })),
+                ]
+              : h === 'keypoints'
+              ? ['keypoints', d[i]]
+              : [h, d[i]]
+            : []
         )
-      : { name: d[idx] };
+        .filter((e) => e.length)
+    );
+  };
 
   const groupByImageFunc: (data: any[][]) => CarouselData['carouselData'] = (
     data: any[][]
   ) =>
     data.reduce((res: CarouselData['carouselData'], d: any[]) => {
       const anno = rowDataToAnno(d);
+      const hasAnno = 'type' in anno;
       const name = anno.name;
+      const annos = name in res ? res[name].annotations! : [];
+
       return {
         ...res,
         [name]: {
           name: name,
-          annotations: pass
-            ? [...(name in res ? res[name].annotations! : []), anno]
-            : null,
+          annotations: hasAnno ? [...annos, anno] : annos,
         },
       };
     }, {});
