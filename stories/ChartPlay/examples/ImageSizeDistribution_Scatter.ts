@@ -100,6 +100,7 @@ export const makeOption = (
           await Option.filterFromQuery(
             HOST,
             "res = df[(df.image_width == data['image_width']) & (df.image_height == data['image_height'])][['image_hash']].drop_duplicates()",
+            false,
             params
           )
         );

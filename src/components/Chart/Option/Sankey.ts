@@ -1,4 +1,5 @@
-import { Base, ChartExternalDatasetProps, fetchData, queryData } from './Base';
+import { Base, ChartExternalDatasetProps } from './Base';
+import { fetchData, queryData } from '../../../utils';
 
 export interface ChartSankeyDataProps {
   nodes: {

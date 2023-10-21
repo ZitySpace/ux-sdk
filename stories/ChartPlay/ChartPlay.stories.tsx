@@ -1,10 +1,10 @@
 import { Meta, StoryObj } from '@storybook/react';
-import React, { useEffect, useState, useRef } from 'react';
+import React, { useEffect, useState, useRef, Suspense } from 'react';
 
 import { QueryProvider, useCarouselSetSize, useCarouselSetPage } from '@/hooks';
 import { Chart, Option, PaginationBar, ImageCarousel } from '@/components';
-import { filterAtom } from '@/atoms';
-import { useSetAtom, Provider } from 'jotai';
+import { filterAtom, apiEndpointAtom } from '@/atoms';
+import { useAtom, useSetAtom, Provider } from 'jotai';
 
 import {
   makeCategoryDistributionBarOption,
@@ -26,7 +26,7 @@ const meta: Meta<typeof Chart> = {
 };
 export default meta;
 
-const HOST = 'http://localhost:8008';
+const endpoint = '/formula-serv/zityspace/category-distribution-bar';
 
 const ChartPlay = () => {
   const { isLoading: isSizeLoading } = useCarouselSetSize();
@@ -56,16 +56,25 @@ const ChartPlay = () => {
 
   const setFilter = useSetAtom(filterAtom);
 
+  const [apiEndpoint, setApiEndpoint] = useAtom(apiEndpointAtom);
+
   useEffect(() => {
     setFilter({
       choice: 'byDataframe',
       value: {
-        header: [],
+        header: ['a'],
         data: [],
         selected: [],
+        // query: {
+        //   host: `${endpoint}/default/queries`,
+        //   code: "res = df[['image_hash', 'x', 'y', 'w', 'h', 'category', 'type']]",
+        // },
       },
     });
+    setApiEndpoint(`${endpoint}/default`);
   }, []);
+
+  const HOST = `${endpoint}/default/queries`;
 
   const optionRef = useRef<Option>(new Option());
   const chartKeyRef = useRef<boolean>(false);

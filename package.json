@@ -129,7 +129,7 @@
     "ace-builds": "^1.21.1",
     "echarts": "^5.3.2",
     "echarts-gl": "^2.0.9",
-    "jotai": "^2.1.0",
+    "jotai": "^2.4.3",
     "rc-slider": "^10.1.0",
     "rc-tooltip": "^5.2.2",
     "rc-util": "^5.30.0",

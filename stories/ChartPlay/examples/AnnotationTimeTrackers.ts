@@ -234,6 +234,7 @@ export const makeOption = (
           await Option.filterFromQuery(
             HOST,
             "res = df[df.last_updated.apply(lambda dt: dt.startswith(data['last_updated']))]",
+            false,
             params
           )
         );

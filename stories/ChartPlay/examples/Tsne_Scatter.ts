@@ -117,6 +117,7 @@ res = df[
     & (df.h == data['h'])
 ][['image_hash', 'x', 'y', 'w', 'h', 'category', 'type']]
             `,
+            false,
             params
           )
         );

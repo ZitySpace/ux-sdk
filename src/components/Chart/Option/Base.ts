@@ -1,4 +1,5 @@
-import { filterAtomMap, requestTemplate } from '../../../atoms';
+import { filterAtomMap } from '../../../atoms';
+import { queryData, fetchData } from '../../../utils';
 import * as echarts from 'echarts';
 import merge from 'ts-deepmerge';
 
@@ -50,47 +51,6 @@ interface ChartOptionProps {
 interface ChartOptionGenFuncProps {
   (dataset: ChartDatasetProps): ChartOptionProps;
 }
-
-export const queryData = async (host: string, query: string) => {
-  const api = requestTemplate(
-    (code: string) => {
-      return {
-        url: host,
-        method: 'POST',
-        headers: new Headers({
-          Accept: 'application/json',
-          'Content-Type': 'application/json',
-        }),
-        body: JSON.stringify({
-          code: code,
-        }),
-      };
-    },
-    ...[,],
-    ...[,],
-    false
-  );
-
-  try {
-    const r = await api(query);
-    if (r && r.hasOwnProperty('result') && typeof r.result !== 'string')
-      return r.result;
-    return null;
-  } catch (err) {
-    return null;
-  }
-};
-
-export const fetchData = async (jsonUri: string) => {
-  const response = await fetch(jsonUri, {
-    method: 'GET',
-    headers: {
-      Accept: 'application/json',
-    },
-  });
-  const data = await response.json();
-  return data;
-};
 
 const ListableOptions = [
   'title',
@@ -466,6 +426,7 @@ export class Base {
   public static filterFromQuery = async (
     host: string,
     query: string,
+    toLocal: boolean = true,
     params?: MouseEventParams
   ) => {
     let query_: string = query;
@@ -473,8 +434,18 @@ export class Base {
       const data = transformParams(params);
       query_ = `global data\ndata = ${JSON.stringify(data)}\n${query}`;
     }
+
+    if (!toLocal)
+      return {
+        choice: 'byDataframeGroupByImage' as keyof typeof filterAtomMap,
+        value: {
+          query: { host, code: query_ },
+        },
+      };
+
     const df = await queryData(host, query_);
     const { header, data } = df ? df : { header: [], data: [] };
+
     return {
       choice: 'byDataframeGroupByImage' as keyof typeof filterAtomMap,
       value: {

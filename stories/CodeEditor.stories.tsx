@@ -1,7 +1,8 @@
 import { Meta, StoryObj } from '@storybook/react';
 import React, { useEffect } from 'react';
-import { useAtom, useSetAtom, Provider } from 'jotai';
-import { requestTemplate, filterAtom, dataframeAtom } from '@/atoms';
+import { useSetAtom, Provider } from 'jotai';
+import { filterAtom } from '@/atoms';
+import { requestTemplate } from '@/utils';
 import { QueryProvider, useCarouselSetPage, useCarouselSetSize } from '@/hooks';
 import {
   CodeEditor,
@@ -43,20 +44,17 @@ const Template = (args: any) => {
     const { isLoading: isPageLoading } = useCarouselSetPage();
 
     const setFilter = useSetAtom(filterAtom);
-    const [dataframe, setDataframe] = useAtom(dataframeAtom);
-    const header = dataframe.header;
-    const data = dataframe.data;
 
     useEffect(() => {
       setFilter({
         choice: 'byDataframe',
         value: {
-          header,
-          data,
-          selected: Array(data.length).fill(false),
+          header: [],
+          data: [],
+          selected: [],
         },
       });
-    }, [header, data]);
+    }, []);
 
     if (isSizeLoading || isPageLoading) return <></>;
 
@@ -71,10 +69,13 @@ const Template = (args: any) => {
             header: string[];
             data: any[][];
           }) =>
-            setDataframe({
-              header,
-              data,
-              selected: Array(data.length).fill(false),
+            setFilter({
+              choice: 'byDataframe',
+              value: {
+                header,
+                data,
+                selected: Array(data.length).fill(false),
+              },
             })
           }
           {...args.CodeEditor}

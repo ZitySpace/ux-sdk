@@ -5,6 +5,8 @@ import {
   ImageData,
   keypointsLabelConfig,
 } from '@zityspace/react-annotate';
+import { getImageResponseHandler, requestTemplate, queryData } from './utils';
+import { unwrap } from 'jotai/utils';
 
 interface ImageMetaProps {
   id: number;
@@ -55,82 +57,6 @@ interface Filter {
   sizeFilter: SizeFilter;
   pageFilter: PageFilter;
 }
-
-interface Dataframe {
-  header: string[];
-  data: any[][];
-  selected: boolean[];
-}
-
-const responseHandlerTemplate = async (response: Response) => {
-  if (response.status === 401) {
-    throw new Error('Not Authorized');
-  }
-
-  if (response.status === 500) {
-    throw new Error('Internal Server Error');
-  }
-
-  const data = await response.json();
-
-  if (response.status > 401 && response.status < 500) {
-    const err = data.detail ? data.detail : data;
-    throw err;
-  }
-
-  return data;
-};
-
-const getImageResponseHandler = async (response: Response) => {
-  if (response.status === 401) {
-    throw new Error('Not Authorized');
-  }
-
-  if (response.status === 500) {
-    throw new Error('Internal Server Error');
-  }
-
-  const data = await response.blob();
-
-  if (response.status > 401 && response.status < 500) {
-    const err = JSON.parse(await data.text());
-    throw new Error(err.detail);
-  }
-
-  return data;
-};
-
-export const requestTemplate =
-  (
-    requestConstructor: Function,
-    responseHandler: Function = responseHandlerTemplate,
-    dataTransformer: Function | null = null,
-    requireAuthentication: boolean = false
-  ) =>
-  async (...args: any[]) => {
-    const { url, method, headers, body } = requestConstructor(...args);
-    const headersFinal = headers || new Headers({ Accept: 'application/json' });
-
-    if (requireAuthentication) {
-      const token = localStorage.getItem('token');
-      if (!token) {
-        throw new Error('Not Authorized');
-      }
-
-      headersFinal.set('Authorization', `Bearer ${token}`);
-    }
-
-    const request = new Request(url, {
-      method: method,
-      headers: headersFinal,
-      body: body,
-    });
-    const response = await fetch(request);
-
-    const data = await responseHandler(response);
-
-    return dataTransformer ? dataTransformer(data) : data;
-  };
 
 export const normalizeImagesMeta = (data: ImageMetaProps[]) => {
   return {
@@ -261,16 +187,142 @@ const categoryFilterAtom = atom<Filter>((get) => {
   };
 });
 
-export const dataframeAtom = atom<Dataframe>({
+interface LocalDataframe {
+  header: string[];
+  data: any[][];
+  selected: boolean[];
+}
+
+interface RemoteDataframe {
+  query: { host: string; code: string } | null;
+}
+
+const dataframeLocalAtom = atom<LocalDataframe>({
   header: [],
   data: [],
   selected: [],
 });
 
-const dataframeUtilsAtom = atom((get) => {
-  const dataframe = get(dataframeAtom);
-  const header = dataframe.header;
+const dataframeRemoteAtom = atom<RemoteDataframe>({
+  query: null,
+});
 
+const dataframeIsRemoteAtom = atom<boolean>(false);
+
+type DataframeConfig = LocalDataframe | RemoteDataframe;
+
+const dataframeAsyncAtom = atom<
+  Promise<{
+    header: string[];
+    selected: boolean[];
+    getData: (
+      start: number,
+      end: number,
+      byImage: boolean
+    ) => Promise<any[][]> | any[][];
+    getSize: (byImage: boolean) => Promise<number> | number;
+  }>,
+  DataframeConfig[],
+  void
+>(
+  async (get) => {
+    const isRemote = get(dataframeIsRemoteAtom);
+
+    if (isRemote) {
+      const { query } = get(dataframeRemoteAtom);
+      if (!query)
+        return {
+          header: [],
+          selected: [],
+          getData: (
+            start: number = 0,
+            end: number = 0,
+            byImage: boolean = false
+          ) => [],
+          getSize: (byImage: boolean = false) => 0,
+        };
+
+      const { host, code } = query!;
+      const df = await queryData(host, code, 0, 0, false, true);
+      const { header, size } = df ? df : { header: [], size: 0 };
+
+      const getSize = async (byImage: boolean = false) => {
+        const df = await queryData(host, code, 0, 0, byImage, true);
+        const { size } = df ? df : { size: 0 };
+        return size;
+      };
+
+      const getData = async (
+        start: number = 0,
+        end: number = size,
+        byImage: boolean = false
+      ) => {
+        const df = await queryData(host, code, start, end, byImage, true);
+        const { data } = df ? df : { data: [] };
+        return data;
+      };
+
+      return {
+        header,
+        selected: Array(size).fill(false),
+        getData,
+        getSize,
+      };
+    } else {
+      const { header, data, selected } = get(dataframeLocalAtom);
+      console.log(header, data, selected);
+      const { sizeByImageFunc, sliceByImageFunc } = dataframeUtils(header);
+
+      const getData = (
+        start: number = 0,
+        end: number = selected.length,
+        byImage: boolean = false
+      ) => {
+        if (!byImage) return data.slice(start, end);
+        return sliceByImageFunc(data, start, end);
+      };
+
+      const getSize = (byImage: boolean = false) => {
+        if (!byImage) return data.length;
+        return sizeByImageFunc(data);
+      };
+
+      return {
+        header,
+        selected,
+        getData,
+        getSize,
+      };
+    }
+  },
+  (_, set, config) => {
+    if ('query' in config) {
+      set(dataframeIsRemoteAtom, true);
+      set(dataframeRemoteAtom, config);
+    } else {
+      set(dataframeIsRemoteAtom, false);
+      set(dataframeLocalAtom, config);
+    }
+  }
+);
+
+export const dataframeAtom = unwrap(dataframeAsyncAtom, (prev) => {
+  console.log('prev: ', prev);
+  return (
+    prev ?? {
+      header: [],
+      selected: [],
+      getData: (
+        start: number = 0,
+        end: number = 0,
+        byImage: boolean = false
+      ) => [],
+      getSize: (byImage: boolean = false) => 57,
+    }
+  );
+});
+
+const dataframeUtils = (header: string[]) => {
   const idx = header.findIndex((v) => v === 'image_hash');
   const typeIdx = header.findIndex((v) => v === 'type');
   const optional = ['category'];
@@ -351,6 +403,21 @@ const dataframeUtilsAtom = atom((get) => {
       };
     }, {});
 
+  const sizeByImageFunc = (data: any[][]) => {
+    const names = data.map((d) => d[idx]);
+    const uniqueNames = new Set(names);
+    return uniqueNames.size;
+  };
+
+  const sliceByImageFunc = (data: any[][], start: number, end: number) => {
+    const names = data.map((d) => d[idx]);
+    const uniqueNames = Array.from(new Set(names));
+    const nameSlice = new Set(uniqueNames.slice(start, end));
+
+    const dataSlice = data.filter((d) => nameSlice.has(d[idx]));
+    return dataSlice;
+  };
+
   const initSelectionFunc = (carouselData: CarouselData['carouselData']) => ({
     selectable: false,
     selected: Object.keys(carouselData).reduce(
@@ -359,19 +426,25 @@ const dataframeUtilsAtom = atom((get) => {
     ),
   });
 
-  return { groupByImageFunc, initSelectionFunc };
-});
+  return {
+    groupByImageFunc,
+    sizeByImageFunc,
+    sliceByImageFunc,
+    initSelectionFunc,
+  };
+};
 
 const dataframeFilterAtom = atom<Filter>((get) => {
-  const dataframe = get(dataframeAtom);
-  const data = dataframe.data;
+  const { header, getData, getSize } = get(dataframeAtom);
 
-  const { groupByImageFunc, initSelectionFunc } = get(dataframeUtilsAtom);
+  const { groupByImageFunc, initSelectionFunc } = dataframeUtils(header);
 
   return {
-    sizeFilter: () => data.length,
-    pageFilter: (pos: number, step: number) => {
-      const carouselData = groupByImageFunc(data.slice(pos, pos + step));
+    sizeFilter: async () => await getSize(false),
+    pageFilter: async (pos: number, step: number) => {
+      const carouselData = groupByImageFunc(
+        await getData(pos, pos + step, false)
+      );
       const selection = initSelectionFunc(carouselData);
       return { carouselData, selection };
     },
@@ -379,24 +452,17 @@ const dataframeFilterAtom = atom<Filter>((get) => {
 });
 
 const dataframeGroupByImageFilterAtom = atom<Filter>((get) => {
-  const dataframe = get(dataframeAtom);
-  const data = dataframe.data;
+  const { header, getData, getSize } = get(dataframeAtom);
 
-  const { groupByImageFunc, initSelectionFunc } = get(dataframeUtilsAtom);
-  const dataGroupByImage = groupByImageFunc(data);
-  const images = Object.keys(dataGroupByImage);
+  const { groupByImageFunc, initSelectionFunc } = dataframeUtils(header);
 
   return {
-    sizeFilter: () => images.length,
-    pageFilter: (pos: number, step: number) => {
-      const carouselData = images
-        .slice(pos, pos + step)
-        .reduce(
-          (res, name) => ({ ...res, [name]: dataGroupByImage[name] }),
-          {}
-        );
+    sizeFilter: async () => await getSize(true),
+    pageFilter: async (pos: number, step: number) => {
+      const carouselData = groupByImageFunc(
+        await getData(pos, pos + step, true)
+      );
       const selection = initSelectionFunc(carouselData);
-
       return { carouselData, selection };
     },
   };
@@ -411,7 +477,7 @@ export const filterAtomMap = {
 
 export interface FilterProps {
   choice: keyof typeof filterAtomMap;
-  value?: string | Dataframe;
+  value?: string | DataframeConfig;
 }
 
 export const filterAtom = atom<FilterProps, FilterProps[], void>(
@@ -436,7 +502,7 @@ export const filterAtom = atom<FilterProps, FilterProps[], void>(
     }
 
     if (choice === 'byDataframe' || choice === 'byDataframeGroupByImage') {
-      set(dataframeAtom, value! as Dataframe);
+      set(dataframeAtom, value! as DataframeConfig);
     }
 
     set(posAtom, 0);

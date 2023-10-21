@@ -73,5 +73,14 @@ export default [
       const [pkg] = id.split('/');
       return deps.includes(pkg);
     },
+
+    // use client warning issue
+    // https://github.com/TanStack/query/issues/5175
+    onwarn(warning, warn) {
+      if (warning.code === 'MODULE_LEVEL_DIRECTIVE') {
+        return;
+      }
+      warn(warning);
+    },
   },
 ];

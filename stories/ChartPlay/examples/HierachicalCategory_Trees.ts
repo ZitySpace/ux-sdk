@@ -1,5 +1,6 @@
 import { FilterProps } from '@/atoms';
-import { Option, MouseEventParams, fetchData } from '@/components';
+import { Option, MouseEventParams } from '@/components';
+import { fetchData } from '@/utils';
 
 const getRelationData = (HOST: string) => async () =>
   await fetchData(HOST + '/relation?name=categories');

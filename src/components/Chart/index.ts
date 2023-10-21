@@ -4,5 +4,4 @@ export {
   type MouseEventParams,
   type BrushSelectedEventParams,
   type ChartDatasetProps,
-  fetchData,
 } from './Option/Base';

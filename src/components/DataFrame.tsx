@@ -16,22 +16,27 @@ const DataFrame = ({
 }) => {
   const [dataframe, setDataframe] = useAtom(dataframeAtom);
 
-  const { header, data, selected } = dataframe;
-  const toggleSelect = (i: number) => {
-    setDataframe(
-      produce((d) => {
-        d.selected[i] = !d.selected[i];
-      })
-    );
-  };
-  const toggleSelectSlice = (i: number, step: number) => {
-    setDataframe(
-      produce((d) => {
-        const allSelected = !d.selected.slice(i, i + step).includes(false);
-        d.selected.splice(i, step, ...Array(step).fill(!allSelected));
-      })
-    );
-  };
+  const { header, getData, selected } = dataframe;
+  // const toggleSelect = (i: number) => {
+  //   setDataframe(
+  //     produce((d) => {
+  //       d.selected[i] = !d.selected[i];
+  //     })
+  //   );
+  // };
+  // const toggleSelectSlice = (i: number, step: number) => {
+  //   setDataframe(
+  //     produce((d) => {
+  //       const allSelected = !d.selected.slice(i, i + step).includes(false);
+  //       d.selected.splice(i, step, ...Array(step).fill(!allSelected));
+  //     })
+  //   );
+  // };
+
+  // hack for commit now
+  const data: any[][] = [];
+  const toggleSelect = (i: number) => null;
+  const toggleSelectSlice = (i: number, step: number) => null;
 
   const [pos, setPos] = useAtom(posAtom);
   const step = useAtomValue(stepAtom);

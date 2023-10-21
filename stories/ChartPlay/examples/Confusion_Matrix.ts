@@ -304,6 +304,7 @@ export const makeOption = (
           await Option.filterFromQuery(
             HOST,
             "res = df.iloc[data['idx']][['image_hash', 'x', 'y', 'w', 'h', 'category', 'type']]",
+            false,
             params
           )
         );

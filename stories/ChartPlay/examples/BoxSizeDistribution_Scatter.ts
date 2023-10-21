@@ -96,6 +96,7 @@ export const makeOption = (
           await Option.filterFromQuery(
             HOST,
             "res = df[df.category == data['category']][['image_hash', 'x', 'y', 'w', 'h', 'category', 'type']]",
+            false,
             params
           )
         );
