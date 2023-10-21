@@ -62,7 +62,7 @@ const ChartPlay = () => {
     setFilter({
       choice: 'byDataframe',
       value: {
-        header: ['a'],
+        header: [],
         data: [],
         selected: [],
         // query: {

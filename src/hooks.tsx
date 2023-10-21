@@ -38,14 +38,14 @@ export const QueryProvider = ({ children }: { children: React.ReactNode }) => {
 export const useCarouselSetSize = () => {
   const setTotal = useSetAtom(totAtom);
   const filter = useAtomValue(filterAtom);
-  const { sizeFilter } = useAtomValue(filterAtomMap[filter.choice]);
+  const { config, sizeFilter } = useAtomValue(filterAtomMap[filter.choice]);
 
   const {
     data: total,
     isLoading,
     isSuccess,
   } = useQuery({
-    queryKey: ['carouselSize', filter],
+    queryKey: ['carouselSize', config],
     queryFn: sizeFilter,
     keepPreviousData: true,
     refetchOnWindowFocus: false,
@@ -64,14 +64,14 @@ export const useCarouselSetPage = () => {
   const step = useAtomValue(stepAtom);
   const setCarouselData = useSetAtom(carouselDataAtom);
   const filter = useAtomValue(filterAtom);
-  const { pageFilter } = useAtomValue(filterAtomMap[filter.choice]);
+  const { config, pageFilter } = useAtomValue(filterAtomMap[filter.choice]);
 
   const {
     data: carouselData,
     isLoading,
     isSuccess,
   } = useQuery({
-    queryKey: ['carouselPage', pos, step, filter],
+    queryKey: ['carouselPage', pos, step, config],
     queryFn: () => pageFilter(pos, step, 'upload_time'),
     keepPreviousData: true,
     refetchOnWindowFocus: false,

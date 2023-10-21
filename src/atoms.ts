@@ -54,6 +54,10 @@ type PageFilter = (
 ) => CarouselData | Promise<CarouselData>;
 
 interface Filter {
+  config: {
+    choice: string;
+    value?: DataframeConfig | string | null;
+  };
   sizeFilter: SizeFilter;
   pageFilter: PageFilter;
 }
@@ -167,6 +171,10 @@ export const carouselDataAtom = atom<CarouselData>({
 });
 
 const defaultFilterAtom = atom<Filter>((get) => ({
+  config: {
+    choice: 'default',
+    value: undefined,
+  },
   sizeFilter: get(getImagesCountAtom),
   pageFilter: get(getImagesMetaAtom),
 }));
@@ -175,12 +183,20 @@ export const categoryAtom = atom<string | null>(null);
 const categoryFilterAtom = atom<Filter>((get) => {
   const category = get(categoryAtom);
 
-  if (!category) return get(defaultFilterAtom);
+  if (!category)
+    return {
+      ...get(defaultFilterAtom),
+      config: { choice: 'byCategory', value: null },
+    };
 
   const getImagesCountByCategory = get(getImagesCountByCategoryAtom);
   const getImagesMetaByCategory = get(getImagesMetaByCategoryAtom);
 
   return {
+    config: {
+      choice: 'byCategory',
+      value: category,
+    },
     sizeFilter: async () => await getImagesCountByCategory(category),
     pageFilter: async (offset: number, limit: number, order_by: string) =>
       await getImagesMetaByCategory(category, offset, limit, order_by),
@@ -221,6 +237,7 @@ const dataframeAsyncAtom = atom<
       byImage: boolean
     ) => Promise<any[][]> | any[][];
     getSize: (byImage: boolean) => Promise<number> | number;
+    config: DataframeConfig;
   }>,
   DataframeConfig[],
   void
@@ -240,6 +257,9 @@ const dataframeAsyncAtom = atom<
             byImage: boolean = false
           ) => [],
           getSize: (byImage: boolean = false) => 0,
+          config: {
+            query,
+          },
         };
 
       const { host, code } = query!;
@@ -267,10 +287,12 @@ const dataframeAsyncAtom = atom<
         selected: Array(size).fill(false),
         getData,
         getSize,
+        config: {
+          query,
+        },
       };
     } else {
       const { header, data, selected } = get(dataframeLocalAtom);
-      console.log(header, data, selected);
       const { sizeByImageFunc, sliceByImageFunc } = dataframeUtils(header);
 
       const getData = (
@@ -292,6 +314,11 @@ const dataframeAsyncAtom = atom<
         selected,
         getData,
         getSize,
+        config: {
+          header,
+          data,
+          selected,
+        },
       };
     }
   },
@@ -307,7 +334,6 @@ const dataframeAsyncAtom = atom<
 );
 
 export const dataframeAtom = unwrap(dataframeAsyncAtom, (prev) => {
-  console.log('prev: ', prev);
   return (
     prev ?? {
       header: [],
@@ -317,7 +343,8 @@ export const dataframeAtom = unwrap(dataframeAsyncAtom, (prev) => {
         end: number = 0,
         byImage: boolean = false
       ) => [],
-      getSize: (byImage: boolean = false) => 57,
+      getSize: (byImage: boolean = false) => 0,
+      config: { header: [], data: [], selected: [] },
     }
   );
 });
@@ -435,11 +462,12 @@ const dataframeUtils = (header: string[]) => {
 };
 
 const dataframeFilterAtom = atom<Filter>((get) => {
-  const { header, getData, getSize } = get(dataframeAtom);
+  const { header, getData, getSize, config } = get(dataframeAtom);
 
   const { groupByImageFunc, initSelectionFunc } = dataframeUtils(header);
 
   return {
+    config: { choice: 'byDataframe', value: config },
     sizeFilter: async () => await getSize(false),
     pageFilter: async (pos: number, step: number) => {
       const carouselData = groupByImageFunc(
@@ -452,11 +480,12 @@ const dataframeFilterAtom = atom<Filter>((get) => {
 });
 
 const dataframeGroupByImageFilterAtom = atom<Filter>((get) => {
-  const { header, getData, getSize } = get(dataframeAtom);
+  const { header, getData, getSize, config } = get(dataframeAtom);
 
   const { groupByImageFunc, initSelectionFunc } = dataframeUtils(header);
 
   return {
+    config: { choice: 'byDataframeGroupByImage', value: config },
     sizeFilter: async () => await getSize(true),
     pageFilter: async (pos: number, step: number) => {
       const carouselData = groupByImageFunc(
