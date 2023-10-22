@@ -1,8 +1,9 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { Meta, StoryObj } from '@storybook/react';
 import { ImageCarousel, PaginationBar } from '@/components';
 import { QueryProvider, useCarouselSetSize, useCarouselSetPage } from '@/hooks';
-import { Provider } from 'jotai';
+import { apiEndpointAtom } from '@/atoms';
+import { Provider, useSetAtom } from 'jotai';
 
 const meta: Meta<typeof ImageCarousel> = {
   title: 'UX-SDK/ImageCarousel',
@@ -14,6 +15,12 @@ const Template = () => {
   const Story = () => {
     const { isLoading: isSizeLoading } = useCarouselSetSize();
     const { isLoading: isPageLoading } = useCarouselSetPage();
+
+    const setApiEndpoint = useSetAtom(apiEndpointAtom);
+
+    useEffect(() => {
+      setApiEndpoint(`/formula-serv/zityspace/image-carousel/default`);
+    }, []);
 
     if (isSizeLoading || isPageLoading) return <></>;
 

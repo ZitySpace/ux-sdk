@@ -1,7 +1,13 @@
 import { Meta, StoryObj } from '@storybook/react';
 import React, { useEffect } from 'react';
-import { useSetAtom, Provider } from 'jotai';
-import { filterAtom } from '@/atoms';
+import {
+  useAtom,
+  useSetAtom,
+  Provider,
+  createStore,
+  useAtomValue,
+} from 'jotai';
+import { filterAtom, apiEndpointAtom, dataframeAtom } from '@/atoms';
 import { requestTemplate } from '@/utils';
 import { QueryProvider, useCarouselSetPage, useCarouselSetSize } from '@/hooks';
 import {
@@ -9,6 +15,8 @@ import {
   DataFrame,
   PaginationBar,
   ImageCarousel,
+  ImageList,
+  Annotator,
 } from '@/components';
 
 const meta: Meta<typeof CodeEditor> = {
@@ -17,49 +25,92 @@ const meta: Meta<typeof CodeEditor> = {
 };
 export default meta;
 
-const code = `res = df.groupby('category').size().to_frame('count')`;
+const dataframeStore = createStore();
 
-const runCode = requestTemplate(
-  (code: string) => {
-    return {
-      url: 'http://localhost:8008',
-      method: 'POST',
-      headers: new Headers({
-        Accept: 'application/json',
-        'Content-Type': 'application/json',
-      }),
-      body: JSON.stringify({
-        code: code,
-      }),
-    };
-  },
-  ...[,],
-  ...[,],
-  false
-);
+const imageCarouselStore = createStore();
 
 const Template = (args: any) => {
-  const Story = () => {
+  const QueriedDataFrame = () => {
     const { isLoading: isSizeLoading } = useCarouselSetSize();
     const { isLoading: isPageLoading } = useCarouselSetPage();
-
-    const setFilter = useSetAtom(filterAtom);
-
-    useEffect(() => {
-      setFilter({
-        choice: 'byDataframe',
-        value: {
-          header: [],
-          data: [],
-          selected: [],
-        },
-      });
-    }, []);
 
     if (isSizeLoading || isPageLoading) return <></>;
 
     return (
-      <>
+      <div className='us-flex us-flex-col'>
+        <DataFrame hideTitle={true} />
+        <PaginationBar />
+      </div>
+    );
+  };
+
+  const QueriedImageCarousel = () => {
+    const { isLoading: isSizeLoading } = useCarouselSetSize();
+    const { isLoading: isPageLoading } = useCarouselSetPage();
+
+    if (isSizeLoading || isPageLoading) return <></>;
+
+    return (
+      <div className='us-flex us-flex-col us-space-y-2'>
+        <div className='us-flex us-flex-col'>
+          <div className='us-w-full us-grid us-grid-cols-3 us-gap-2 us-h-[720px]'>
+            <div className='us-max-h-full us-overflow-y-scroll'>
+              <ImageList hideTitle={true} />
+            </div>
+            <div className='us-max-h-full us-overflow-y-scroll us-col-span-2'>
+              <ImageCarousel hideTitle={true} />
+            </div>
+          </div>
+          <PaginationBar />
+        </div>
+        <div className='us-h-[640px]'>
+          <Annotator hideTitle={true} />
+        </div>
+      </div>
+    );
+  };
+
+  const Story = () => {
+    const [apiEndpoint, setApiEndpoint] = useAtom(apiEndpointAtom);
+
+    const [dataframe, setDataframe] = useAtom(dataframeAtom);
+    const { config } = dataframe;
+
+    dataframeStore.set(apiEndpointAtom, apiEndpoint);
+    dataframeStore.set(filterAtom, { choice: 'byDataframe', value: config });
+    imageCarouselStore.set(apiEndpointAtom, apiEndpoint);
+    imageCarouselStore.set(filterAtom, {
+      choice: 'byDataframeGroupByImage',
+      value: config,
+    });
+
+    const code = `res = df.groupby('category').size().to_frame('count')`;
+
+    const runCode = requestTemplate(
+      (code: string) => {
+        return {
+          url: `${apiEndpoint}/queries`,
+          method: 'POST',
+          headers: new Headers({
+            Accept: 'application/json',
+            'Content-Type': 'application/json',
+          }),
+          body: JSON.stringify({
+            code: code,
+          }),
+        };
+      },
+      ...[,],
+      ...[,],
+      false
+    );
+
+    useEffect(() => {
+      setApiEndpoint(`/formula-serv/zityspace/annotation-query/default`);
+    }, []);
+
+    return (
+      <div className='us-flex us-flex-col us-space-y-2'>
         <CodeEditor
           onCodeRun={runCode}
           onSuccessCallback={({
@@ -69,21 +120,24 @@ const Template = (args: any) => {
             header: string[];
             data: any[][];
           }) =>
-            setFilter({
-              choice: 'byDataframe',
-              value: {
-                header,
-                data,
-                selected: Array(data.length).fill(false),
-              },
+            setDataframe({
+              header,
+              data,
+              selected: Array(data.length).fill(false),
             })
           }
+          initCode={code}
           {...args.CodeEditor}
         />
-        <DataFrame {...args.DataFrame} />
-        <PaginationBar />
-        <ImageCarousel />
-      </>
+
+        <Provider store={dataframeStore}>
+          <QueriedDataFrame />
+        </Provider>
+
+        <Provider store={imageCarouselStore}>
+          <QueriedImageCarousel />
+        </Provider>
+      </div>
     );
   };
 
@@ -101,7 +155,6 @@ export const Story: StoryObj<typeof Template> = {
   args: {
     CodeEditor: {
       title: 'DataFrame Query Box',
-      initCode: code,
       placeholder: 'write pandas dataframe query here',
     },
     DataFrame: {

@@ -246,7 +246,8 @@ const dataframeAsyncAtom = atom<
     const isRemote = get(dataframeIsRemoteAtom);
 
     if (isRemote) {
-      const { query } = get(dataframeRemoteAtom);
+      const config = get(dataframeRemoteAtom);
+      const { query } = config;
       if (!query)
         return {
           header: [],
@@ -257,9 +258,7 @@ const dataframeAsyncAtom = atom<
             byImage: boolean = false
           ) => [],
           getSize: (byImage: boolean = false) => 0,
-          config: {
-            query,
-          },
+          config,
         };
 
       const { host, code } = query!;
@@ -287,12 +286,11 @@ const dataframeAsyncAtom = atom<
         selected: Array(size).fill(false),
         getData,
         getSize,
-        config: {
-          query,
-        },
+        config,
       };
     } else {
-      const { header, data, selected } = get(dataframeLocalAtom);
+      const config = get(dataframeLocalAtom);
+      const { header, data, selected } = config;
       const { sizeByImageFunc, sliceByImageFunc } = dataframeUtils(header);
 
       const getData = (
@@ -314,11 +312,7 @@ const dataframeAsyncAtom = atom<
         selected,
         getData,
         getSize,
-        config: {
-          header,
-          data,
-          selected,
-        },
+        config,
       };
     }
   },
@@ -368,6 +362,7 @@ const dataframeUtils = (header: string[]) => {
   );
 
   const rowDataToAnno = (d: any[]) => {
+    if (idx === -1) return {};
     if (typeIdx === -1) return { name: d[idx] };
 
     const type = d[typeIdx] as string;
@@ -415,28 +410,32 @@ const dataframeUtils = (header: string[]) => {
   const groupByImageFunc: (data: any[][]) => CarouselData['carouselData'] = (
     data: any[][]
   ) =>
-    data.reduce((res: CarouselData['carouselData'], d: any[]) => {
-      const anno = rowDataToAnno(d);
-      const hasAnno = 'type' in anno;
-      const name = anno.name;
-      const annos = name in res ? res[name].annotations! : [];
+    idx === -1
+      ? {}
+      : data.reduce((res: CarouselData['carouselData'], d: any[]) => {
+          const anno = rowDataToAnno(d);
+          const hasAnno = 'type' in anno;
+          const name = anno.name;
+          const annos = name in res ? res[name].annotations! : [];
 
-      return {
-        ...res,
-        [name]: {
-          name: name,
-          annotations: hasAnno ? [...annos, anno] : annos,
-        },
-      };
-    }, {});
+          return {
+            ...res,
+            [name]: {
+              name: name,
+              annotations: hasAnno ? [...annos, anno] : annos,
+            },
+          };
+        }, {});
 
   const sizeByImageFunc = (data: any[][]) => {
+    if (idx === -1) return 0;
     const names = data.map((d) => d[idx]);
     const uniqueNames = new Set(names);
     return uniqueNames.size;
   };
 
   const sliceByImageFunc = (data: any[][], start: number, end: number) => {
+    if (idx === -1) return [];
     const names = data.map((d) => d[idx]);
     const uniqueNames = Array.from(new Set(names));
     const nameSlice = new Set(uniqueNames.slice(start, end));

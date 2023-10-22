@@ -1,5 +1,5 @@
 import produce from 'immer';
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useAtom, useAtomValue, useSetAtom } from 'jotai';
 import { posAtom, stepAtom, totAtom, dataframeAtom } from '../atoms';
 
@@ -14,38 +14,49 @@ const DataFrame = ({
   flat?: boolean;
   rounded?: boolean;
 }) => {
-  const [dataframe, setDataframe] = useAtom(dataframeAtom);
-
-  const { header, getData, selected } = dataframe;
-  // const toggleSelect = (i: number) => {
-  //   setDataframe(
-  //     produce((d) => {
-  //       d.selected[i] = !d.selected[i];
-  //     })
-  //   );
-  // };
-  // const toggleSelectSlice = (i: number, step: number) => {
-  //   setDataframe(
-  //     produce((d) => {
-  //       const allSelected = !d.selected.slice(i, i + step).includes(false);
-  //       d.selected.splice(i, step, ...Array(step).fill(!allSelected));
-  //     })
-  //   );
-  // };
-
-  // hack for commit now
-  const data: any[][] = [];
-  const toggleSelect = (i: number) => null;
-  const toggleSelectSlice = (i: number, step: number) => null;
+  const { header, selected, getSize, getData, config } =
+    useAtomValue(dataframeAtom);
 
   const [pos, setPos] = useAtom(posAtom);
   const step = useAtomValue(stepAtom);
   const setTotal = useSetAtom(totAtom);
+  const [slice, setSlice] = useState<any[][]>([]);
+  const [sel, setSel] = useState<boolean[]>([]);
 
   useEffect(() => {
-    setPos(0);
-    setTotal(data.length);
-  }, [header, data]);
+    const init = async () => {
+      setPos(0);
+      setTotal(await getSize(false));
+      setSel(selected);
+    };
+
+    init();
+  }, [config]);
+
+  useEffect(() => {
+    const update = async () => {
+      const data = await getData(pos, pos + step, false);
+      setSlice(data);
+    };
+
+    update();
+  }, [pos, step, getData]);
+
+  const toggleSelect = (i: number) => {
+    setSel(
+      produce((s) => {
+        s[i] = !s[i];
+      })
+    );
+  };
+  const toggleSelectSlice = (i: number, step: number) => {
+    setSel(
+      produce((s) => {
+        const allSelected = !s.slice(i, i + step).includes(false);
+        s.splice(i, step, ...Array(step).fill(!allSelected));
+      })
+    );
+  };
 
   return (
     <div
@@ -71,8 +82,8 @@ const DataFrame = ({
                   type='checkbox'
                   className='us-border-none focus:us-outline-none focus:us-ring-0 focus:us-ring-offset-0 us-bg-white us-w-3.5 us-h-3.5'
                   checked={
-                    selected.slice(pos, pos + step).length
-                      ? !selected.slice(pos, pos + step).includes(false)
+                    sel.slice(pos, pos + step).length
+                      ? !sel.slice(pos, pos + step).includes(false)
                       : false
                   }
                   readOnly
@@ -91,7 +102,7 @@ const DataFrame = ({
             </tr>
           </thead>
           <tbody>
-            {data.slice(pos, pos + step).map((row, irow) => (
+            {slice.map((row, irow) => (
               <tr
                 key={irow}
                 className='us-bg-white us-border-b'
@@ -102,7 +113,7 @@ const DataFrame = ({
                     <input
                       type='checkbox'
                       className='us-border-none focus:us-outline-none focus:us-ring-0 focus:us-ring-offset-0 us-bg-indigo-100 us-w-3.5 us-h-3.5'
-                      checked={selected[pos + irow] || false}
+                      checked={sel[pos + irow] || false}
                       readOnly
                     />
                   </div>

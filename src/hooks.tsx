@@ -79,7 +79,7 @@ export const useCarouselSetPage = () => {
   });
 
   useEffect(() => {
-    if (isSuccess)
+    if (isSuccess) {
       setCarouselData(
         produce((d) => {
           d.carouselData = carouselData.carouselData;
@@ -87,6 +87,7 @@ export const useCarouselSetPage = () => {
           d.switchOfFreshData = !d.switchOfFreshData;
         })
       );
+    }
   }, [isSuccess, carouselData]);
 
   return { isLoading };

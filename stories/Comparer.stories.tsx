@@ -1,8 +1,9 @@
+import React, { useEffect } from 'react';
 import { Meta, StoryObj } from '@storybook/react';
-import React from 'react';
 import { QueryProvider, useCarouselSetSize, useCarouselSetPage } from '@/hooks';
 import { Comparer, ImageTag } from '@/components';
-import { Provider } from 'jotai';
+import { apiEndpointAtom } from '@/atoms';
+import { Provider, useSetAtom } from 'jotai';
 
 const meta: Meta<typeof Comparer> = {
   title: 'UX-SDK/Comparer',
@@ -20,6 +21,12 @@ const Template = (args: any) => {
   const Story = () => {
     const { isLoading: isSizeLoading } = useCarouselSetSize();
     const { isLoading: isPageLoading } = useCarouselSetPage();
+
+    const setApiEndpoint = useSetAtom(apiEndpointAtom);
+
+    useEffect(() => {
+      setApiEndpoint(`/formula-serv/zityspace/image-carousel/default`);
+    }, []);
 
     if (isSizeLoading || isPageLoading) return <></>;
 

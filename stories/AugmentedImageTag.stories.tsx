@@ -1,9 +1,9 @@
-import { Meta, StoryObj } from '@storybook/react';
 import React, { useEffect } from 'react';
+import { Meta, StoryObj } from '@storybook/react';
 import { AugmentedImageTag } from '@/components';
 import { LabelType } from '@zityspace/react-annotate';
-import { carouselDataAtom, getImageAtom } from '@/atoms';
-import { useAtomValue, useAtom, Provider } from 'jotai';
+import { carouselDataAtom, getImageAtom, apiEndpointAtom } from '@/atoms';
+import { useAtomValue, useAtom, Provider, useSetAtom } from 'jotai';
 
 const meta: Meta<typeof AugmentedImageTag> = {
   title: 'UX-SDK/AugmentedImageTag',
@@ -21,11 +21,15 @@ interface BoxProps {
 
 const Template = (args: any) => {
   const [carouselData, setCarouselData] = useAtom(carouselDataAtom);
+
+  const setApiEndpoint = useSetAtom(apiEndpointAtom);
+
   useEffect(() => {
+    setApiEndpoint('/formula-serv/zityspace/image-carousel/default');
     setCarouselData({
       carouselData: {
-        duck: {
-          name: 'duck',
+        ['kol_batch1_372.jpg']: {
+          name: 'kol_batch1_372.jpg',
           annotations: [
             {
               x: 100,
@@ -85,6 +89,6 @@ export const Story: StoryObj<typeof Template> = {
     </Provider>
   ),
   args: {
-    name: 'duck',
+    name: 'kol_batch1_372.jpg',
   },
 };
