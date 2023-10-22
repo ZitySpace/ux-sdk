@@ -13,7 +13,7 @@ export const makeOption = (
     .setSize({ height: 540 })
     .setData({
       queryApi: {
-        host: HOST + '/dimensionality_reduction?gridify=false&method=tsne',
+        host: HOST.replace('/default/queries', '/tsne'),
         query: '',
       },
     })
@@ -88,7 +88,8 @@ export const makeOption = (
         setFilter(
           await Option.filterFromQuery(
             HOST,
-            "res = df[['image_hash', 'x', 'y', 'w', 'h', 'category', 'type']]"
+            "res = df[['image_hash', 'x', 'y', 'w', 'h', 'category', 'type']]",
+            false
           )
         );
       },

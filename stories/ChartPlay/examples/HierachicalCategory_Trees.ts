@@ -3,7 +3,7 @@ import { Option, MouseEventParams } from '@/components';
 import { fetchData } from '@/utils';
 
 const getRelationData = (HOST: string) => async () =>
-  await fetchData(HOST + '/relation?name=categories');
+  await fetchData(HOST + '/category-tree');
 
 export const makeOption = (
   treeType: string,
@@ -14,7 +14,7 @@ export const makeOption = (
     treeType === 'tree'
       ? Option.makeTree()
           .setSize({ height: 320 })
-          .setTreeData(getRelationData(HOST))
+          .setTreeData(getRelationData(HOST.replace('/default/queries', '')))
           .updateOption({
             series: [
               {
@@ -66,7 +66,7 @@ export const makeOption = (
       : treeType === 'radialTree'
       ? Option.makeTree()
           .setSize({ height: 360 })
-          .setTreeData(getRelationData(HOST))
+          .setTreeData(getRelationData(HOST.replace('/default/queries', '')))
           .updateOption({
             series: [
               {
@@ -101,7 +101,7 @@ export const makeOption = (
       : treeType === 'treemap'
       ? Option.makeTreemap()
           .setSize({ height: 360 })
-          .setTreeData(getRelationData(HOST))
+          .setTreeData(getRelationData(HOST.replace('/default/queries', '')))
           .updateOption({
             series: [
               {
@@ -112,7 +112,7 @@ export const makeOption = (
       : treeType === 'sunburst'
       ? Option.makeSunburst()
           .setSize({ height: 480 })
-          .setTreeData(getRelationData(HOST))
+          .setTreeData(getRelationData(HOST.replace('/default/queries', '')))
           .updateOption({
             series: [
               {
@@ -163,7 +163,8 @@ export const makeOption = (
         setFilter(
           await Option.filterFromQuery(
             HOST,
-            "res = df[['image_hash', 'x', 'y', 'w', 'h', 'category', 'type']]"
+            "res = df[['image_hash', 'x', 'y', 'w', 'h', 'category', 'type']]",
+            false
           )
         );
       },
@@ -210,7 +211,7 @@ export const makeOption = (
           leafs
         )}\n${queryStr}`;
 
-        setFilter(await Option.filterFromQuery(HOST, queryStrWithData));
+        setFilter(await Option.filterFromQuery(HOST, queryStrWithData, false));
       },
     });
 

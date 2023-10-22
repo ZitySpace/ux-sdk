@@ -14,7 +14,7 @@ export const makeOption = (
             queryApi: {
               host: HOST,
               query:
-                "res = df.groupby(df.last_updated.apply(lambda dt: dt[:10])).size().to_frame('count')",
+                "res = df.groupby(df.timestamp_z.apply(lambda dt: dt[:10])).size().to_frame('count')",
             },
           })
           .updateOption({
@@ -40,7 +40,7 @@ export const makeOption = (
               orient: 'horizontal',
               left: 60,
               right: 30,
-              range: 2022,
+              range: 2023,
               itemStyle: {
                 borderWidth: 0.25,
               },
@@ -74,7 +74,7 @@ export const makeOption = (
             queryApi: {
               host: HOST,
               query:
-                "res = df.groupby(df.last_updated.apply(lambda dt: dt[:10])).size().to_frame('count')",
+                "res = df.groupby(df.timestamp_z.apply(lambda dt: dt[:10])).size().to_frame('count')",
             },
           })
           .updateOption({
@@ -104,7 +104,7 @@ export const makeOption = (
               orient: 'vertical',
               left: '15%',
               right: '20%',
-              range: '2022-03',
+              range: '2023-06',
               top: 90,
               height: 180,
               monthLabel: {
@@ -163,7 +163,7 @@ export const makeOption = (
             queryApi: {
               host: HOST,
               query:
-                "res = df.groupby(df.last_updated.apply(lambda dt: dt[:10])).size().to_frame('count')",
+                "res = df.groupby(df.timestamp_z.apply(lambda dt: dt[:10])).size().to_frame('count')",
             },
           })
           .updateOption({
@@ -233,7 +233,7 @@ export const makeOption = (
         setFilter(
           await Option.filterFromQuery(
             HOST,
-            "res = df[df.last_updated.apply(lambda dt: dt.startswith(data['last_updated']))]",
+            "res = df[df.timestamp_z.apply(lambda dt: dt.startswith(data['timestamp_z']))]",
             false,
             params
           )

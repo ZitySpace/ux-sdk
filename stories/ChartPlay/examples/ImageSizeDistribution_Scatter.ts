@@ -15,8 +15,7 @@ export const makeOption = (
     .setData({
       queryApi: {
         host: HOST,
-        query:
-          "res = df[['image_hash', 'image_width', 'image_height']].drop_duplicates()",
+        query: "res = meta_df[['image_hash', 'image_width', 'image_height']]",
       },
     })
     .updateOption({
@@ -87,7 +86,7 @@ export const makeOption = (
         setFilter(
           await Option.filterFromQuery(
             HOST,
-            "res = df[['image_hash', 'image_width', 'image_height']].drop_duplicates()"
+            "res = meta_df[['image_hash', 'image_width', 'image_height']]"
           )
         );
       },
@@ -99,7 +98,7 @@ export const makeOption = (
         setFilter(
           await Option.filterFromQuery(
             HOST,
-            "res = df[(df.image_width == data['image_width']) & (df.image_height == data['image_height'])][['image_hash']].drop_duplicates()",
+            "res = meta_df[(meta_df.image_width == data['image_width']) & (meta_df.image_height == data['image_height'])][['image_hash']]",
             false,
             params
           )

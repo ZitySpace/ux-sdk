@@ -1,5 +1,5 @@
 import { Meta, StoryObj } from '@storybook/react';
-import React, { useEffect, useState, useRef, Suspense } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 
 import { QueryProvider, useCarouselSetSize, useCarouselSetPage } from '@/hooks';
 import { Chart, Option, PaginationBar, ImageCarousel } from '@/components';
@@ -26,60 +26,40 @@ const meta: Meta<typeof Chart> = {
 };
 export default meta;
 
-const endpoint = '/formula-serv/zityspace/category-distribution-bar';
-
 const ChartPlay = () => {
   const { isLoading: isSizeLoading } = useCarouselSetSize();
   const { isLoading: isPageLoading } = useCarouselSetPage();
 
-  const examples = [
-    'Custom',
-    'CategoryDistribution_Bar',
-    'CategoryDistribution_Pie',
-    'ImageSizeDistribution_Scatter',
-    'BoxSizeDistribution_Scatter',
-    'AnnotationTimeTracker_Line',
-    'AnnotationYearlyTracker_Calendar',
-    'AnnotationMonthlyTracker_Calendar',
-    'ConfusionMatrix_Heatmap',
-    'MultiLabelConfusionMatrix_Heatmap',
-    'Tsne_Scatter',
-    'Tsne_Scatter3D',
-    'HierachicalCategory_Tree',
-    'HierachicalCategory_RadialTree',
-    'HierachicalCategory_TreeMap',
-    'HierachicalCategory_Sunburst',
-    'MultiLabel_Forest',
-    'CategoryAttribute_Sankey',
-  ];
+  const examples_endpoints: { [key: string]: string } = {
+    Custom: 'category-distribution-bar',
+    CategoryDistribution_Bar: 'category-distribution-bar',
+    CategoryDistribution_Pie: 'category-distribution-pie',
+    ImageSizeDistribution_Scatter: 'image-size-distribution-scatter',
+    BoxSizeDistribution_Scatter: 'box-size-distribution-scatter',
+    AnnotationTimeTracker_Line: 'annotation-tracker-line',
+    AnnotationYearlyTracker_Calendar: 'annotation-tracker-yearly-calendar',
+    AnnotationMonthlyTracker_Calendar: 'annotation-tracker-monthly-calendar',
+    ConfusionMatrix_Heatmap: 'category-confusion-matrix',
+    MultiLabelConfusionMatrix_Heatmap: 'multilabel-confusion-matrix',
+    Tsne_Scatter: 'embedding-tsne-scatter',
+    Tsne_Scatter3D: 'embedding-tsne-scatter3d',
+    HierachicalCategory_Tree: 'hier-category-distribution-tree',
+    HierachicalCategory_RadialTree: 'hier-category-distribution-radialtree',
+    HierachicalCategory_TreeMap: 'hier-category-distribution-treemap',
+    HierachicalCategory_Sunburst: 'hier-category-distribution-sunburst',
+    MultiLabel_Forest: 'hier-multilabel-distribution-forest',
+    CategoryAttribute_Sankey: 'category-attribute-sankey',
+  };
   const [example, setExample] = useState<string>('Custom');
 
   const setFilter = useSetAtom(filterAtom);
 
   const [apiEndpoint, setApiEndpoint] = useAtom(apiEndpointAtom);
 
-  useEffect(() => {
-    setFilter({
-      choice: 'byDataframe',
-      value: {
-        header: [],
-        data: [],
-        selected: [],
-        // query: {
-        //   host: `${endpoint}/default/queries`,
-        //   code: "res = df[['image_hash', 'x', 'y', 'w', 'h', 'category', 'type']]",
-        // },
-      },
-    });
-    setApiEndpoint(`${endpoint}/default`);
-  }, []);
-
-  const HOST = `${endpoint}/default/queries`;
-
   const optionRef = useRef<Option>(new Option());
   const chartKeyRef = useRef<boolean>(false);
 
-  const prepareExample = (emp: string) => {
+  const prepareExample = (emp: string, HOST: string) => {
     if (emp === 'Custom') optionRef.current = new Option();
     else if (emp === 'CategoryDistribution_Bar') {
       optionRef.current = makeCategoryDistributionBarOption(HOST, setFilter);
@@ -148,10 +128,25 @@ const ChartPlay = () => {
       optionRef.current = makeCategoryAttributeSankeyOption(HOST, setFilter);
     }
 
-    if (emp !== example) {
-      chartKeyRef.current = !chartKeyRef.current;
-    }
+    chartKeyRef.current = !chartKeyRef.current;
   };
+
+  useEffect(() => {
+    const endpoint = examples_endpoints[example];
+    setFilter({
+      choice: 'byDataframe',
+      value: {
+        header: [],
+        data: [],
+        selected: [],
+      },
+    });
+    setApiEndpoint(`/formula-serv/zityspace/${endpoint}/default`);
+    prepareExample(
+      example,
+      `/formula-serv/zityspace/${endpoint}/default/queries`
+    );
+  }, [example]);
 
   if (isSizeLoading || isPageLoading) return <></>;
 
@@ -165,7 +160,7 @@ const ChartPlay = () => {
         <div className='us-flex-grow us-border-t us-border-indigo-200'></div>
       </div>
       <div className='us-flex us-flex-wrap'>
-        {examples.map((emp, i) => (
+        {Object.keys(examples_endpoints).map((emp, i) => (
           <button
             type='button'
             key={i}
@@ -178,7 +173,6 @@ const ChartPlay = () => {
                       : 'us-text-gray-600 us-bg-transparent us-border-gray-400'
                   }`}
             onClick={() => {
-              prepareExample(emp);
               setExample(emp);
             }}
           >

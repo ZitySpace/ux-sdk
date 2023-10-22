@@ -12,7 +12,7 @@ export const makeOption = (
         .setData(
           {
             queryApi: {
-              host: HOST + '/confusion_matrix?taxonomy=attribute',
+              host: HOST.replace('/default/queries', '') + '/confusion-matrix',
               query: '',
             },
           },
@@ -150,7 +150,7 @@ export const makeOption = (
         .setData(
           {
             queryApi: {
-              host: HOST + '/confusion_matrix?taxonomy=category',
+              host: HOST.replace('/default/queries', '') + '/confusion-matrix',
               query: '',
             },
           },
@@ -283,7 +283,8 @@ export const makeOption = (
         setFilter(
           await Option.filterFromQuery(
             HOST,
-            "res = df[['image_hash', 'x', 'y', 'w', 'h', 'category', 'type']]"
+            "res = df[['image_hash', 'x', 'y', 'w', 'h', 'category', 'type']]",
+            false
           )
         );
       },

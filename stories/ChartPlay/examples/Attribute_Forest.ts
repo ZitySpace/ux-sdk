@@ -2,15 +2,16 @@ import { FilterProps } from '@/atoms';
 import { Option, MouseEventParams } from '@/components';
 import { fetchData } from '@/utils';
 
+const getRelationData = (HOST: string) => async () =>
+  await fetchData(HOST + '/attributes-forest');
+
 export const makeOption = (
   HOST: string,
   setFilter: { (filter: FilterProps): void }
 ) => {
   const opt = Option.makeTree()
     .setSize({ height: 640 })
-    .setMultiTreeData(
-      async () => await fetchData(HOST + '/relation?name=attributes')
-    );
+    .setMultiTreeData(getRelationData(HOST.replace('/default/queries', '')));
 
   const nTrees = 16;
   const nRows = 2;
@@ -94,7 +95,8 @@ export const makeOption = (
         setFilter(
           await Option.filterFromQuery(
             HOST,
-            "res = df[['image_hash', 'x', 'y', 'w', 'h', 'category', 'type']]"
+            "res = df[['image_hash', 'x', 'y', 'w', 'h', 'category', 'type']]",
+            false
           )
         );
       },
@@ -141,7 +143,7 @@ slice = df[df.attributes.apply(lambda x: check('${path}', ast.literal_eval(x)))]
 res = slice[['image_hash', 'x', 'y', 'w', 'h', 'type']]
         `;
 
-        setFilter(await Option.filterFromQuery(HOST, queryStr));
+        setFilter(await Option.filterFromQuery(HOST, queryStr, false));
       },
     });
 
