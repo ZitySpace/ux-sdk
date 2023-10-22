@@ -50,6 +50,7 @@ jobs:
 
       - name: Install dependencies
         run: |
+          echo "auto-install-peers=false" >> .npmrc
           echo "@ZitySpace:registry=https://npm.pkg.github.com/" >> .npmrc
           echo "//npm.pkg.github.com/:_authToken=${{ secrets.GH_REGISTRY_TOKEN }}" >> .npmrc
           cat .npmrc
